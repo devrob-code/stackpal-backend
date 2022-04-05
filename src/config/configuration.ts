@@ -1,5 +1,6 @@
 export default () => ({
   database: getDatabaseProps(),
+  jwt: getJwtProps(),
 });
 
 const getDatabaseProps = () => {
@@ -16,3 +17,8 @@ const getDatabaseProps = () => {
     migrations: process.env.DB_MIGRATIONS,
   };
 };
+
+const getJwtProps = () => ({
+  secret: process.env.JWT_SECRET,
+  expiresIn: process.env.JWT_EXPIRES_IN,
+});
