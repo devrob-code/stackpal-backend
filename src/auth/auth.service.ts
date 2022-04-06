@@ -6,6 +6,9 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { SignupResponse } from './dto/response/signup.response';
+import { plainToClass } from 'class-transformer';
+import { LoginResponse } from './dto/response/login.response';
 
 @Injectable()
 export class AuthService {
@@ -19,16 +22,17 @@ export class AuthService {
     return bcrypt.compare(password, hash);
   }
 
-  public async signup(body: CreateUserDto): Promise<any> {
-    return await this.userRepositoryService.createUser(body);
+  public async signup(body: CreateUserDto): Promise<SignupResponse> {
+    const signupUser = await this.userRepositoryService.createUser(body);
+    return plainToClass(SignupResponse, signupUser);
   }
 
-  public async login(body: LoginDto): Promise<any> {
+  public async login(body: LoginDto): Promise<LoginResponse> {
     const { email, password } = body;
     const user: User = await this.userRepositoryService.getByEmail(email);
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
     // compare passwords
@@ -43,7 +47,8 @@ export class AuthService {
       username: user.username,
     });
 
-    return { user, token };
+    const response = { ...user, ...token };
+    return plainToClass(LoginResponse, response);
   }
 
   public async validateUser(payload): Promise<any> {
