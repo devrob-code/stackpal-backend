@@ -10,7 +10,7 @@ export class GetUserByEmailUseCase {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
-  public async exec(email: string): Promise<any> {
+  public async exec(email: string): Promise<User> {
     return this.userRepo.findOne({
       where: {
         email,

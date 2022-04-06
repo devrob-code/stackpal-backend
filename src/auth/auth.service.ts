@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignupResponse } from './dto/response/signup.response';
 import { plainToClass } from 'class-transformer';
 import { LoginResponse } from './dto/response/login.response';
+import { PayloadResponse } from './dto/response/payload.response';
 
 @Injectable()
 export class AuthService {
@@ -51,15 +52,18 @@ export class AuthService {
     return plainToClass(LoginResponse, response);
   }
 
-  public async validateUser(payload): Promise<any> {
-    const user = await this.userRepositoryService.getByEmail(payload);
+  public async validateUser(payload: PayloadResponse): Promise<User> {
+    const user = await this.userRepositoryService.getByEmailAndId(
+      payload.email,
+      payload.id,
+    );
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
     return user;
   }
 
-  private _createToken(email): any {
+  private _createToken(email): { expiresIn: string; accessToken: string } {
     const accessToken = this.jwtService.sign(email);
 
     return {

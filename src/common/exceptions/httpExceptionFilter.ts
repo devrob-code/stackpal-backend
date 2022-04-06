@@ -29,7 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     return response.status(statusCode).json({
       status: statusCode,
       message: Array.isArray(message)
-        ? message.map((error: any) => error.constraints)
+        ? message.map((error) => error.constraints)
         : message,
       name: error,
     });
