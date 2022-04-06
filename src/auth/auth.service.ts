@@ -20,20 +20,6 @@ export class AuthService {
   }
 
   public async signup(body: CreateUserDto): Promise<any> {
-    const { username, email } = body;
-
-    // check if the username exists in the db
-    const usernameInDb = await this.userRepositoryService.getByUsername(
-      username,
-    );
-
-    // check if the username exists in the db
-    const emailInDb = await this.userRepositoryService.getByEmail(email);
-
-    if (usernameInDb || emailInDb) {
-      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
-    }
-
     return await this.userRepositoryService.createUser(body);
   }
 
