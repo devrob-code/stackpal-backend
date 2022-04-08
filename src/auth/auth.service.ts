@@ -11,11 +11,13 @@ import { plainToClass } from 'class-transformer';
 import { LoginResponse } from './dto/response/login.response';
 import { PayloadResponse } from './dto/response/payload.response';
 import { MailService } from 'src/core/mail/mail.service';
+import { VerificationRepositoryService } from 'src/repositories/verifications/verification-repository.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepositoryService: UserRepositoryService,
+    private readonly verificationRepositoryService: VerificationRepositoryService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
@@ -26,7 +28,6 @@ export class AuthService {
   }
 
   public async signup(body: CreateUserDto): Promise<SignupResponse> {
-    await this.mailService.sendUserConfirmation();
     const signupUser = await this.userRepositoryService.createUser(body);
     return plainToClass(SignupResponse, signupUser);
   }
@@ -56,7 +57,10 @@ export class AuthService {
   }
 
   public async validateUser(payload: PayloadResponse): Promise<User> {
-    const user = await this.userRepositoryService.getByEmailAndId(payload.email, payload.id);
+    const user = await this.userRepositoryService.getByEmailAndId(
+      payload.email,
+      payload.id,
+    );
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
@@ -70,5 +74,21 @@ export class AuthService {
       expiresIn: this.configService.get('jwt.expiresIn'),
       accessToken,
     };
+  }
+
+  public async sendVerificationCode(body: { email: string }): Promise<boolean> {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save Code to db
+    await this.verificationRepositoryService.createEmailVerificationCode({
+      email: body.email,
+      code: code,
+    });
+
+    // Send the verification code
+    return await this.mailService.sendUserEmailVerificationToken(
+      body.email,
+      code,
+    );
   }
 }

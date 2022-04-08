@@ -21,4 +21,10 @@ export class AuthController {
   public async signup(@Body() body: CreateUserDto): Promise<SignupResponse> {
     return this.authService.signup(body);
   }
+
+  @UseGuards(EmailExistsGuard)
+  @Post('send-email-verification-code')
+  public async sendEmailVerificationCode(@Body() body: { email: string }): Promise<boolean> {
+    return this.authService.sendVerificationCode(body);
+  }
 }
