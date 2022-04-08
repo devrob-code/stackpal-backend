@@ -10,12 +10,14 @@ import { SignupResponse } from './dto/response/signup.response';
 import { plainToClass } from 'class-transformer';
 import { LoginResponse } from './dto/response/login.response';
 import { PayloadResponse } from './dto/response/payload.response';
+import { MailService } from 'src/core/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepositoryService: UserRepositoryService,
     private readonly configService: ConfigService,
+    private readonly mailService: MailService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -24,6 +26,7 @@ export class AuthService {
   }
 
   public async signup(body: CreateUserDto): Promise<SignupResponse> {
+    await this.mailService.sendUserConfirmation();
     const signupUser = await this.userRepositoryService.createUser(body);
     return plainToClass(SignupResponse, signupUser);
   }
@@ -53,10 +56,7 @@ export class AuthService {
   }
 
   public async validateUser(payload: PayloadResponse): Promise<User> {
-    const user = await this.userRepositoryService.getByEmailAndId(
-      payload.email,
-      payload.id,
-    );
+    const user = await this.userRepositoryService.getByEmailAndId(payload.email, payload.id);
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
