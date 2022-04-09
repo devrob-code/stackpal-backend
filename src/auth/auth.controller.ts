@@ -24,7 +24,9 @@ export class AuthController {
 
   @UseGuards(EmailExistsGuard)
   @Post('send-email-verification-code')
-  public async sendEmailVerificationCode(@Body() body: { email: string }): Promise<boolean> {
-    return this.authService.sendVerificationCode(body);
+  public async sendEmailVerificationCode(
+    @Body() body: { email: string },
+  ): Promise<boolean> {
+    return await this.authService.sendVerificationCode(body);
   }
 }
