@@ -3,10 +3,12 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
+import { HelperModule } from '../helpers/helper.module';
 import { MailService } from './mail.service';
 
 @Module({
   imports: [
+    HelperModule,
     MailerModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
         transport: {
