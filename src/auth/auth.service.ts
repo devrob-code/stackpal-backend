@@ -14,6 +14,7 @@ import { MailService } from 'src/core/mail/mail.service';
 import { VerificationRepositoryService } from 'src/repositories/verifications/verification-repository.service';
 import { VerifyEmailDto } from './dto/request/verify-email.dto';
 import { HelperService } from 'src/core/helpers/helper.service';
+import { SmsService } from 'src/core/sms/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly verificationRepositoryService: VerificationRepositoryService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
+    private readonly smsService: SmsService,
     private readonly jwtService: JwtService,
     private readonly helperService: HelperService,
   ) {}
@@ -79,7 +81,9 @@ export class AuthService {
     };
   }
 
-  public async sendVerificationCode(body: { email: string }): Promise<boolean> {
+  public async sendEmailVerificationCode(body: {
+    email: string;
+  }): Promise<boolean> {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Save Code to db
@@ -120,5 +124,9 @@ export class AuthService {
       return true;
     }
     return false;
+  }
+
+  public async sendPhoneVerificationCode(): Promise<boolean> {
+    return await this.smsService.sendUserPhoneVerificationToken('e', 'e');
   }
 }

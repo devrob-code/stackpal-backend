@@ -3,6 +3,7 @@ export default () => ({
   jwt: getJwtProps(),
   mail: getMailProps(),
   encrypt: getEncryptProps(),
+  twilio: getTwilioProps(),
 });
 
 const getDatabaseProps = () => {
@@ -37,4 +38,10 @@ const getMailProps = () => ({
 
 const getEncryptProps = () => ({
   encryptPassword: process.env.ENCRYPT_PASSWORD,
+});
+
+const getTwilioProps = () => ({
+  accountSid: process.env.TWILIO_ACCOUNT_SID,
+  authToken: process.env.TWILIO_AUTH_TOKEN,
+  twilioNumber: process.env.TWILIO_NUMBER,
 });

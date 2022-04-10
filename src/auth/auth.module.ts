@@ -9,6 +9,7 @@ import { MailModule } from 'src/core/mail/mail.module';
 import { ConfigService } from '@nestjs/config';
 import { VerificationRepositoryModule } from 'src/repositories/verifications/verification-repository.module';
 import { HelperModule } from 'src/core/helpers/helper.module';
+import { SmsModule } from 'src/core/sms/sms.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { HelperModule } from 'src/core/helpers/helper.module';
     VerificationRepositoryModule,
     MailModule,
     HelperModule,
+    SmsModule,
     PassportModule.register({
       defaultStrategy: 'jwt',
       property: 'user',
