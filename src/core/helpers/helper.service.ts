@@ -1,23 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as crypto from 'crypto';
-import { promisify } from 'util';
 
+let ncrypt = require('ncrypt-js');
 @Injectable()
 export class HelperService {
   constructor(private readonly configService: ConfigService) {}
+  private securityKey = this.configService.get('encrypt.encryptPassword');
+  private ncryptObject = new ncrypt(this.securityKey);
 
   public async encryptString(string: string): Promise<any> {
-    const algorithm = 'aes-256-cbc';
-    const initVector = crypto.randomBytes(16);
-    const password = this.configService.get('encrypt.encryptPassword');
-    const securityKey = crypto.randomBytes(32);
+    return await this.ncryptObject.encrypt(string);
+  }
 
-    const cipher = crypto.createCipheriv(algorithm, securityKey, initVector);
-
-    let encryptedData = cipher.update(string, 'utf-8', 'hex');
-    encryptedData += cipher.final('hex');
-
-    return encryptedData;
+  public async decryptString(encryptedString: string): Promise<any> {
+    try {
+      return await this.ncryptObject.decrypt(encryptedString);
+    } catch (e) {
+      throw new HttpException('Invalid Request', 400);
+    }
   }
 }

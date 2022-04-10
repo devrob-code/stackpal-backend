@@ -5,6 +5,7 @@ import { CreateUserUseCase } from './usecases/create-user.usecase';
 import { GetUserByEmailAndIdUseCase } from './usecases/get-user-by-email-and-id.usecase';
 import { GetUserByEmailUseCase } from './usecases/get-user-by-email.usecase';
 import { GetUserByUsernameUseCase } from './usecases/get-user-by-username.usecase';
+import { UpdateUserByEmailUseCase } from './usecases/update-user-by-email.usecase';
 import { UserRepositoryService } from './user-repository.service';
 
 @Module({
@@ -15,6 +16,7 @@ import { UserRepositoryService } from './user-repository.service';
     GetUserByUsernameUseCase,
     CreateUserUseCase,
     GetUserByEmailAndIdUseCase,
+    UpdateUserByEmailUseCase,
   ],
   exports: [UserRepositoryService],
 })

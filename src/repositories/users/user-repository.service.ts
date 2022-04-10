@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
+import { UpdateUserDataDto } from 'src/user/dto/request/user-data.dto';
 import { User } from './entities/user.entity';
 import { CreateUserUseCase } from './usecases/create-user.usecase';
 import { GetUserByEmailAndIdUseCase } from './usecases/get-user-by-email-and-id.usecase';
 import { GetUserByEmailUseCase } from './usecases/get-user-by-email.usecase';
 import { GetUserByUsernameUseCase } from './usecases/get-user-by-username.usecase';
+import { UpdateUserByEmailUseCase } from './usecases/update-user-by-email.usecase';
 
 @Injectable()
 export class UserRepositoryService {
@@ -13,6 +15,7 @@ export class UserRepositoryService {
     private readonly getUserByUsernameUseCase: GetUserByUsernameUseCase,
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly getUserByEmailAndIdUseCase: GetUserByEmailAndIdUseCase,
+    private readonly updateUserByEmailUseCase: UpdateUserByEmailUseCase,
   ) {}
 
   public async getByEmail(email: string): Promise<User> {
@@ -29,5 +32,12 @@ export class UserRepositoryService {
 
   public async getByEmailAndId(email: string, id: number): Promise<User> {
     return this.getUserByEmailAndIdUseCase.exec(email, id);
+  }
+
+  public async updateUserByEmail(
+    email: string,
+    data: Partial<User>,
+  ): Promise<boolean> {
+    return this.updateUserByEmailUseCase.exec(email, data);
   }
 }

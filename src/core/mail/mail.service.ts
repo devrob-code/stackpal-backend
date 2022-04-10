@@ -17,6 +17,7 @@ export class MailService {
   ): Promise<boolean> {
     const encryptedCode = await this.helperService.encryptString(code);
     const encryptedEmail = await this.helperService.encryptString(email);
+
     const url = `https://stackpal.io/verify-email?el=${encryptedEmail}&ce=${encryptedCode}`;
     const sendEmailVerificationCode = this.mailerService.sendMail({
       to: email.toLowerCase(),

@@ -8,12 +8,14 @@ import { JwtStrategy } from './jwt.strategy';
 import { MailModule } from 'src/core/mail/mail.module';
 import { ConfigService } from '@nestjs/config';
 import { VerificationRepositoryModule } from 'src/repositories/verifications/verification-repository.module';
+import { HelperModule } from 'src/core/helpers/helper.module';
 
 @Module({
   imports: [
     UserRepositoryModule,
     VerificationRepositoryModule,
     MailModule,
+    HelperModule,
     PassportModule.register({
       defaultStrategy: 'jwt',
       property: 'user',

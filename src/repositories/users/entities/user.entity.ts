@@ -34,6 +34,12 @@ export class User {
   @Column('varchar')
   lastName: string;
 
+  @Column('boolean')
+  emailVerified: boolean;
+
+  @Column('boolean')
+  phoneVerified: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

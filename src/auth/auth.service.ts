@@ -12,6 +12,8 @@ import { LoginResponse } from './dto/response/login.response';
 import { PayloadResponse } from './dto/response/payload.response';
 import { MailService } from 'src/core/mail/mail.service';
 import { VerificationRepositoryService } from 'src/repositories/verifications/verification-repository.service';
+import { VerifyEmailDto } from './dto/request/verify-email.dto';
+import { HelperService } from 'src/core/helpers/helper.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
+    private readonly helperService: HelperService,
   ) {}
 
   private checkPassword(password, hash) {
@@ -90,5 +93,32 @@ export class AuthService {
       body.email,
       code,
     );
+  }
+
+  public async verifyEmailAddress(body: VerifyEmailDto): Promise<boolean> {
+    const encryptedEmail = body.email;
+    const encryptedCode = body.code;
+
+    const email = await this.helperService.decryptString(encryptedEmail);
+    const code = await this.helperService.decryptString(encryptedCode);
+
+    const foundData =
+      await this.verificationRepositoryService.getEmailVerificationByEmailAndCode(
+        email,
+        code,
+      );
+
+    if (foundData) {
+      await this.userRepositoryService.updateUserByEmail(email, {
+        emailVerified: true,
+      });
+
+      await this.verificationRepositoryService.deleteEmailVerificationCodeByEmail(
+        email,
+      );
+
+      return true;
+    }
+    return false;
   }
 }
