@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 let ncrypt = require('ncrypt-js');
@@ -16,7 +16,7 @@ export class HelperService {
     try {
       return await this.ncryptObject.decrypt(encryptedString);
     } catch (e) {
-      throw new HttpException('Invalid Request', 400);
+      throw new HttpException('Invalid Request', HttpStatus.BAD_REQUEST);
     }
   }
 }

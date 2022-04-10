@@ -5,6 +5,8 @@ import { LoginDto } from './dto/request/login.dto';
 import { VerifyEmailDto } from './dto/request/verify-email.dto';
 import { LoginResponse } from './dto/response/login.response';
 import { SignupResponse } from './dto/response/signup.response';
+import { CheckEmailVerifiedGuard } from './guards/check-email-verified.guard';
+import { CheckPhoneVerifiedGuard } from './guards/check-phone-verified.guard';
 import { EmailExistsGuard } from './guards/email-exists.guard';
 import { UsernameExistsGuard } from './guards/username-exists.guard';
 
@@ -13,12 +15,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @UseGuards(CheckEmailVerifiedGuard, CheckPhoneVerifiedGuard)
   public async login(@Body() body: LoginDto): Promise<LoginResponse> {
     return this.authService.login(body);
   }
 
-  @UseGuards(UsernameExistsGuard, EmailExistsGuard)
   @Post('signup')
+  @UseGuards(UsernameExistsGuard, EmailExistsGuard)
   public async signup(@Body() body: CreateUserDto): Promise<SignupResponse> {
     return this.authService.signup(body);
   }
