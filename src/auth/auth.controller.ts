@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/request/login.dto';
+import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
 import { LoginResponse } from './dto/response/login.response';
 import { SignupResponse } from './dto/response/signup.response';
 import { CheckEmailVerifiedGuard } from './guards/check-email-verified.guard';
@@ -34,7 +35,7 @@ export class AuthController {
 
   @Post('send-phone-verification-code')
   public async sendPhoneVerificationCode(
-    @Body() body: { phone: string },
+    @Body() body: PhoneVerificationDto,
   ): Promise<boolean> {
     return await this.authService.sendPhoneVerificationCode(body);
   }

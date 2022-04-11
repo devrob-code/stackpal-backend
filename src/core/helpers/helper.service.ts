@@ -8,11 +8,11 @@ export class HelperService {
   private securityKey = this.configService.get('encrypt.encryptPassword');
   private ncryptObject = new ncrypt(this.securityKey);
 
-  public async encryptString(string: string): Promise<any> {
+  public async encryptString(string: string): Promise<string> {
     return await this.ncryptObject.encrypt(string);
   }
 
-  public async decryptString(encryptedString: string): Promise<any> {
+  public async decryptString(encryptedString: string): Promise<string> {
     try {
       return await this.ncryptObject.decrypt(encryptedString);
     } catch (e) {

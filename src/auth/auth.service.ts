@@ -15,6 +15,7 @@ import { VerificationRepositoryService } from 'src/repositories/verifications/ve
 import { VerifyEmailDto } from './dto/request/verify-email.dto';
 import { HelperService } from 'src/core/helpers/helper.service';
 import { SmsService } from 'src/core/sms/sms.service';
+import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
 
 @Injectable()
 export class AuthService {
@@ -126,9 +127,9 @@ export class AuthService {
     return false;
   }
 
-  public async sendPhoneVerificationCode(body: {
-    phone: string;
-  }): Promise<boolean> {
+  public async sendPhoneVerificationCode(
+    body: PhoneVerificationDto,
+  ): Promise<boolean> {
     const code = this.helperService.generateCode(6);
     return await this.smsService.sendUserPhoneVerificationToken(
       body.phone,

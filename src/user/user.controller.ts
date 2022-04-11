@@ -7,7 +7,5 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  public async get(): Promise<any> {
-    return 'hello';
-  }
+  public async get() {}
 }
