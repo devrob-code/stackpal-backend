@@ -16,6 +16,7 @@ import { VerifyEmailDto } from './dto/request/verify-email.dto';
 import { HelperService } from 'src/core/helpers/helper.service';
 import { SmsService } from 'src/core/sms/sms.service';
 import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
+import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
 
 @Injectable()
 export class AuthService {
@@ -100,7 +101,9 @@ export class AuthService {
     );
   }
 
-  public async verifyEmailAddress(body: VerifyEmailDto): Promise<boolean> {
+  public async verifyEmailAddress(
+    body: VerifyEmailDto,
+  ): Promise<boolean | string> {
     const encryptedEmail = body.email;
     const encryptedCode = body.code;
 
@@ -118,11 +121,11 @@ export class AuthService {
         emailVerified: true,
       });
 
-      await this.verificationRepositoryService.deleteEmailVerificationCodeByEmail(
-        email,
+      await this.verificationRepositoryService.deleteEmailVerificationCodeById(
+        foundData.id,
       );
 
-      return true;
+      return this.helperService.encryptString(email);
     }
     return false;
   }
@@ -143,5 +146,37 @@ export class AuthService {
       body.phone,
       code,
     );
+  }
+
+  public async verifyPhone(body: VerifyPhoneDto): Promise<boolean | string> {
+    const phone = body.phone;
+    const code = body.code;
+    const email = body.email;
+
+    const foundData =
+      await this.verificationRepositoryService.getPhoneVerificationByPhoneAndCode(
+        phone,
+        code,
+      );
+
+    if (foundData) {
+      const user = await this.userRepositoryService.getByPhone(phone);
+
+      if (user.email == email) {
+        await this.userRepositoryService.updateUserByEmail(user.email, {
+          phoneVerified: true,
+          phone,
+        });
+
+        await this.verificationRepositoryService.deletePhoneVerificationCodeById(
+          foundData.id,
+        );
+
+        return true;
+      }
+
+      throw new HttpException('Mismatched Data', HttpStatus.CONFLICT);
+    }
+    return false;
   }
 }

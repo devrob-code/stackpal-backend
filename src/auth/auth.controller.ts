@@ -44,7 +44,7 @@ export class AuthController {
   public async verifyEmailAddress(
     @Query('el') email: string,
     @Query('ce') code: string,
-  ): Promise<boolean> {
+  ): Promise<boolean | string> {
     return await this.authService.verifyEmailAddress({ email, code });
   }
 }
