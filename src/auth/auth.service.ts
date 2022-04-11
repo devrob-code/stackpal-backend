@@ -90,7 +90,7 @@ export class AuthService {
     // Save Code to db
     await this.verificationRepositoryService.createEmailVerificationCode({
       email: body.email,
-      code: this.helperService.generateCode(6),
+      code,
     });
 
     // Send the verification code
@@ -131,6 +131,14 @@ export class AuthService {
     body: PhoneVerificationDto,
   ): Promise<boolean> {
     const code = this.helperService.generateCode(6);
+
+    // Save Code to db
+    await this.verificationRepositoryService.createPhoneVerificationCode({
+      phone: body.phone,
+      code,
+    });
+
+    // Send the code
     return await this.smsService.sendUserPhoneVerificationToken(
       body.phone,
       code,
