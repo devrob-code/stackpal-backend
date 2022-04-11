@@ -15,7 +15,7 @@ export class PhoneExistsGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const phone = request.body.phone;
-    const phoneExists = await this.userRepo.getByUsername(phone);
+    const phoneExists = await this.userRepo.getByPhone(phone);
 
     if (phoneExists) {
       throw new HttpException(

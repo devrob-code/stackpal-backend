@@ -9,6 +9,7 @@ import { SignupResponse } from './dto/response/signup.response';
 import { CheckEmailVerifiedGuard } from './guards/check-email-verified.guard';
 import { CheckPhoneVerifiedGuard } from './guards/check-phone-verified.guard';
 import { EmailExistsGuard } from './guards/email-exists.guard';
+import { PhoneExistsGuard } from './guards/phone-exists.guard';
 import { UsernameExistsGuard } from './guards/username-exists.guard';
 
 @Controller('auth')
@@ -35,6 +36,7 @@ export class AuthController {
   }
 
   @Post('send-phone-verification-code')
+  @UseGuards(PhoneExistsGuard)
   public async sendPhoneVerificationCode(
     @Body() body: PhoneVerificationDto,
   ): Promise<boolean> {
