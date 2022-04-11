@@ -34,9 +34,9 @@ export class AuthController {
 
   @Post('send-phone-verification-code')
   public async sendPhoneVerificationCode(
-    @Body() body: { email: string },
+    @Body() body: { phone: string },
   ): Promise<boolean> {
-    return await this.authService.sendPhoneVerificationCode();
+    return await this.authService.sendPhoneVerificationCode(body);
   }
 
   @Get('verify-email')

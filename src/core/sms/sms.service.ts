@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Twilio } from 'twilio';
 
@@ -21,7 +21,7 @@ export class SmsService {
         to: '+2348083026554',
         body: 'You just sent an SMS from TypeScript using Twilio!',
       })
-      .then((message) => console.log(message.sid));
+      .then((message) => Logger.log(`Message Sent ${message.sid}`));
 
     return true;
   }

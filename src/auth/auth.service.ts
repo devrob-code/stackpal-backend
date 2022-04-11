@@ -84,12 +84,12 @@ export class AuthService {
   public async sendEmailVerificationCode(body: {
     email: string;
   }): Promise<boolean> {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = this.helperService.generateCode(6);
 
     // Save Code to db
     await this.verificationRepositoryService.createEmailVerificationCode({
       email: body.email,
-      code: code,
+      code: this.helperService.generateCode(6),
     });
 
     // Send the verification code
@@ -126,7 +126,9 @@ export class AuthService {
     return false;
   }
 
-  public async sendPhoneVerificationCode(): Promise<boolean> {
+  public async sendPhoneVerificationCode(body: {
+    phone: string;
+  }): Promise<boolean> {
     return await this.smsService.sendUserPhoneVerificationToken('e', 'e');
   }
 }

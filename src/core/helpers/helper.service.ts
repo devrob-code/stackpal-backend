@@ -19,4 +19,19 @@ export class HelperService {
       throw new HttpException('Invalid Request', HttpStatus.BAD_REQUEST);
     }
   }
+
+  public generateCode(length): string {
+    let add = 1;
+    let max = 12 - add;
+
+    if (length > max) {
+      return this.generateCode(max) + this.generateCode(length - max);
+    }
+
+    max = Math.pow(10, length + add);
+    var min = max / 10; // Math.pow(10, n) basically
+    var number = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    return ('' + number).substring(add);
+  }
 }
