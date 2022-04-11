@@ -3,6 +3,7 @@ import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/request/login.dto';
 import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
+import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
 import { LoginResponse } from './dto/response/login.response';
 import { SignupResponse } from './dto/response/signup.response';
 import { CheckEmailVerifiedGuard } from './guards/check-email-verified.guard';
@@ -46,5 +47,12 @@ export class AuthController {
     @Query('ce') code: string,
   ): Promise<boolean | string> {
     return await this.authService.verifyEmailAddress({ email, code });
+  }
+
+  @Post('verify-phone')
+  public async VerifyPhone(
+    @Body() body: VerifyPhoneDto,
+  ): Promise<boolean | string> {
+    return await this.authService.verifyPhone(body);
   }
 }

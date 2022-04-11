@@ -160,22 +160,16 @@ export class AuthService {
       );
 
     if (foundData) {
-      const user = await this.userRepositoryService.getByPhone(phone);
+      await this.userRepositoryService.updateUserByEmail(email, {
+        phoneVerified: true,
+        phone,
+      });
 
-      if (user.email == email) {
-        await this.userRepositoryService.updateUserByEmail(user.email, {
-          phoneVerified: true,
-          phone,
-        });
+      await this.verificationRepositoryService.deletePhoneVerificationCodeById(
+        foundData.id,
+      );
 
-        await this.verificationRepositoryService.deletePhoneVerificationCodeById(
-          foundData.id,
-        );
-
-        return true;
-      }
-
-      throw new HttpException('Mismatched Data', HttpStatus.CONFLICT);
+      return true;
     }
     return false;
   }
