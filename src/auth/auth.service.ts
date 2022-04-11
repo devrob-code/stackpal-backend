@@ -129,6 +129,10 @@ export class AuthService {
   public async sendPhoneVerificationCode(body: {
     phone: string;
   }): Promise<boolean> {
-    return await this.smsService.sendUserPhoneVerificationToken('e', 'e');
+    const code = this.helperService.generateCode(6);
+    return await this.smsService.sendUserPhoneVerificationToken(
+      body.phone,
+      code,
+    );
   }
 }

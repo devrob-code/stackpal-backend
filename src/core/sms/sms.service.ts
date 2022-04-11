@@ -18,10 +18,12 @@ export class SmsService {
     client.messages
       .create({
         from: this.configService.get('twilio.twilioNumber'),
-        to: '+2348083026554',
-        body: 'You just sent an SMS from TypeScript using Twilio!',
+        to: phone,
+        body: `Your Stackpal verification code is ${code}`,
       })
-      .then((message) => Logger.log(`Message Sent ${message.sid}`));
+      .then((message) =>
+        Logger.log(`SMS Message Sent Successfully to ${message.sid}`),
+      );
 
     return true;
   }
