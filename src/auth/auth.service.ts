@@ -17,6 +17,8 @@ import { HelperService } from 'src/core/helpers/helper.service';
 import { SmsService } from 'src/core/sms/sms.service';
 import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
 import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
+import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
+import { RecoverPasswordDto } from './dto/request/recover-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -172,5 +174,22 @@ export class AuthService {
       return true;
     }
     return false;
+  }
+
+  public async forgotPassword(body: ForgotPasswordDto): Promise<boolean> {
+    const user = await this.userRepositoryService.getByEmail(body.email);
+
+    if (user) {
+      return this.mailService.forgotPassword(body.email);
+    }
+  }
+
+  public async recoverPassword(body: RecoverPasswordDto): Promise<boolean> {
+    const email = await this.helperService.decryptString(body.token);
+    const password = await bcrypt.hash(body.newPassword, 10);
+
+    return await this.userRepositoryService.updateUserByEmail(email, {
+      password,
+    });
   }
 }

@@ -34,4 +34,24 @@ export class MailService {
 
     return !!sendEmailVerificationCode;
   }
+
+  public async forgotPassword(email: string): Promise<boolean> {
+    const encryptedEmail = await this.helperService.encryptString(email);
+
+    const url = `https://stackpal.io/forgot-password?token=${encryptedEmail}`;
+    const sendForgotPasswordMail = this.mailerService.sendMail({
+      to: email.toLowerCase(),
+      from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
+      subject: 'Stackpal - Recover Password',
+      template: '/forgot-password',
+      replyTo: `Stackpal No-Reply <${this.configService.get(
+        'mail.defaultReplyTo',
+      )}>`,
+      context: {
+        url,
+      },
+    });
+
+    return !!sendForgotPasswordMail;
+  }
 }

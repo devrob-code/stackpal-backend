@@ -7,17 +7,17 @@ import { User } from '../entities/user.entity';
 @Injectable()
 export class UpdateUserByEmailUseCase {
   constructor(
-    @InjectRepository(User) private readonly cartRepo: Repository<User>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
   public async exec(email: string, data: Partial<User>): Promise<boolean> {
-    const updateCartItems = await this.cartRepo
+    const updateUser = await this.userRepo
       .createQueryBuilder()
       .update(User)
       .set(data)
       .where('email = :email', { email })
       .execute();
 
-    return !!updateCartItems;
+    return !!updateUser;
   }
 }

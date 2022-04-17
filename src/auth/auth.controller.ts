@@ -1,8 +1,10 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { AuthService } from './auth.service';
+import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
 import { LoginDto } from './dto/request/login.dto';
 import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
+import { RecoverPasswordDto } from './dto/request/recover-password.dto';
 import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
 import { LoginResponse } from './dto/response/login.response';
 import { SignupResponse } from './dto/response/signup.response';
@@ -56,5 +58,19 @@ export class AuthController {
     @Body() body: VerifyPhoneDto,
   ): Promise<boolean | string> {
     return await this.authService.verifyPhone(body);
+  }
+
+  @Post('forgot-password')
+  public async forgotPassword(
+    @Body() body: ForgotPasswordDto,
+  ): Promise<boolean> {
+    return await this.authService.forgotPassword(body);
+  }
+
+  @Post('recover-password')
+  public async recoverPassword(
+    @Body() body: RecoverPasswordDto,
+  ): Promise<boolean> {
+    return await this.authService.recoverPassword(body);
   }
 }
