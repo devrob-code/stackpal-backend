@@ -80,7 +80,7 @@ export class AuthService {
     const accessToken = this.jwtService.sign(email);
 
     return {
-      expiresIn: this.configService.get('jwt.expiresIn'),
+      expiresIn: this.configService.get('jwt.expiresIn').toString(),
       accessToken,
     };
   }

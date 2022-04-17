@@ -27,7 +27,7 @@ import { SmsModule } from 'src/core/sms/sms.module';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('jwt.secret'),
         signOptions: {
-          expiresIn: configService.get('jwt.expiresIn'),
+          expiresIn: configService.get('jwt.expiresIn').toString(),
         },
       }),
       inject: [ConfigService],
