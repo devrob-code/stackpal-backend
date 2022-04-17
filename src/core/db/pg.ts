@@ -19,7 +19,6 @@ export default async function (
   let extra = {
     ssl: {
       rejectUnauthorized: false,
-      require: true,
     },
   };
 
@@ -39,6 +38,9 @@ export default async function (
     // migrations: [migrations],
     entities: [entities],
     logging: true,
-    extra,
+    ssl:
+      process.env.NODE_ENV === 'production'
+        ? { rejectUnauthorized: false }
+        : false,
   };
 }
