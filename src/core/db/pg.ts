@@ -19,6 +19,7 @@ export default async function (
   let extra = {
     ssl: {
       rejectUnauthorized: false,
+      require: true,
     },
   };
 
