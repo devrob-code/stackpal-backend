@@ -16,6 +16,16 @@ export default async function (
     migrations,
   } = configService.get('database');
 
+  let extra = {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  };
+
+  if (process.env.NODE_ENV === 'local') {
+    extra = null;
+  }
+
   return {
     type,
     host,
@@ -28,5 +38,6 @@ export default async function (
     // migrations: [migrations],
     entities: [entities],
     logging: true,
+    extra,
   };
 }
