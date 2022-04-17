@@ -28,6 +28,8 @@ export default async function (
     // migrations: [migrations],
     entities: [entities],
     logging: true,
-    ssl: process.env.NODE_ENV === 'local' ? false : true,
+    extra: {
+      ssl: process.env.NODE_ENV === 'local' ? false : true,
+    },
   };
 }
