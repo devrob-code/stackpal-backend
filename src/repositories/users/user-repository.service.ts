@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
-import { UpdateUserDataDto } from 'src/user/dto/request/user-data.dto';
 import { User } from './entities/user.entity';
 import { CreateUserUseCase } from './usecases/create-user.usecase';
 import { GetUserByPhoneUseCase } from './usecases/get-user-by-phone.usecase';

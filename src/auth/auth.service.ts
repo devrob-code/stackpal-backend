@@ -7,7 +7,7 @@ import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SignupResponse } from './dto/response/signup.response';
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { LoginResponse } from './dto/response/login.response';
 import { PayloadResponse } from './dto/response/payload.response';
 import { MailService } from 'src/core/mail/mail.service';
@@ -38,7 +38,7 @@ export class AuthService {
 
   public async signup(body: CreateUserDto): Promise<SignupResponse> {
     const signupUser = await this.userRepositoryService.createUser(body);
-    return plainToClass(SignupResponse, signupUser);
+    return plainToInstance(SignupResponse, signupUser);
   }
 
   public async login(body: LoginDto): Promise<LoginResponse> {
@@ -62,7 +62,7 @@ export class AuthService {
     });
 
     const response = { ...user, ...token };
-    return plainToClass(LoginResponse, response);
+    return plainToInstance(LoginResponse, response);
   }
 
   public async validateUser(payload: PayloadResponse): Promise<User> {
