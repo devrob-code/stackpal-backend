@@ -19,10 +19,15 @@ const setupNestApp = (app) => {
   app.useGlobalFilters(new HttpExceptionFilter());
 };
 
+const setupCors = (app) => {
+  app.enableCors();
+};
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   setupNestApp(app);
+  setupCors(app);
 
   await startServer(app);
   Logger.log(`Server started running on http://localhost:${port}`, 'Bootstrap');
