@@ -8,6 +8,7 @@ import { RecoverPasswordDto } from './dto/request/recover-password.dto';
 import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
 import { LoginResponse } from './dto/response/login.response';
 import { SignupResponse } from './dto/response/signup.response';
+import { AccountExistsGuard } from './guards/account-exists.guard';
 import { CheckEmailVerifiedGuard } from './guards/check-email-verified.guard';
 import { CheckPhoneVerifiedGuard } from './guards/check-phone-verified.guard';
 import { EmailExistsGuard } from './guards/email-exists.guard';
@@ -19,7 +20,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  @UseGuards(CheckEmailVerifiedGuard, CheckPhoneVerifiedGuard)
+  @UseGuards(
+    AccountExistsGuard,
+    CheckEmailVerifiedGuard,
+    CheckPhoneVerifiedGuard,
+  )
   public async login(@Body() body: LoginDto): Promise<LoginResponse> {
     return this.authService.login(body);
   }
