@@ -127,7 +127,7 @@ export class AuthService {
         foundData.id,
       );
 
-      return this.helperService.encryptString(email);
+      return email;
     }
     return false;
   }
