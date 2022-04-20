@@ -1,4 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
+import { UserRoles } from 'src/user/user.constants';
 
 @Exclude()
 export class LoginResponse {
@@ -19,6 +20,9 @@ export class LoginResponse {
 
   @Expose()
   lastName: string;
+
+  @Expose()
+  role: UserRoles;
 
   @Expose()
   createdAt: Date;

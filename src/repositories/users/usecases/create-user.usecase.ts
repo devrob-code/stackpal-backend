@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserRoles } from 'src/user/user.constants';
 import { Repository } from 'typeorm';
 
 import { User } from '../entities/user.entity';
@@ -11,7 +12,12 @@ export class CreateUserUseCase {
   ) {}
 
   public async exec(user: Partial<User>): Promise<User> {
-    const newUser: User = this.userRepo.merge(new User(), user);
+    const body = {
+      role: UserRoles.customer,
+      ...user,
+    };
+
+    const newUser: User = this.userRepo.merge(new User(), body);
 
     return this.userRepo.save(newUser);
   }

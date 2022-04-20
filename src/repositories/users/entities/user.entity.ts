@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserRoles } from 'src/user/user.constants';
 
 @Entity('users')
 export class User {
@@ -39,6 +40,9 @@ export class User {
 
   @Column('boolean')
   phoneVerified: boolean;
+
+  @Column({ type: 'enum', enum: UserRoles })
+  role: UserRoles;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
