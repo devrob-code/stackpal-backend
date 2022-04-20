@@ -1,5 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminGuard } from 'src/admin/guards/admin.guard';
 import { CurrencyService } from './currency.service';
 import { CurrencyResponse } from './dto/response/currency.response';
 
