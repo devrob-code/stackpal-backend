@@ -192,4 +192,8 @@ export class AuthService {
       password,
     });
   }
+
+  public async validateToken(user: User): Promise<LoginResponse> {
+    return plainToInstance(LoginResponse, user);
+  }
 }

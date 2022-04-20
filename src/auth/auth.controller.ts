@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/repositories/users/entities/user.entity';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
@@ -77,5 +87,11 @@ export class AuthController {
     @Body() body: RecoverPasswordDto,
   ): Promise<boolean> {
     return await this.authService.recoverPassword(body);
+  }
+
+  @Get('validate-token')
+  @UseGuards(AuthGuard('jwt'))
+  public async validateToken(@Req() { user }): Promise<LoginResponse> {
+    return await this.authService.validateToken(user);
   }
 }

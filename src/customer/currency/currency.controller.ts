@@ -6,10 +6,10 @@ import { CurrencyResponse } from './dto/response/currency.response';
 @Controller('currency')
 @UseGuards(AuthGuard('jwt'))
 export class CurrencyController {
-  constructor(private readonly walletService: CurrencyService) {}
+  constructor(private readonly currencyService: CurrencyService) {}
 
   @Get('/all')
   public async getAllWallet(): Promise<CurrencyResponse[]> {
-    return await this.walletService.getAllWallet();
+    return await this.currencyService.getAllWallet();
   }
 }
