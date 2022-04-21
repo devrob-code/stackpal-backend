@@ -14,11 +14,11 @@ export class CurrencyController {
     return await this.currencyService.getAllCurrency();
   }
 
-  @Get('/:currencyId')
+  @Get('/:id')
   @UseGuards(CurrencyIdExistsGuard)
   public async getCurrencyById(
-    @Param('currencyId') currencyId: number,
+    @Param('id') id: number,
   ): Promise<CurrencyResponse> {
-    return await this.currencyService.getCurrencyById(currencyId);
+    return await this.currencyService.getCurrencyById(id);
   }
 }

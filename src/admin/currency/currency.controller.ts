@@ -1,9 +1,18 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrencyResponse } from 'src/customer/currency/dto/response/currency.response';
+import { CurrencyIdExistsGuard } from 'src/customer/currency/guards/currency-id-exists.guard';
 import { AdminGuard } from '../guards/admin.guard';
 import { AdminCurrencyService } from './currency.service';
 import { NewCurrencyDto } from './dto/request/new-currency.dto';
+import { UpdateCurrencyDto } from './dto/request/update-currency.dto';
 import { CurrencyAliasExistsGuard } from './guards/currency-alias-exists.guard';
 import { CurrencyNameExistsGuard } from './guards/currency-name-exists.guard';
 
@@ -18,5 +27,14 @@ export class AdminCurrencyController {
     @Body() body: NewCurrencyDto,
   ): Promise<CurrencyResponse> {
     return await this.adminCurrencyService.addNewCurrency(body);
+  }
+
+  @Patch(':id')
+  @UseGuards(CurrencyIdExistsGuard)
+  public async updateCurrencyById(
+    @Param('id') id: number,
+    @Body() body: UpdateCurrencyDto,
+  ): Promise<boolean> {
+    return await this.adminCurrencyService.updateCurrencyById(id, body);
   }
 }

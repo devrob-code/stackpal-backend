@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { NewCurrencyDto } from 'src/admin/currency/dto/request/new-currency.dto';
+import { UpdateCurrencyDto } from 'src/admin/currency/dto/request/update-currency.dto';
 import { CurrencyResponse } from 'src/customer/currency/dto/response/currency.response';
 import { AddNewCurrencyUseCase } from './usecases/add-new-currency.usecase';
 import { GetAllCurrencyUseCase } from './usecases/get-all-currency.usecase';
 import { GetCurrencyByAliasUseCase } from './usecases/get-currency-by-alias.usecase';
 import { GetCurrencyByIdUseCase } from './usecases/get-currency-by-id.usecase';
 import { GetCurrencyByNameUseCase } from './usecases/get-currency-by-name.usecase';
+import { UpdateCurrencyByIdUseCase } from './usecases/update-currency-by-id.usecase';
 
 @Injectable()
 export class CurrencyRepositoryService {
@@ -15,6 +17,7 @@ export class CurrencyRepositoryService {
     private readonly getCurrencyByNameUseCase: GetCurrencyByNameUseCase,
     private readonly getCurrencyByAliasUseCase: GetCurrencyByAliasUseCase,
     private readonly getCurrencyByIdUseCase: GetCurrencyByIdUseCase,
+    private readonly updateCurrencyByIdUseCase: UpdateCurrencyByIdUseCase,
   ) {}
 
   public async getAllCurrency(): Promise<CurrencyResponse[]> {
@@ -35,5 +38,12 @@ export class CurrencyRepositoryService {
 
   public async getByCurrencyId(id: number): Promise<CurrencyResponse> {
     return this.getCurrencyByIdUseCase.exec(id);
+  }
+
+  public async updateCurrencyById(
+    id: number,
+    body: UpdateCurrencyDto,
+  ): Promise<boolean> {
+    return this.updateCurrencyByIdUseCase.exec(id, body);
   }
 }

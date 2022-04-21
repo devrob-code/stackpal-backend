@@ -14,7 +14,7 @@ export class CurrencyIdExistsGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const id = request.params.currencyId;
+    const id = request.params.id;
     const currency = await this.currencyRepo.getByCurrencyId(id);
 
     if (!currency) {

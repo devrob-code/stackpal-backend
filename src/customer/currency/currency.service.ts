@@ -14,10 +14,8 @@ export class CurrencyService {
     return plainToInstance(CurrencyResponse, currencies);
   }
 
-  public async getCurrencyById(currencyId): Promise<CurrencyResponse> {
-    const currency = await this.currencyRepositoryService.getByCurrencyId(
-      currencyId,
-    );
+  public async getCurrencyById(id: number): Promise<CurrencyResponse> {
+    const currency = await this.currencyRepositoryService.getByCurrencyId(id);
     return plainToInstance(CurrencyResponse, currency);
   }
 }
