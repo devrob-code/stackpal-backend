@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-repository.service';
+import { CurrencyQueryDto } from './dto/request/currency-query.dto';
 import { CurrencyResponse } from './dto/response/currency.response';
 
 @Injectable()
@@ -9,8 +10,12 @@ export class CurrencyService {
     private readonly currencyRepositoryService: CurrencyRepositoryService,
   ) {}
 
-  public async getAllCurrency(): Promise<CurrencyResponse[]> {
-    const currencies = await this.currencyRepositoryService.getAllCurrency();
+  public async getAllCurrency(
+    query: CurrencyQueryDto,
+  ): Promise<CurrencyResponse[]> {
+    const currencies = await this.currencyRepositoryService.getAllCurrency(
+      query,
+    );
     return plainToInstance(CurrencyResponse, currencies);
   }
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NewCurrencyDto } from 'src/admin/currency/dto/request/new-currency.dto';
 import { UpdateCurrencyDto } from 'src/admin/currency/dto/request/update-currency.dto';
+import { CurrencyQueryDto } from 'src/customer/currency/dto/request/currency-query.dto';
 import { CurrencyResponse } from 'src/customer/currency/dto/response/currency.response';
 import { AddNewCurrencyUseCase } from './usecases/add-new-currency.usecase';
 import { DeleteCurrencyByIdUseCase } from './usecases/delete-currency-by-id.usecase';
@@ -22,8 +23,10 @@ export class CurrencyRepositoryService {
     private readonly deleteCurrencyByIdUseCase: DeleteCurrencyByIdUseCase,
   ) {}
 
-  public async getAllCurrency(): Promise<CurrencyResponse[]> {
-    return this.getAllCurrencyUseCase.exec();
+  public async getAllCurrency(
+    query: CurrencyQueryDto,
+  ): Promise<CurrencyResponse[]> {
+    return this.getAllCurrencyUseCase.exec(query);
   }
 
   public async addNewCurrency(body: NewCurrencyDto): Promise<CurrencyResponse> {

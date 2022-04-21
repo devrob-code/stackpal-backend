@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CurrencyQueryDto } from 'src/customer/currency/dto/request/currency-query.dto';
 import { CurrencyResponse } from 'src/customer/currency/dto/response/currency.response';
 import { Repository } from 'typeorm';
 import { Currency } from '../entities/currency.entity';
@@ -11,7 +12,13 @@ export class GetAllCurrencyUseCase {
     private readonly currencyRepo: Repository<Currency>,
   ) {}
 
-  public async exec(): Promise<CurrencyResponse[]> {
-    return await this.currencyRepo.find();
+  public async exec(query: CurrencyQueryDto): Promise<CurrencyResponse[]> {
+    const whereStatement = query.active !== null && {
+      where: {
+        isActive: query.active,
+      },
+    };
+
+    return await this.currencyRepo.find(whereStatement);
   }
 }

@@ -1,6 +1,7 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrencyService } from './currency.service';
+import { CurrencyQueryDto } from './dto/request/currency-query.dto';
 import { CurrencyResponse } from './dto/response/currency.response';
 import { CurrencyIdExistsGuard } from './guards/currency-id-exists.guard';
 
@@ -10,8 +11,10 @@ export class CurrencyController {
   constructor(private readonly currencyService: CurrencyService) {}
 
   @Get('/all')
-  public async getAlCurrency(): Promise<CurrencyResponse[]> {
-    return await this.currencyService.getAllCurrency();
+  public async getAlCurrency(
+    @Query() query: CurrencyQueryDto,
+  ): Promise<CurrencyResponse[]> {
+    return await this.currencyService.getAllCurrency(query);
   }
 
   @Get('/:id')
