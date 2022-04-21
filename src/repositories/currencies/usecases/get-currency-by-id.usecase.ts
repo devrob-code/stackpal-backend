@@ -5,16 +5,16 @@ import { Repository } from 'typeorm';
 import { Currency } from '../entities/currency.entity';
 
 @Injectable()
-export class GetCurrencyByAliasUseCase {
+export class GetCurrencyByIdUseCase {
   constructor(
     @InjectRepository(Currency)
     private readonly currencyRepo: Repository<Currency>,
   ) {}
 
-  public async exec(alias: string): Promise<CurrencyResponse> {
+  public async exec(id: number): Promise<CurrencyResponse> {
     return this.currencyRepo.findOne({
       where: {
-        alias,
+        id,
       },
     });
   }

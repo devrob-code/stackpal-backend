@@ -4,6 +4,7 @@ import { CurrencyResponse } from 'src/customer/currency/dto/response/currency.re
 import { AddNewCurrencyUseCase } from './usecases/add-new-currency.usecase';
 import { GetAllCurrencyUseCase } from './usecases/get-all-currency.usecase';
 import { GetCurrencyByAliasUseCase } from './usecases/get-currency-by-alias.usecase';
+import { GetCurrencyByIdUseCase } from './usecases/get-currency-by-id.usecase';
 import { GetCurrencyByNameUseCase } from './usecases/get-currency-by-name.usecase';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class CurrencyRepositoryService {
     private readonly addNewCurrencyUseCase: AddNewCurrencyUseCase,
     private readonly getCurrencyByNameUseCase: GetCurrencyByNameUseCase,
     private readonly getCurrencyByAliasUseCase: GetCurrencyByAliasUseCase,
+    private readonly getCurrencyByIdUseCase: GetCurrencyByIdUseCase,
   ) {}
 
   public async getAllCurrency(): Promise<CurrencyResponse[]> {
@@ -29,5 +31,9 @@ export class CurrencyRepositoryService {
 
   public async getByCurrencyAlias(alias: string): Promise<CurrencyResponse> {
     return this.getCurrencyByAliasUseCase.exec(alias);
+  }
+
+  public async getByCurrencyId(id: number): Promise<CurrencyResponse> {
+    return this.getCurrencyByIdUseCase.exec(id);
   }
 }

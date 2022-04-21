@@ -7,11 +7,12 @@ import { Currency } from '../entities/currency.entity';
 @Injectable()
 export class GetCurrencyByNameUseCase {
   constructor(
-    @InjectRepository(Currency) private readonly userRepo: Repository<Currency>,
+    @InjectRepository(Currency)
+    private readonly currencyRepo: Repository<Currency>,
   ) {}
 
   public async exec(name: string): Promise<CurrencyResponse> {
-    return this.userRepo.findOne({
+    return this.currencyRepo.findOne({
       where: {
         name,
       },

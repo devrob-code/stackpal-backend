@@ -9,8 +9,15 @@ export class CurrencyService {
     private readonly currencyRepositoryService: CurrencyRepositoryService,
   ) {}
 
-  public async getAllWallet(): Promise<CurrencyResponse[]> {
+  public async getAllCurrency(): Promise<CurrencyResponse[]> {
     const currencies = await this.currencyRepositoryService.getAllCurrency();
     return plainToInstance(CurrencyResponse, currencies);
+  }
+
+  public async getCurrencyById(currencyId): Promise<CurrencyResponse> {
+    const currency = await this.currencyRepositoryService.getByCurrencyId(
+      currencyId,
+    );
+    return plainToInstance(CurrencyResponse, currency);
   }
 }
