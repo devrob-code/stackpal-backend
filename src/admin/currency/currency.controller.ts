@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Param,
   Patch,
   Post,
@@ -36,5 +37,11 @@ export class AdminCurrencyController {
     @Body() body: UpdateCurrencyDto,
   ): Promise<boolean> {
     return await this.adminCurrencyService.updateCurrencyById(id, body);
+  }
+
+  @Delete(':id')
+  @UseGuards(CurrencyIdExistsGuard)
+  public async deleteCurrencyById(@Param('id') id: number): Promise<boolean> {
+    return await this.adminCurrencyService.deleteCurrencyById(id);
   }
 }

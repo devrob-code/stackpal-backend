@@ -20,4 +20,8 @@ export class AdminCurrencyService {
   ): Promise<boolean> {
     return await this.currencyRepositoryService.updateCurrencyById(id, body);
   }
+
+  public async deleteCurrencyById(id: number): Promise<boolean> {
+    return await this.currencyRepositoryService.deleteCurrencyById(id);
+  }
 }

@@ -3,6 +3,7 @@ import { NewCurrencyDto } from 'src/admin/currency/dto/request/new-currency.dto'
 import { UpdateCurrencyDto } from 'src/admin/currency/dto/request/update-currency.dto';
 import { CurrencyResponse } from 'src/customer/currency/dto/response/currency.response';
 import { AddNewCurrencyUseCase } from './usecases/add-new-currency.usecase';
+import { DeleteCurrencyByIdUseCase } from './usecases/delete-currency-by-id.usecase';
 import { GetAllCurrencyUseCase } from './usecases/get-all-currency.usecase';
 import { GetCurrencyByAliasUseCase } from './usecases/get-currency-by-alias.usecase';
 import { GetCurrencyByIdUseCase } from './usecases/get-currency-by-id.usecase';
@@ -18,6 +19,7 @@ export class CurrencyRepositoryService {
     private readonly getCurrencyByAliasUseCase: GetCurrencyByAliasUseCase,
     private readonly getCurrencyByIdUseCase: GetCurrencyByIdUseCase,
     private readonly updateCurrencyByIdUseCase: UpdateCurrencyByIdUseCase,
+    private readonly deleteCurrencyByIdUseCase: DeleteCurrencyByIdUseCase,
   ) {}
 
   public async getAllCurrency(): Promise<CurrencyResponse[]> {
@@ -45,5 +47,9 @@ export class CurrencyRepositoryService {
     body: UpdateCurrencyDto,
   ): Promise<boolean> {
     return this.updateCurrencyByIdUseCase.exec(id, body);
+  }
+
+  public async deleteCurrencyById(id): Promise<boolean> {
+    return this.deleteCurrencyByIdUseCase.exec(id);
   }
 }
