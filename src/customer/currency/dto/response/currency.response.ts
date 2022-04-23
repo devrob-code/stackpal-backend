@@ -1,4 +1,5 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
+import { CurrencyTypes } from '../../currency.constants';
 
 @Exclude()
 export class CurrencyResponse {
@@ -20,6 +21,9 @@ export class CurrencyResponse {
 
   @Expose()
   isActive: boolean;
+
+  @Expose()
+  type: CurrencyTypes;
 
   @Expose()
   createdAt: Date;

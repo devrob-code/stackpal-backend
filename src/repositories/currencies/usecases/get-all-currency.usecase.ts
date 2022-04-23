@@ -13,10 +13,13 @@ export class GetAllCurrencyUseCase {
   ) {}
 
   public async exec(query: CurrencyQueryDto): Promise<CurrencyResponse[]> {
-    const whereStatement = query.active !== null && {
-      where: {
-        isActive: query.active,
-      },
+    const whereStatement = {
+      where:
+        query.active !== null
+          ? {
+              isActive: query.active,
+            }
+          : {},
     };
 
     return await this.currencyRepo.find(whereStatement);

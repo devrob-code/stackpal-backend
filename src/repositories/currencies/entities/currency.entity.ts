@@ -1,3 +1,4 @@
+import { CurrencyTypes } from 'src/customer/currency/currency.constants';
 import {
   Column,
   CreateDateColumn,
@@ -25,6 +26,9 @@ export class Currency {
 
   @Column('boolean')
   isActive: boolean;
+
+  @Column({ type: 'enum', enum: CurrencyTypes })
+  type: CurrencyTypes;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
