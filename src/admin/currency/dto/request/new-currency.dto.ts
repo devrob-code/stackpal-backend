@@ -1,4 +1,5 @@
-import { IsBoolean, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsString } from 'class-validator';
+import { CurrencyTypes } from 'src/customer/currency/currency.constants';
 
 export class NewCurrencyDto {
   @IsString()
@@ -15,4 +16,7 @@ export class NewCurrencyDto {
 
   @IsBoolean()
   isActive: boolean;
+
+  @IsEnum(CurrencyTypes)
+  type: CurrencyTypes;
 }
