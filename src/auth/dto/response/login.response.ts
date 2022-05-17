@@ -31,8 +31,8 @@ export class LoginResponse {
   updatedAt: Date;
 
   @Expose()
-  accessToken: string;
+  accessToken?: string;
 
   @Expose()
-  expiresIn: string;
+  expiresIn?: string;
 }

@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity('p2pAccounts')
-export class Currency {
+export class P2PAccount {
   @PrimaryGeneratedColumn()
   public id: number;
 
