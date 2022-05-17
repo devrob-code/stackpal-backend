@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CoreModule } from './core/core.module';
 import { CurrencyModule } from './customer/currency/currency.module';
+import { P2PAccountModule } from './customer/p2p-accounts/p2p-account.module';
 import { WalletModule } from './customer/wallet/wallet.module';
 import { UserModule } from './user/user.module';
 
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
     AdminModule,
     CurrencyModule,
     WalletModule,
+    P2PAccountModule,
   ],
 })
 export class AppModule {}

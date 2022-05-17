@@ -5,20 +5,17 @@ import { P2PAccount } from '../entities/p2p-account.entity';
 import { P2PAccountResponse } from '../response/p2p-account.response';
 
 @Injectable()
-export class AddNewP2PAccountUseCase {
+export class GetP2PAccountByIdUseCase {
   constructor(
     @InjectRepository(P2PAccount)
     private readonly p2pAccountRepo: Repository<P2PAccount>,
   ) {}
 
-  public async exec(
-    p2pAccount: Partial<P2PAccount>,
-  ): Promise<P2PAccountResponse> {
-    const newP2PAccount = this.p2pAccountRepo.merge(
-      new P2PAccount(),
-      p2pAccount,
-    );
-
-    return this.p2pAccountRepo.save(newP2PAccount);
+  public async exec(id: number): Promise<P2PAccountResponse> {
+    return this.p2pAccountRepo.findOne({
+      where: {
+        id,
+      },
+    });
   }
 }
