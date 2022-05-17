@@ -19,6 +19,9 @@ import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
 import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
 import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
 import { RecoverPasswordDto } from './dto/request/recover-password.dto';
+import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-repository.service';
+import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
+import { CurrencyTypes } from 'src/customer/currency/currency.constants';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +33,8 @@ export class AuthService {
     private readonly smsService: SmsService,
     private readonly jwtService: JwtService,
     private readonly helperService: HelperService,
+    private readonly currencyRepositoryService: CurrencyRepositoryService,
+    private readonly walletRepositoryService: WalletRepositoryService,
   ) {}
 
   private checkPassword(password, hash) {
@@ -61,6 +66,9 @@ export class AuthService {
       username: user.username,
       role: user.role,
     });
+
+    // Assign all fiat currency to user if user does not have fiat currency
+    await this.assignFiatCurrenciesToUser(user.id);
 
     const response = { ...user, ...token };
     return plainToInstance(LoginResponse, response);
@@ -186,6 +194,7 @@ export class AuthService {
   }
 
   public async recoverPassword(body: RecoverPasswordDto): Promise<boolean> {
+    //TODO: Make the token expire
     const email = await this.helperService.decryptString(body.token);
     const password = await bcrypt.hash(body.newPassword, 10);
 
@@ -196,5 +205,28 @@ export class AuthService {
 
   public async validateToken(user: User): Promise<LoginResponse> {
     return plainToInstance(LoginResponse, user);
+  }
+
+  private async assignFiatCurrenciesToUser(userId: number): Promise<boolean> {
+    const fiatCurrencies =
+      await this.currencyRepositoryService.getFiatCurrencies();
+
+    fiatCurrencies.forEach(async (fiatCurrency) => {
+      // Check if user has this currency
+      const wallet =
+        await this.walletRepositoryService.getUserWalletByCurrencyId(
+          userId,
+          fiatCurrency.id,
+        );
+
+      if (!wallet) {
+        await this.walletRepositoryService.createWallet(
+          userId,
+          fiatCurrency.id,
+        );
+      }
+    });
+
+    return true;
   }
 }

@@ -1,8 +1,12 @@
 import { CurrencyTypes } from 'src/customer/currency/currency.constants';
+import { Wallet } from 'src/repositories/wallets/entities/wallet.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -35,4 +39,7 @@ export class Currency {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @OneToMany(() => Wallet, (wallet) => wallet.currency)
+  wallet: Wallet[];
 }

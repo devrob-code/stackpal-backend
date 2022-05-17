@@ -10,6 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { VerificationRepositoryModule } from 'src/repositories/verifications/verification-repository.module';
 import { HelperModule } from 'src/core/helpers/helper.module';
 import { SmsModule } from 'src/core/sms/sms.module';
+import { CurrencyRepositoryModule } from 'src/repositories/currencies/currency-repository.module';
+import { WalletRepositoryModule } from 'src/repositories/wallets/wallet-repository.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { SmsModule } from 'src/core/sms/sms.module';
       }),
       inject: [ConfigService],
     }),
+    CurrencyRepositoryModule,
+    WalletRepositoryModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

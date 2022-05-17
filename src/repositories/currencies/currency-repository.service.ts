@@ -9,6 +9,7 @@ import { GetAllCurrencyUseCase } from './usecases/get-all-currency.usecase';
 import { GetCurrencyByAliasUseCase } from './usecases/get-currency-by-alias.usecase';
 import { GetCurrencyByIdUseCase } from './usecases/get-currency-by-id.usecase';
 import { GetCurrencyByNameUseCase } from './usecases/get-currency-by-name.usecase';
+import { GetFiatCurrenciesUseCase } from './usecases/get-fiat-currencies.usecase';
 import { UpdateCurrencyByIdUseCase } from './usecases/update-currency-by-id.usecase';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class CurrencyRepositoryService {
     private readonly getCurrencyByIdUseCase: GetCurrencyByIdUseCase,
     private readonly updateCurrencyByIdUseCase: UpdateCurrencyByIdUseCase,
     private readonly deleteCurrencyByIdUseCase: DeleteCurrencyByIdUseCase,
+    private readonly getFiatCurrenciesUseCase: GetFiatCurrenciesUseCase,
   ) {}
 
   public async getAllCurrency(
@@ -54,5 +56,9 @@ export class CurrencyRepositoryService {
 
   public async deleteCurrencyById(id): Promise<boolean> {
     return this.deleteCurrencyByIdUseCase.exec(id);
+  }
+
+  public async getFiatCurrencies(): Promise<CurrencyResponse[]> {
+    return this.getFiatCurrenciesUseCase.exec();
   }
 }

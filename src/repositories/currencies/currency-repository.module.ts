@@ -9,6 +9,7 @@ import { GetCurrencyByAliasUseCase } from './usecases/get-currency-by-alias.usec
 import { GetCurrencyByIdUseCase } from './usecases/get-currency-by-id.usecase';
 import { UpdateCurrencyByIdUseCase } from './usecases/update-currency-by-id.usecase';
 import { DeleteCurrencyByIdUseCase } from './usecases/delete-currency-by-id.usecase';
+import { GetFiatCurrenciesUseCase } from './usecases/get-fiat-currencies.usecase';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Currency])],
@@ -21,6 +22,7 @@ import { DeleteCurrencyByIdUseCase } from './usecases/delete-currency-by-id.usec
     GetCurrencyByIdUseCase,
     UpdateCurrencyByIdUseCase,
     DeleteCurrencyByIdUseCase,
+    GetFiatCurrenciesUseCase,
   ],
   exports: [CurrencyRepositoryService],
 })
