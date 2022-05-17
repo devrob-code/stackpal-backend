@@ -1,9 +1,15 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { LoginResponse } from 'src/auth/dto/response/login.response';
-import { P2PAccount } from 'src/repositories/p2p-accounts/entities/p2p-account.entity';
 import { AdminGuard } from '../guards/admin.guard';
 import { NewP2PAccountDto } from './dto/request/new-p2p-account.dto';
+import { P2PAccountResponse } from './dto/response/p2p-account.response';
 import { AdminP2PAccountService } from './p2p-account.service';
 
 @Controller('p2p-account')
@@ -17,7 +23,7 @@ export class AdminP2PAccountController {
   public async addNewP2PAccount(
     @Body() body: NewP2PAccountDto,
     @Request() req,
-  ): Promise<any> {
+  ): Promise<P2PAccountResponse> {
     const data = {
       createdBy: req.user.id,
       ...body,
@@ -25,4 +31,14 @@ export class AdminP2PAccountController {
 
     return await this.adminP2pAccountService.addNewP2PAccount(data);
   }
+
+  //   @Get(':id')
+  //   public async getP2PAccountById()): Promise<P2PAccount> {
+  //     const data = {
+  //       createdBy: req.user.id,
+  //       ...body,
+  //     };
+
+  //     return await this.adminP2pAccountService.addNewP2PAccount(data);
+  //   }
 }

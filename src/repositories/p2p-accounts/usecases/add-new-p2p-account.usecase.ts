@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { P2PAccountResponse } from 'src/admin/p2p-accounts/dto/response/p2p-account.response';
 import { Repository } from 'typeorm';
 import { P2PAccount } from '../entities/p2p-account.entity';
 
@@ -10,7 +11,9 @@ export class AddNewP2PAccountUseCase {
     private readonly p2pAccountRepo: Repository<P2PAccount>,
   ) {}
 
-  public async exec(p2pAccount: Partial<P2PAccount>): Promise<P2PAccount> {
+  public async exec(
+    p2pAccount: Partial<P2PAccount>,
+  ): Promise<P2PAccountResponse> {
     const newP2PAccount = this.p2pAccountRepo.merge(
       new P2PAccount(),
       p2pAccount,
