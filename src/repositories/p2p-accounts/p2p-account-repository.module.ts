@@ -5,6 +5,7 @@ import { P2PAccountRepositoryService } from './p2p-account-repository.service';
 import { AddNewP2PAccountUseCase } from './usecases/add-new-p2p-account.usecase';
 import { GetP2PAccountByIdUseCase } from './usecases/get-p2p-account-by-id.usecase';
 import { GetP2PAccountsUseCase } from './usecases/get-p2p-accounts.usecase';
+import { GetRandomP2PAccountUseCase } from './usecases/get-random-p2p-account.usecase';
 
 @Module({
   imports: [TypeOrmModule.forFeature([P2PAccount])],
@@ -13,6 +14,7 @@ import { GetP2PAccountsUseCase } from './usecases/get-p2p-accounts.usecase';
     AddNewP2PAccountUseCase,
     GetP2PAccountByIdUseCase,
     GetP2PAccountsUseCase,
+    GetRandomP2PAccountUseCase,
   ],
   exports: [P2PAccountRepositoryService],
 })

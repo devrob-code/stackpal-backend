@@ -22,4 +22,11 @@ export class P2PAccountService {
 
     return plainToInstance(P2PAccountResponse, p2pAccounts);
   }
+
+  public async getRandomP2PAccount(): Promise<P2PAccountResponse> {
+    const p2pAccount =
+      await this.p2pAccountRepositoryService.getRandomP2PAccount();
+
+    return plainToInstance(P2PAccountResponse, p2pAccount);
+  }
 }

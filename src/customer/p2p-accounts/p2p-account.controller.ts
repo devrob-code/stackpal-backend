@@ -25,4 +25,9 @@ export class P2PAccountController {
   public async getP2PAccounts(): Promise<P2PAccountResponse[]> {
     return await this.p2pAccountService.getP2PAccounts();
   }
+
+  @Get('/random/get')
+  public async getRandomP2PAccount(): Promise<P2PAccountResponse> {
+    return await this.p2pAccountService.getRandomP2PAccount();
+  }
 }
