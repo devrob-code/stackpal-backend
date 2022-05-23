@@ -16,4 +16,7 @@ export class P2PAccountResponse {
 
   @Expose()
   bankName: string;
+
+  @Expose()
+  isActive: boolean;
 }

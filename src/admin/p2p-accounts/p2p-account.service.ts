@@ -17,4 +17,13 @@ export class AdminP2PAccountService {
       await this.p2pAccountRepositoryService.addNewP2PAccount(body);
     return plainToInstance(P2PAccountResponse, newP2PAccount);
   }
+
+  public async changeAccountStatus(
+    id: number,
+    deactivate: boolean,
+  ): Promise<boolean> {
+    return this.p2pAccountRepositoryService.updateP2PAccount(id, {
+      isActive: deactivate,
+    });
+  }
 }
