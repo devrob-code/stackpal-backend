@@ -3,12 +3,14 @@ import { NewP2PAccountDto } from 'src/admin/p2p-accounts/dto/request/new-p2p-acc
 import { P2PAccountResponse } from 'src/repositories/p2p-accounts/response/p2p-account.response';
 import { AddNewP2PAccountUseCase } from './usecases/add-new-p2p-account.usecase';
 import { GetP2PAccountByIdUseCase } from './usecases/get-p2p-account-by-id.usecase';
+import { GetP2PAccountsUseCase } from './usecases/get-p2p-accounts.usecase';
 
 @Injectable()
 export class P2PAccountRepositoryService {
   constructor(
     private readonly addNewP2PAccountUseCase: AddNewP2PAccountUseCase,
     private readonly getP2PAccountByIdUseCase: GetP2PAccountByIdUseCase,
+    private readonly getP2PAccountsUseCase: GetP2PAccountsUseCase,
   ) {}
 
   public async addNewP2PAccount(
@@ -19,5 +21,9 @@ export class P2PAccountRepositoryService {
 
   public async getP2PAccountById(id: number): Promise<P2PAccountResponse> {
     return this.getP2PAccountByIdUseCase.exec(id);
+  }
+
+  public async getP2PAccounts(): Promise<P2PAccountResponse[]> {
+    return this.getP2PAccountsUseCase.exec();
   }
 }

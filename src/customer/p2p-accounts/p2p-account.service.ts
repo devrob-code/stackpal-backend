@@ -16,4 +16,10 @@ export class P2PAccountService {
 
     return plainToInstance(P2PAccountResponse, p2pAccount);
   }
+
+  public async getP2PAccounts(): Promise<P2PAccountResponse[]> {
+    const p2pAccounts = await this.p2pAccountRepositoryService.getP2PAccounts();
+
+    return plainToInstance(P2PAccountResponse, p2pAccounts);
+  }
 }

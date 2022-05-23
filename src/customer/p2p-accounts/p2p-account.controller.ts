@@ -20,4 +20,9 @@ export class P2PAccountController {
   ): Promise<P2PAccountResponse> {
     return await this.p2pAccountService.getP2PAccountById(id);
   }
+
+  @Get()
+  public async getP2PAccounts(): Promise<P2PAccountResponse[]> {
+    return await this.p2pAccountService.getP2PAccounts();
+  }
 }
