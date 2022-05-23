@@ -14,6 +14,7 @@ export class GetRandomP2PAccountUseCase {
   public async exec(): Promise<P2PAccountResponse> {
     return this.p2pAccountRepo
       .createQueryBuilder('p2pAccounts')
+      .where('p2pAccounts.isActive = :isActive', { isActive: true })
       .orderBy('RANDOM()')
       .getOne();
   }
