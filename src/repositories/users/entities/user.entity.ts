@@ -10,6 +10,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserRoles } from 'src/user/user.constants';
 import { Wallet } from 'src/repositories/wallets/entities/wallet.entity';
+import { FiatDeposit } from 'src/repositories/fiat-deposits/entities/fiat-deposit.entity';
 
 @Entity('users')
 export class User {
@@ -54,4 +55,7 @@ export class User {
 
   @OneToMany(() => Wallet, (wallet) => wallet.user)
   wallet: Wallet[];
+
+  @OneToMany(() => FiatDeposit, (fiatDeposit) => fiatDeposit.user)
+  fiatDeposit: FiatDeposit[];
 }

@@ -14,7 +14,7 @@ export class CheckP2PAccountIdExistsGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const p2pAccountId = request.params.id;
+    const p2pAccountId = request.params.id || request.body.p2pAccountId;
 
     if (p2pAccountId === null) {
       throw new NotFoundException();

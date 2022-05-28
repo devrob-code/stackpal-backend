@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CurrencyResponse } from 'src/customer/currency/dto/response/currency.response';
-import { UserRoles } from 'src/user/user.constants';
 import { Repository } from 'typeorm';
 import { Currency } from '../entities/currency.entity';
 
