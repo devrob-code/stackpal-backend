@@ -16,6 +16,9 @@ export class GetFiatDepositsByUserIdUseCase {
       where: {
         userId,
       },
+      order: {
+        createdAt: 'DESC',
+      },
     });
   }
 }
