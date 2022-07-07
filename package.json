@@ -25,6 +25,9 @@
     "typeorm:migrate": "npm run typeorm migration:run",
     "typeorm:migration:rollback": "npm run typeorm migration:revert"
   },
+  "engines": {
+    "node": "16.13.2"
+  },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.3.17",
     "@nestjs/common": "^8.0.0",
