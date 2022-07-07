@@ -1,7 +1,10 @@
+import { User } from 'src/repositories/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,4 +34,8 @@ export class P2PAccount {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.p2pAccounts)
+  @JoinColumn({ name: 'createdBy', referencedColumnName: 'id' })
+  user: User;
 }

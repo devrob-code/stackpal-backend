@@ -13,6 +13,7 @@ export class GetP2PAccountByIdUseCase {
 
   public async exec(id: number): Promise<P2PAccountResponse> {
     return this.p2pAccountRepo.findOne({
+      relations: ['user'],
       where: {
         id,
       },
