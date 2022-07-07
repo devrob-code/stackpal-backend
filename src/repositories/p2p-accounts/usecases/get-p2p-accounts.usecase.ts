@@ -12,6 +12,9 @@ export class GetP2PAccountsUseCase {
   ) {}
 
   public async exec(): Promise<P2PAccountResponse[]> {
-    return this.p2pAccountRepo.find({ order: { createdAt: 'DESC' } });
+    return this.p2pAccountRepo.find({
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
   }
 }

@@ -1,3 +1,4 @@
+import { FiatDeposit } from 'src/repositories/fiat-deposits/entities/fiat-deposit.entity';
 import { User } from 'src/repositories/users/entities/user.entity';
 import {
   Column,
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -38,4 +40,7 @@ export class P2PAccount {
   @ManyToOne(() => User, (user) => user.p2pAccounts)
   @JoinColumn({ name: 'createdBy', referencedColumnName: 'id' })
   user: User;
+
+  @OneToMany(() => FiatDeposit, (fiatDeposit) => fiatDeposit.p2pAccount)
+  fiatDeposit: FiatDeposit[];
 }

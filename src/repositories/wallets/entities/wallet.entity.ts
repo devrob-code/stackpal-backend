@@ -1,4 +1,5 @@
 import { Currency } from 'src/repositories/currencies/entities/currency.entity';
+import { FiatDeposit } from 'src/repositories/fiat-deposits/entities/fiat-deposit.entity';
 import { User } from 'src/repositories/users/entities/user.entity';
 import {
   Column,
@@ -39,4 +40,7 @@ export class Wallet {
 
   @ManyToOne(() => Currency, (currency) => currency.wallet)
   currency: Currency;
+
+  @OneToMany(() => FiatDeposit, (fiatDeposit) => fiatDeposit.p2pAccount)
+  fiatDeposit: FiatDeposit[];
 }

@@ -1,22 +1,5 @@
-import { Exclude, Expose, Type } from 'class-transformer';
-
-@Exclude()
-export class CreatedByResponse {
-  @Expose()
-  id: number;
-
-  @Expose()
-  username: string;
-
-  @Expose()
-  firstName: string;
-
-  @Expose()
-  lastName: string;
-
-  @Expose()
-  role: string;
-}
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { UserResponse } from 'src/user/dto/response/user.response';
 
 @Exclude()
 export class P2PAccountResponse {
@@ -45,6 +28,6 @@ export class P2PAccountResponse {
   updatedAt: Date;
 
   @Expose()
-  @Type(() => CreatedByResponse)
-  user: CreatedByResponse;
+  @Type(() => UserResponse)
+  user: UserResponse;
 }
