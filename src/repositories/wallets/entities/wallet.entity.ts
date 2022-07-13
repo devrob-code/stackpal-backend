@@ -29,6 +29,15 @@ export class Wallet {
   @Column('boolean')
   isLocked: boolean;
 
+  @Column('varchar')
+  address: string;
+
+  @Column('varchar')
+  private_key: string;
+
+  @Column('varchar')
+  network: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
