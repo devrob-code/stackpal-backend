@@ -1,4 +1,11 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, IsArray} from 'class-validator';
+
+interface Wallet {
+  network: string,
+  address: string,
+  privateKey: string
+}
+
 
 export class CreateUserDto {
   @IsString()
@@ -15,4 +22,7 @@ export class CreateUserDto {
 
   @IsEmail()
   email: string;
+
+  @IsArray()
+  walletData: Wallet[];
 }
