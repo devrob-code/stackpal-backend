@@ -8,6 +8,7 @@ import { GetByIdAndUserIdUseCase } from './usecases/get-by-id-and-user-id.usecas
 import { GetByIdUseCase } from './usecases/get-by-id.usecase';
 import { GetUserWalletByCurrencyIdUseCase } from './usecases/get-user-wallet-by-currency-id.usecase';
 import { GetUserWalletUseCase } from './usecases/get-user-wallet.usecase';
+import { GetWalletByUserIdUsecase } from './usecases/get-wallet-by-user-id.usecase';
 
 @Injectable()
 export class WalletRepositoryService {
@@ -18,6 +19,7 @@ export class WalletRepositoryService {
     private readonly getByIdUseCase: GetByIdUseCase,
     private readonly getByIdAndUserIdUseCase: GetByIdAndUserIdUseCase,
     private readonly changeWalletBalanceUseCase: ChangeWalletBalanceUseCase,
+    private readonly getWalletByUserIdUsecase: GetWalletByUserIdUsecase,
   ) {}
 
   public async getUserWallet(
@@ -47,6 +49,10 @@ export class WalletRepositoryService {
 
   public async getByIdAndUserId(id: number, userId: number): Promise<Wallet> {
     return this.getByIdAndUserIdUseCase.exec(id, userId);
+  }
+
+  public async getWalletsByUserId(userId: number): Promise<Wallet[]> {
+    return this.getWalletByUserIdUsecase.exec(userId);
   }
 
   public async changeWalletBalance(

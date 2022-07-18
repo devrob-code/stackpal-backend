@@ -8,6 +8,7 @@ import { GetByIdUseCase } from './usecases/get-by-id.usecase';
 import { GetUserWalletByCurrencyIdUseCase } from './usecases/get-user-wallet-by-currency-id.usecase';
 import { GetUserWalletUseCase } from './usecases/get-user-wallet.usecase';
 import { WalletRepositoryService } from './wallet-repository.service';
+import { GetWalletByUserIdUsecase } from './usecases/get-wallet-by-user-id.usecase';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Wallet])],
@@ -19,6 +20,7 @@ import { WalletRepositoryService } from './wallet-repository.service';
     GetByIdUseCase,
     GetByIdAndUserIdUseCase,
     ChangeWalletBalanceUseCase,
+    GetWalletByUserIdUsecase
   ],
   exports: [WalletRepositoryService],
 })

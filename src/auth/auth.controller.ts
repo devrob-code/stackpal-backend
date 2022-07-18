@@ -8,12 +8,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Wallet } from 'src/repositories/wallets/entities/wallet.entity';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
 import { LoginDto } from './dto/request/login.dto';
 import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
 import { RecoverPasswordDto } from './dto/request/recover-password.dto';
+import { UserDataDto } from './dto/request/user-data.dto';
+import { UserIdDto } from './dto/request/user-id.dto';
 import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
 import { LoginResponse } from './dto/response/login.response';
 import { SignupResponse } from './dto/response/signup.response';
@@ -92,5 +95,22 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   public async validateToken(@Req() { user }): Promise<LoginResponse> {
     return await this.authService.validateToken(user);
+  }
+
+  @Post('get-wallets-by-user-id')
+  @UseGuards(AuthGuard('jwt'))
+  public async getWalletsByUserId(
+    @Body() body: UserIdDto
+  ): Promise<Wallet[]> {
+    return await this.authService.getWalletsByUserId(body.userId);
+  }
+
+  @Post('get-wallets-by-user-data')
+  @UseGuards(AuthGuard('jwt'))
+  public async getIdByUserData(
+    @Body() body: UserDataDto
+  ): Promise<Wallet[]> {
+    const userID = await this.authService.getIdByUserData(body.userInfo);
+    return await this.authService.getWalletsByUserId(userID);
   }
 }

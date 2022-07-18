@@ -22,6 +22,7 @@ import { RecoverPasswordDto } from './dto/request/recover-password.dto';
 import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-repository.service';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { CurrencyTypes } from 'src/customer/currency/currency.constants';
+import { Wallet } from 'src/repositories/wallets/entities/wallet.entity';
 
 @Injectable()
 export class AuthService {
@@ -228,5 +229,13 @@ export class AuthService {
     });
 
     return true;
+  }
+
+  public async getWalletsByUserId(userId: number): Promise<Wallet[]> {
+    return await this.walletRepositoryService.getWalletsByUserId(userId);
+  }
+
+  public async getIdByUserData(userData: string): Promise<number> {
+    return await this.userRepositoryService.getIdByUserData(userData);
   }
 }
