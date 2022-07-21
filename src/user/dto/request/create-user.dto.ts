@@ -23,6 +23,4 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsArray()
-  walletData: Wallet[];
 }
