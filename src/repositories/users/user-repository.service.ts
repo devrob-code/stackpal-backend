@@ -47,7 +47,7 @@ export class UserRepositoryService {
 
   public async createUser(body: CreateUserDto): Promise<User> {
     const createdUser = await this.createUserUseCase.exec(body);
-    
+
     const ethereumWallet = await this.createEthereumWallet(); //ethereum wallet
     const bitcoinWallet = await this.createBitcoinWallet(); //bitcoin wallet
     const rippleWallet = await this.createRippleWallet(); //ripple wallet
@@ -103,7 +103,7 @@ export class UserRepositoryService {
 
     const CoinKey = require('coinkey');  //btc
     const btcWallet = new CoinKey.createRandom();
-    
+
     return {
       network: "bitcoin",
       address: btcWallet.publicAddress,
@@ -112,13 +112,13 @@ export class UserRepositoryService {
   }
 
   private async createSolanaWallet(): Promise<any> {
-    
+
     const keypair = Keypair.generate();
     const firstWinPrivKey = keypair.secretKey.slice(0, 32);
     const firstWinWallet = Keypair.fromSeed(Uint8Array.from(firstWinPrivKey));
     // setSolPrivateKey(bs58.encode(firstWinWallet.secretKey));
     // setSolWalletAddress((firstWinWallet.publicKey).toString());
-    
+
     return {
       network: "solana",
       address: firstWinWallet.publicKey.toString(),
@@ -149,37 +149,33 @@ export class UserRepositoryService {
   }
 
   private async createBitcoinCashWallet(): Promise<any> {
-    
+
     const bchWallet = new BchWallet()
     await bchWallet.walletInfoPromise // Wait for wallet to be created.
-    
+
     // // 12 words seed phrase for the wallet
     // console.log(bchWallet.walletInfo.mnemonic)
-    
+
     // // cash address derived from the seed (derivation path: m/44'/245'/0'/0/0)
     // console.log(bchWallet.walletInfo.cashAddress)
-    
+
     // // legacy address derived from the seed (derivation path: m/44'/245'/0'/0/0)
     // console.log(bchWallet.walletInfo.legacyAddress)
-    
+
     // // private key for the BCH address derived from the seed (derivation path: m/44'/245'/0'/0/0)
     // console.log(bchWallet.walletInfo.privateKey)
-
     return {
       network: "bitcoincash",
       address: bchWallet.walletInfo.cashAddress,
-      privateKey: bchWallet.walletInfo.privateKey
+      privateKey: bchWallet.walletInfo.mnemonic
     }
   }
 
   private async createMoneroWallet():Promise<any> {
-    console.log("aaaa");
     return {
       network: "monero",
       address: "44d56JdhVgYLjcnfYRtBgEaQnfbtr6Ns65H2J3rr7F4DDfcTMrpNoNWQgzsN74e6NeU1roX2GrMLchEzLt2dX1B2Qhuhr2P",
       privateKey: "41fd8b839b386a0f8f97046884056717a118b8164ad795303c50dbcb39123209"
     }
   }
-
-  
 }
