@@ -23,4 +23,8 @@ export class GiftCardRepositoryService {
   public async getById(id: number): Promise<GiftCardResponse> {
     return this.getByIdUseCase.exec(id);
   }
+
+  // public async approve(id: number): Promise<boolean> {
+  //   return this.approveGiftVa.exec(id);
+  // }
 }

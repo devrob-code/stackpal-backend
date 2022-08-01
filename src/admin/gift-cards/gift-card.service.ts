@@ -14,4 +14,8 @@ export class AdminGiftCardService {
 
     return plainToInstance(GiftCardResponse, giftCards);
   }
+
+  // public async approve(id: number): Promise<boolean> {
+  //   return this.giftCardRepositoryService.approve();
+  // }
 }
