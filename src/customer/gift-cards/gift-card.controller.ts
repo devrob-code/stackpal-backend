@@ -5,5 +5,5 @@ import { GiftCardService } from './gift-card.service';
 @Controller('gift-card')
 @UseGuards(AuthGuard('jwt'))
 export class GiftCardController {
-  constructor(private readonly giftCardController: GiftCardService) {}
+  constructor(private readonly giftCardService: GiftCardService) {}
 }
