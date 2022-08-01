@@ -1,4 +1,5 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { UserResponse } from 'src/user/dto/response/user.response';
 
 @Exclude()
 export class GiftCardResponse {
@@ -28,4 +29,8 @@ export class GiftCardResponse {
 
   @Expose()
   updatedAt: Date;
+
+  @Expose()
+  @Type(() => UserResponse)
+  user: UserResponse[];
 }

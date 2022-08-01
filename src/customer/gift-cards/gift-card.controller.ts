@@ -1,4 +1,13 @@
-import { Body, Controller, UseGuards, Request, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  UseGuards,
+  Request,
+  Post,
+  Get,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GiftCardDto } from './dto/request/gift-card.dto';
 import { GiftCardResponse } from './dto/response/gift-card.response';
@@ -21,5 +30,12 @@ export class GiftCardController {
       ...body,
     };
     return await this.giftCardService.newGiftCard(data);
+  }
+
+  @Get(':id')
+  public async getById(
+    @Param('id', new ParseIntPipe()) id: number,
+  ): Promise<GiftCardResponse> {
+    return await this.giftCardService.getById(id);
   }
 }
