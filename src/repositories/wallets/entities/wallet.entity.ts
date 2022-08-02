@@ -38,6 +38,9 @@ export class Wallet {
   @Column('varchar')
   network: string;
 
+  @Column('varchar')
+  mnemonic: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

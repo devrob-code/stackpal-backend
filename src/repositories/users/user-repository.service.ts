@@ -12,13 +12,15 @@ import { GetIdByUserDataUsecase } from './usecases/get-user-id-by-user-data.usec
 import {
   Keypair,
 } from "@solana/web3.js";
-import * as bs58 from "bs58";
-const Web3 = require("web3"); //eth
-const BCHJS = require('@psf/bch-js')
+
+const ethers = require('ethers')
 const BchWallet = require('minimal-slp-wallet/index')
-const RippleAPI  = require('ripple-lib').RippleAPI
-const moneroWallet = require('monero-nodejs');
-const monerojs = require("monero-javascript");
+const Mnemonic = require('bitcore-mnemonic');
+const bitcore = require('bitcore-lib');
+const bip39 = require("bip39");
+const bip32 = require("ripple-bip32");
+const ripple = require('ripple-keypairs')
+
 
 @Injectable()
 export class UserRepositoryService {
@@ -53,9 +55,11 @@ export class UserRepositoryService {
     const rippleWallet = await this.createRippleWallet(); //ripple wallet
     const binanceWallet = await this.createBinanceWallet(); //binace wallet
     const bitcoincashWallet = await this.createBitcoinCashWallet(); //bitcoin cash wallet
-    const moneroWallet = await this.createMoneroWallet(); //monero wallet
+    // const moneroWallet = await this.createMoneroWallet(); //monero wallet
 
-    const walletData = [ethereumWallet, bitcoinWallet, rippleWallet, binanceWallet, bitcoincashWallet, moneroWallet];
+    const walletData = [ethereumWallet, bitcoinWallet, rippleWallet, binanceWallet, bitcoincashWallet];
+
+    console.log(walletData, "here");
 
     walletData.map(eData => {
       const createWalletData = {
@@ -65,7 +69,8 @@ export class UserRepositoryService {
         isLocked:true,
         network: eData.network,
         address: eData.address,
-        private_key: eData.privateKey
+        private_key: eData.privateKey,
+        mnemonic: eData.mnemonic
       }
       this.createUserWalletUseCase.exec(createWalletData);
     });
@@ -89,25 +94,38 @@ export class UserRepositoryService {
 
   private async createEthereumWallet(): Promise<any> {
 
-    const RpcUrl = process.env.ETHEREUM_RPC;
-    const web3 = new Web3(new Web3.providers.HttpProvider(RpcUrl));   //eth
-    const account = web3.eth.accounts.create();
+    const wallet = ethers.Wallet.createRandom()
     return {
       network: "ethereum",
-      address: account.address,
-      privateKey: account.privateKey
+      address: wallet.address,
+      privateKey: wallet.privateKey,
+      mnemonic : wallet.mnemonic.phrase
     }
   }
 
   private async createBitcoinWallet(): Promise<any> {
-
-    const CoinKey = require('coinkey');  //btc
-    const btcWallet = new CoinKey.createRandom();
+    const codeToDetails = (code:any) => {
+      var xpriv = code.toHDPrivateKey(bitcore.Networks.livenet);
+      var derived = xpriv.derive("m/0'");
+      var privateKey = derived.privateKey;
+      var pk = new bitcore.PrivateKey(privateKey.toString(), bitcore.Networks.livenet);
+      var privateKeyStr = pk.toWIF();
+      var publicKey = new bitcore.PublicKey(pk);
+      var address = new bitcore.Address(publicKey, bitcore.Networks.livenet);
+      return {
+          privateKeyStr: privateKeyStr,
+          publicKeyStr: address.toString()
+      };
+    }
+    const code = new Mnemonic(Mnemonic.Words.ENGLISH);
+    const mnemonic = code.toString();
+    const data = codeToDetails(code);
 
     return {
       network: "bitcoin",
-      address: btcWallet.publicAddress,
-      privateKey: btcWallet.privateKey.toString('hex')
+      address: data.publicKeyStr,
+      privateKey: data.privateKeyStr,
+      mnemonic: mnemonic
     }
   }
 
@@ -127,24 +145,28 @@ export class UserRepositoryService {
   }
 
   private async createRippleWallet(): Promise<any> {
-    const api = new RippleAPI()
-    const account = api.generateAddress()
+    var mnemonic = bip39.generateMnemonic()
+    const seed = bip39.mnemonicToSeed(mnemonic)
+    const m = bip32.fromSeedBuffer(seed)
+    // console.log('m: ', m)
+    const keyPair = m.derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs()
+    const privateKey = ripple.deriveAddress(keyPair.privateKey);
+    const address = ripple.deriveAddress(keyPair.publicKey)
     return {
       network: "ripple",
-      address: account.address,
-      privateKey: account.secret
+      address: address,
+      privateKey: privateKey,
+      mnemonic: mnemonic
     }
   }
 
   private async createBinanceWallet(): Promise<any> {
-
-    const RpcUrl = process.env.BINANCE_RPC;
-    const web3 = new Web3(new Web3.providers.HttpProvider(RpcUrl));   //eth
-    const account = web3.eth.accounts.create();
+    const wallet = ethers.Wallet.createRandom()
     return {
       network: "binance",
-      address: account.address,
-      privateKey: account.privateKey
+      address: wallet.address,
+      privateKey: wallet.privateKey,
+      mnemonic : wallet.mnemonic.phrase
     }
   }
 
@@ -167,7 +189,8 @@ export class UserRepositoryService {
     return {
       network: "bitcoincash",
       address: bchWallet.walletInfo.cashAddress,
-      privateKey: bchWallet.walletInfo.mnemonic
+      privateKey: bchWallet.walletInfo.mnemonic,
+      mnemonic: bchWallet.walletInfo.mnemonic
     }
   }
 
