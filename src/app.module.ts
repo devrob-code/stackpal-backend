@@ -8,6 +8,7 @@ import { CurrencyModule } from './customer/currency/currency.module';
 import { FiatDepositModule } from './customer/fiat-deposits/fiat-deposit.module';
 import { GiftCardModule } from './customer/gift-cards/gift-card.module';
 import { P2PAccountModule } from './customer/p2p-accounts/p2p-account.module';
+import { RateModule } from './customer/rates/rate.module';
 import { WalletModule } from './customer/wallet/wallet.module';
 import { UserModule } from './user/user.module';
 
@@ -24,6 +25,7 @@ import { UserModule } from './user/user.module';
     P2PAccountModule,
     FiatDepositModule,
     GiftCardModule,
+    RateModule,
   ],
 })
 export class AppModule {}

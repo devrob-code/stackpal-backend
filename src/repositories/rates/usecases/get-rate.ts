@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RatesTypes } from 'src/customer/rates/rates.constant';
 import { Repository } from 'typeorm';
-import { Rate } from '../entity/entity';
+import { Rate } from '../entity/rate.entity';
 
 @Injectable()
-export class GetGiftCardRateUseCase {
+export class GetRateUseCase {
   constructor(
     @InjectRepository(Rate)
     private readonly rateRepo: Repository<Rate>,
   ) {}
 
-  public async exec(type: RatesTypes): Promise<Rate> {
+  public async exec(): Promise<Rate> {
     return this.rateRepo.findOne({
-      where: { giftCardRate: type },
+      where: { id: 1 },
     });
   }
 }

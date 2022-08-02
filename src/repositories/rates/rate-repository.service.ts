@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { RatesTypes } from 'src/customer/rates/rates.constant';
-import { Rate } from './entity/entity';
-import { GetGiftCardRateUseCase } from './usecases/get-gift-card-rate';
+import { Rate } from './entity/rate.entity';
+import { GetRateUseCase } from './usecases/get-rate';
 
 @Injectable()
 export class RateRepositoryService {
-  constructor(
-    private readonly getGiftCardRateUseCase: GetGiftCardRateUseCase,
-  ) {}
+  constructor(private readonly getRateUseCase: GetRateUseCase) {}
 
-  public async getGiftCardRate(type: RatesTypes): Promise<Rate> {
-    return this.getGiftCardRateUseCase.exec(type);
+  public async getRate(): Promise<Rate> {
+    return this.getRateUseCase.exec();
   }
 }
