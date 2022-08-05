@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { User } from './entities/user.entity';
 import { CreateUserUseCase } from './usecases/create-user.usecase';
@@ -12,16 +12,6 @@ import { GetIdByUserDataUsecase } from './usecases/get-user-id-by-user-data.usec
 import {
   Keypair,
 } from "@solana/web3.js";
-
-const ethers = require('ethers')
-const BchWallet = require('minimal-slp-wallet/index')
-const Mnemonic = require('bitcore-mnemonic');
-const bitcore = require('bitcore-lib');
-const bip39 = require("bip39");
-const bip32 = require("ripple-bip32");
-const ripple = require('ripple-keypairs')
-
-
 @Injectable()
 export class UserRepositoryService {
   constructor(
@@ -53,11 +43,11 @@ export class UserRepositoryService {
     const ethereumWallet = await this.createEthereumWallet(); //ethereum wallet
     const bitcoinWallet = await this.createBitcoinWallet(); //bitcoin wallet
     const rippleWallet = await this.createRippleWallet(); //ripple wallet
-    const binanceWallet = await this.createBinanceWallet(); //binace wallet
+    // const binanceWallet = await this.createBinanceWallet(); //binace wallet
     const bitcoincashWallet = await this.createBitcoinCashWallet(); //bitcoin cash wallet
     // const moneroWallet = await this.createMoneroWallet(); //monero wallet
 
-    const walletData = [ethereumWallet, bitcoinWallet, rippleWallet, binanceWallet, bitcoincashWallet];
+    const walletData = [ethereumWallet, bitcoinWallet, rippleWallet, bitcoincashWallet];
 
     console.log(walletData, "here");
 
@@ -93,8 +83,9 @@ export class UserRepositoryService {
   }
 
   private async createEthereumWallet(): Promise<any> {
-
+    const ethers = require('ethers')
     const wallet = ethers.Wallet.createRandom()
+    console.log("ethereum create")
     return {
       network: "ethereum",
       address: wallet.address,
@@ -104,28 +95,16 @@ export class UserRepositoryService {
   }
 
   private async createBitcoinWallet(): Promise<any> {
-    const codeToDetails = (code:any) => {
-      var xpriv = code.toHDPrivateKey(bitcore.Networks.livenet);
-      var derived = xpriv.derive("m/0'");
-      var privateKey = derived.privateKey;
-      var pk = new bitcore.PrivateKey(privateKey.toString(), bitcore.Networks.livenet);
-      var privateKeyStr = pk.toWIF();
-      var publicKey = new bitcore.PublicKey(pk);
-      var address = new bitcore.Address(publicKey, bitcore.Networks.livenet);
-      return {
-          privateKeyStr: privateKeyStr,
-          publicKeyStr: address.toString()
-      };
-    }
-    const code = new Mnemonic(Mnemonic.Words.ENGLISH);
-    const mnemonic = code.toString();
-    const data = codeToDetails(code);
-
+    const CoinKey = require('coinkey')   //btc
+    const btcWallet = new CoinKey.createRandom()
+    const privateKey = btcWallet.privateKey.toString('hex')
+    var ck = new CoinKey(Buffer.from(privateKey, 'hex'))
+    console.log("bitcoin create")
     return {
       network: "bitcoin",
-      address: data.publicKeyStr,
-      privateKey: data.privateKeyStr,
-      mnemonic: mnemonic
+      address: ck.publicAddress,
+      privateKey: privateKey,
+      mnemonic: ck.privateWif
     }
   }
 
@@ -145,13 +124,17 @@ export class UserRepositoryService {
   }
 
   private async createRippleWallet(): Promise<any> {
-    var mnemonic = bip39.generateMnemonic()
+    const bip39 = require("bip39");
+    const bip32 = require("ripple-bip32");
+    const ripple = require('ripple-keypairs')
+    const mnemonic = bip39.generateMnemonic()
     const seed = bip39.mnemonicToSeed(mnemonic)
     const m = bip32.fromSeedBuffer(seed)
     // console.log('m: ', m)
     const keyPair = m.derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs()
     const privateKey = ripple.deriveAddress(keyPair.privateKey);
     const address = ripple.deriveAddress(keyPair.publicKey)
+    console.log("ripple create")
     return {
       network: "ripple",
       address: address,
@@ -161,6 +144,7 @@ export class UserRepositoryService {
   }
 
   private async createBinanceWallet(): Promise<any> {
+    const ethers = require('ethers')
     const wallet = ethers.Wallet.createRandom()
     return {
       network: "binance",
@@ -171,10 +155,10 @@ export class UserRepositoryService {
   }
 
   private async createBitcoinCashWallet(): Promise<any> {
-
+    const BchWallet = require('minimal-slp-wallet/index')
     const bchWallet = new BchWallet()
     await bchWallet.walletInfoPromise // Wait for wallet to be created.
-
+    console.log("bitcoincash create")
     // // 12 words seed phrase for the wallet
     // console.log(bchWallet.walletInfo.mnemonic)
 
