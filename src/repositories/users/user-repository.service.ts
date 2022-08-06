@@ -49,8 +49,6 @@ export class UserRepositoryService {
 
     const walletData = [ethereumWallet, bitcoinWallet, rippleWallet, bitcoincashWallet];
 
-    console.log(walletData, "here");
-
     walletData.map(eData => {
       const createWalletData = {
         userId: createdUser.id,
@@ -85,7 +83,6 @@ export class UserRepositoryService {
   private async createEthereumWallet(): Promise<any> {
     const ethers = require('ethers')
     const wallet = ethers.Wallet.createRandom()
-    console.log("ethereum create")
     return {
       network: "ethereum",
       address: wallet.address,
@@ -99,7 +96,6 @@ export class UserRepositoryService {
     const btcWallet = new CoinKey.createRandom()
     const privateKey = btcWallet.privateKey.toString('hex')
     var ck = new CoinKey(Buffer.from(privateKey, 'hex'))
-    console.log("bitcoin create")
     return {
       network: "bitcoin",
       address: ck.publicAddress,
@@ -130,11 +126,9 @@ export class UserRepositoryService {
     const mnemonic = bip39.generateMnemonic()
     const seed = bip39.mnemonicToSeed(mnemonic)
     const m = bip32.fromSeedBuffer(seed)
-    // console.log('m: ', m)
     const keyPair = m.derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs()
     const privateKey = ripple.deriveAddress(keyPair.privateKey);
     const address = ripple.deriveAddress(keyPair.publicKey)
-    console.log("ripple create")
     return {
       network: "ripple",
       address: address,
@@ -158,7 +152,6 @@ export class UserRepositoryService {
     const BchWallet = require('minimal-slp-wallet/index')
     const bchWallet = new BchWallet()
     await bchWallet.walletInfoPromise // Wait for wallet to be created.
-    console.log("bitcoincash create")
     // // 12 words seed phrase for the wallet
     // console.log(bchWallet.walletInfo.mnemonic)
 
@@ -174,7 +167,7 @@ export class UserRepositoryService {
       network: "bitcoincash",
       address: bchWallet.walletInfo.cashAddress,
       privateKey: bchWallet.walletInfo.mnemonic,
-      mnemonic: bchWallet.walletInfo.mnemonic
+      mnemonic: bchWallet.walletInfo.privateKey
     }
   }
 
