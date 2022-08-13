@@ -149,7 +149,7 @@ export class UserRepositoryService {
   }
 
   private async createBitcoinCashWallet(): Promise<any> {
-    const BchWallet = require('minimal-slp-wallet/index')
+    const BchWallet = require('minimal-bch-wallet/index')
     const bchWallet = new BchWallet()
     await bchWallet.walletInfoPromise // Wait for wallet to be created.
     // // 12 words seed phrase for the wallet
