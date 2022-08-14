@@ -22,4 +22,9 @@ export class GiftCardController {
   ): Promise<GiftCardResponse> {
     return await this.giftCardService.getById(id);
   }
+
+  @Get()
+  public async getAll(): Promise<GiftCardResponse[]> {
+    return await this.giftCardService.getAll();
+  }
 }

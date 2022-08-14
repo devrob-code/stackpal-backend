@@ -13,4 +13,9 @@ export class GiftCardService {
     const giftCard = await this.giftCardRepositoryService.getById(id);
     return plainToInstance(GiftCardResponse, giftCard);
   }
+
+  public async getAll(): Promise<GiftCardResponse[]> {
+    const giftCard = await this.giftCardRepositoryService.getAll();
+    return plainToInstance(GiftCardResponse, giftCard);
+  }
 }
