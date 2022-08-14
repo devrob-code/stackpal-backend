@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -38,5 +39,6 @@ export class GiftCard {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.giftCard)
+  @JoinColumn({ name: 'adminId', referencedColumnName: 'id' })
   user: User[];
 }
