@@ -1,41 +1,23 @@
-// import {
-//   Body,
-//   Controller,
-//   UseGuards,
-//   Request,
-//   Post,
-//   Get,
-//   Param,
-//   ParseIntPipe,
-// } from '@nestjs/common';
-// import { AuthGuard } from '@nestjs/passport';
-// import { GiftCardDto } from './dto/request/gift-card.dto';
-// import { GiftCardResponse } from './dto/response/gift-card.response';
-// import { GiftCardService } from './gift-card.service';
-// import { CheckGiftCardTypeGuard } from './guards/check-gift-card-type.guard';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { GiftCardResponse } from 'src/admin/gift-cards/dto/response/gift-card.response';
+import { GiftCardService } from './gift-card.service';
 
-// @Controller('gift-card')
-// @UseGuards(AuthGuard('jwt'))
-// export class GiftCardController {
-//   constructor(private readonly giftCardService: GiftCardService) {}
+@Controller('gift-card')
+@UseGuards(AuthGuard('jwt'))
+export class GiftCardController {
+  constructor(private readonly giftCardService: GiftCardService) {}
 
-//   @Post()
-//   @UseGuards(CheckGiftCardTypeGuard)
-//   public async newGiftCard(
-//     @Body() body: GiftCardDto,
-//     @Request() req,
-//   ): Promise<GiftCardResponse> {
-//     const data = {
-//       userId: req.user.id,
-//       ...body,
-//     };
-//     return await this.giftCardService.newGiftCard(data);
-//   }
-
-//   @Get(':id')
-//   public async getById(
-//     @Param('id', new ParseIntPipe()) id: number,
-//   ): Promise<GiftCardResponse> {
-//     return await this.giftCardService.getById(id);
-//   }
-// } ComeBack
+  @Get(':id')
+  public async getById(
+    @Param('id', new ParseIntPipe()) id: number,
+  ): Promise<GiftCardResponse> {
+    return await this.giftCardService.getById(id);
+  }
+}
