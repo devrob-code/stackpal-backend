@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GiftCardResponse } from 'src/admin/gift-cards/dto/response/gift-card.response';
+import { CheckGiftCardIdExists } from 'src/admin/gift-cards/guards/check-gift-card-id-exists.guard';
 import { GiftCardService } from './gift-card.service';
 
 @Controller('gift-card')
@@ -14,6 +15,7 @@ import { GiftCardService } from './gift-card.service';
 export class GiftCardController {
   constructor(private readonly giftCardService: GiftCardService) {}
 
+  @UseGuards(CheckGiftCardIdExists)
   @Get(':id')
   public async getById(
     @Param('id', new ParseIntPipe()) id: number,
