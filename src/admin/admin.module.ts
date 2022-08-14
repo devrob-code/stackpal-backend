@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AdminCurrencyModule } from './currency/currency.module';
 import { AdminFiatDepositModule } from './fiat-deposits/fiat-deposit.module';
-import { AdminGiftCardModule } from './gift-cards/gift-card.module';
+//import { AdminGiftCardModule } from './gift-cards/gift-card.module'; ComeBack
 import { AdminP2PAccountModule } from './p2p-accounts/p2p-account.module';
 
 @Module({
@@ -9,7 +9,7 @@ import { AdminP2PAccountModule } from './p2p-accounts/p2p-account.module';
     AdminCurrencyModule,
     AdminP2PAccountModule,
     AdminFiatDepositModule,
-    AdminGiftCardModule,
+    //AdminGiftCardModule,
   ],
 })
 export class AdminModule {}

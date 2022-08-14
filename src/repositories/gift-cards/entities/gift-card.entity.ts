@@ -14,22 +14,22 @@ export class GiftCard {
   public id: number;
 
   @Column('int')
-  userId: number;
+  adminId: number;
 
   @Column('varchar')
-  cardNo: string;
+  cardType: string;
 
   @Column('varchar')
   imageUrl: string;
 
-  @Column('boolean')
-  isApproved: boolean;
+  @Column('bigint')
+  physicalRate: number;
+
+  @Column('bigint')
+  eCodeRate: number;
 
   @Column('int')
-  approvedBy: number;
-
-  @Column('int')
-  rate: number;
+  denomination: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
