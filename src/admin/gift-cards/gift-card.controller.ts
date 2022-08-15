@@ -8,8 +8,10 @@ import {
   Param,
   ParseIntPipe,
   ParseBoolPipe,
+  Get,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { GiftCardDepositResponse } from 'src/customer/gift-cards/dto/response/gift-card-deposit.response';
 import { AdminGuard } from '../guards/admin.guard';
 import { GiftCardDto, UpdateGiftCardDto } from './dto/request/gift-card.dto';
 import { GiftCardResponse } from './dto/response/gift-card.response';
@@ -56,5 +58,18 @@ export class AdminGiftCardController {
       status,
       req.user.id,
     );
+  }
+
+  @Get('all/deposits')
+  public async getAllGiftCardDeposits(): Promise<GiftCardDepositResponse[]> {
+    return await this.adminGiftCardService.getAllGiftCardDeposits();
+  }
+
+  @UseGuards(CheckGiftCardDepositIdExists)
+  @Get('deposit/:id')
+  public async getGiftCardDepositById(
+    @Param('id', new ParseIntPipe()) id: number,
+  ): Promise<GiftCardDepositResponse> {
+    return await this.adminGiftCardService.getGiftCardDepositById(id);
   }
 }

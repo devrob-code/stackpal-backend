@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GiftCardDepositDto } from 'src/customer/gift-cards/dto/request/gift-card-deposit.dto';
 import { GiftCardDepositResponse } from 'src/customer/gift-cards/dto/response/gift-card-deposit.response';
 import { ChangeApprovalStatusUseCase } from './usecases/change-approval-status.usecase';
+import { GetAllGiftCardDepositsUseCase } from './usecases/get-all-gift-card-deposits.usecase';
 import { GetByIdUseCase } from './usecases/get-by-id.usecase';
 import { NewGiftCardDepositUseCase } from './usecases/new-gift-card-deposit.usecase';
 
@@ -11,6 +12,7 @@ export class GiftCardDepositRepositoryService {
     private readonly newGiftCardDepositUseCase: NewGiftCardDepositUseCase,
     private readonly getByIdUseCase: GetByIdUseCase,
     private readonly changeApprovalStatusUseCase: ChangeApprovalStatusUseCase,
+    private readonly getAllGiftCardDepositsUseCase: GetAllGiftCardDepositsUseCase,
   ) {}
 
   public async newGiftCardDeposit(
@@ -29,5 +31,9 @@ export class GiftCardDepositRepositoryService {
     approvedBy: number,
   ): Promise<boolean> {
     return this.changeApprovalStatusUseCase.exec(id, status, approvedBy);
+  }
+
+  public async getAllGiftCardDeposits(): Promise<GiftCardDepositResponse[]> {
+    return this.getAllGiftCardDepositsUseCase.exec();
   }
 }

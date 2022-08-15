@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { GiftCardDepositResponse } from 'src/customer/gift-cards/dto/response/gift-card-deposit.response';
 import { GiftCardDepositRepositoryService } from 'src/repositories/gift-card-deposits/gift-card-deposit-repository.service';
 import { GiftCardRepositoryService } from 'src/repositories/gift-cards/gift-card-repository.service';
 import { GiftCardDto, UpdateGiftCardDto } from './dto/request/gift-card.dto';
@@ -32,5 +34,20 @@ export class AdminGiftCardService {
       status,
       approvedBy,
     );
+  }
+
+  public async getAllGiftCardDeposits(): Promise<GiftCardDepositResponse[]> {
+    const giftCardDeposits =
+      await this.giftCardDepositRepositoryService.getAllGiftCardDeposits();
+    return plainToInstance(GiftCardDepositResponse, giftCardDeposits);
+  }
+
+  public async getGiftCardDepositById(
+    id: number,
+  ): Promise<GiftCardDepositResponse> {
+    const giftCardDeposit = await this.giftCardDepositRepositoryService.getById(
+      id,
+    );
+    return plainToInstance(GiftCardDepositResponse, giftCardDeposit);
   }
 }

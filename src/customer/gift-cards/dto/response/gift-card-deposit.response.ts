@@ -20,6 +20,9 @@ export class GiftCardDepositResponse {
   isApproved: boolean;
 
   @Expose()
+  approvedBy: number;
+
+  @Expose()
   approvalRate: number;
 
   @Expose()
