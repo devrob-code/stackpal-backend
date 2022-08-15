@@ -5,6 +5,7 @@ import { GiftCardDepositRepositoryService } from './gift-card-deposit-repository
 import { ChangeApprovalStatusUseCase } from './usecases/change-approval-status.usecase';
 import { GetAllGiftCardDepositsUseCase } from './usecases/get-all-gift-card-deposits.usecase';
 import { GetByIdUseCase } from './usecases/get-by-id.usecase';
+import { GetByUserIdUseCase } from './usecases/get-by-user-id.usecase';
 import { NewGiftCardDepositUseCase } from './usecases/new-gift-card-deposit.usecase';
 
 @Module({
@@ -15,6 +16,7 @@ import { NewGiftCardDepositUseCase } from './usecases/new-gift-card-deposit.usec
     ChangeApprovalStatusUseCase,
     GetByIdUseCase,
     GetAllGiftCardDepositsUseCase,
+    GetByUserIdUseCase,
   ],
   exports: [GiftCardDepositRepositoryService],
 })

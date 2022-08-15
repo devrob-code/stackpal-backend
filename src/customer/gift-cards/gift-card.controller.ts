@@ -45,4 +45,11 @@ export class GiftCardController {
 
     return await this.giftCardService.newGiftCardDeposit(data);
   }
+
+  @Get('deposits/user/all')
+  public async getUserGiftCardDeposit(
+    @Request() req,
+  ): Promise<GiftCardDepositResponse[]> {
+    return await this.giftCardService.getByUserId(req.user.id);
+  }
 }

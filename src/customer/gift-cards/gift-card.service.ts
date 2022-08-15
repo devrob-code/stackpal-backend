@@ -29,4 +29,10 @@ export class GiftCardService {
     data.isCredited = false;
     return this.giftCardDepositRepositoryService.newGiftCardDeposit(data);
   }
+
+  public async getByUserId(userId: number): Promise<GiftCardDepositResponse[]> {
+    const giftCardDeposit =
+      await this.giftCardDepositRepositoryService.getByUserId(userId);
+    return plainToInstance(GiftCardDepositResponse, giftCardDeposit);
+  }
 }

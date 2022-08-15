@@ -4,6 +4,7 @@ import { GiftCardDepositResponse } from 'src/customer/gift-cards/dto/response/gi
 import { ChangeApprovalStatusUseCase } from './usecases/change-approval-status.usecase';
 import { GetAllGiftCardDepositsUseCase } from './usecases/get-all-gift-card-deposits.usecase';
 import { GetByIdUseCase } from './usecases/get-by-id.usecase';
+import { GetByUserIdUseCase } from './usecases/get-by-user-id.usecase';
 import { NewGiftCardDepositUseCase } from './usecases/new-gift-card-deposit.usecase';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class GiftCardDepositRepositoryService {
     private readonly getByIdUseCase: GetByIdUseCase,
     private readonly changeApprovalStatusUseCase: ChangeApprovalStatusUseCase,
     private readonly getAllGiftCardDepositsUseCase: GetAllGiftCardDepositsUseCase,
+    private readonly getByUserIdUseCase: GetByUserIdUseCase,
   ) {}
 
   public async newGiftCardDeposit(
@@ -35,5 +37,9 @@ export class GiftCardDepositRepositoryService {
 
   public async getAllGiftCardDeposits(): Promise<GiftCardDepositResponse[]> {
     return this.getAllGiftCardDepositsUseCase.exec();
+  }
+
+  public async getByUserId(userId: number): Promise<GiftCardDepositResponse[]> {
+    return this.getByUserIdUseCase.exec(userId);
   }
 }
