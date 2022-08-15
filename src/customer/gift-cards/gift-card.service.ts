@@ -26,6 +26,7 @@ export class GiftCardService {
   public async newGiftCardDeposit(
     data: GiftCardDepositDto,
   ): Promise<GiftCardDepositResponse> {
+    data.isCredited = false;
     return this.giftCardDepositRepositoryService.newGiftCardDeposit(data);
   }
 }
