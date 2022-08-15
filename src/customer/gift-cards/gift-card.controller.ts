@@ -1,13 +1,18 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Post,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GiftCardResponse } from 'src/admin/gift-cards/dto/response/gift-card.response';
 import { CheckGiftCardIdExists } from 'src/admin/gift-cards/guards/check-gift-card-id-exists.guard';
+import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
+import { GiftCardDepositResponse } from './dto/response/gift-card-deposit.response';
 import { GiftCardService } from './gift-card.service';
 
 @Controller('gift-card')
@@ -26,5 +31,18 @@ export class GiftCardController {
   @Get()
   public async getAll(): Promise<GiftCardResponse[]> {
     return await this.giftCardService.getAll();
+  }
+
+  @Post('deposit/new')
+  public async giftCardDeposit(
+    @Body() body: GiftCardDepositDto,
+    @Request() req,
+  ): Promise<GiftCardDepositResponse> {
+    const data = {
+      userId: req.user.id,
+      ...body,
+    };
+
+    return await this.giftCardService.newGiftCardDeposit(data);
   }
 }

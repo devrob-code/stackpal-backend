@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity('giftCardDeposits')
-export class GiftCard {
+export class GiftCardDeposit {
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -41,6 +41,12 @@ export class GiftCard {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @Column('varchar')
+  cardImageUrl: string;
+
+  @Column('varchar')
+  code: string;
 
   @ManyToOne(() => User, (user) => user.giftCard)
   @JoinColumn({ name: 'approvedBy', referencedColumnName: 'id' })
