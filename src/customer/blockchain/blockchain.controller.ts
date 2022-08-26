@@ -17,4 +17,10 @@ export class BlockchainController {
     const userId = req.user.id;
     return this.blockchainService.getXrpBalance(userId);
   }
+
+  @Get('balance/btc')
+  public async getBTCBalance(@Request() req): Promise<any> {
+    const userId = req.user.id;
+    return this.blockchainService.getBTCBalance(userId);
+  }
 }

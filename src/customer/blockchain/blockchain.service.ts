@@ -4,6 +4,16 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 const RippleAPI = require('ripple-lib').RippleAPI;
+const NOWNodesApiKey = 'c6c243ff-9a7a-43dd-86d9-1ca9bec25e76';
+const totalDecimal: { [key: string]: number } = {
+  BTC: 8,
+  ETH: 18,
+  USDT: 18,
+  USDC: 18,
+  BNB: 18,
+  XRP: 6,
+  BCH: 8,
+};
 
 @Injectable()
 export class BlockchainService {
@@ -66,6 +76,32 @@ export class BlockchainService {
           return balance;
         })
         .catch((err: any) => {
+          return 0;
+        });
+      return res;
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  public async getBTCBalance(userId: number): Promise<any> {
+    const userWallet =
+      await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+        userId,
+        'bitcoin',
+      );
+
+    try {
+      const res = await firstValueFrom(
+        this.httpService.post(
+          `https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          { headers: { 'api-key': NOWNodesApiKey } },
+        ),
+      )
+        .then(async (response) => {
+          return response.data.balance / 10 ** totalDecimal['BCH'];
+        })
+        .catch((err) => {
           return 0;
         });
       return res;
