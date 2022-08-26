@@ -13,6 +13,7 @@ export class GetFiatDepositByIdUseCase {
 
   public async exec(id: number): Promise<FiatDepositResponse> {
     return this.fiatDepositRepo.findOne({
+      relations: ['p2pAccount', 'wallet', 'wallet.user', 'wallet.currency'],
       where: {
         id,
       },

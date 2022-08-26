@@ -12,6 +12,7 @@ import { UserRoles } from 'src/user/user.constants';
 import { Wallet } from 'src/repositories/wallets/entities/wallet.entity';
 import { FiatDeposit } from 'src/repositories/fiat-deposits/entities/fiat-deposit.entity';
 import { P2PAccount } from 'src/repositories/p2p-accounts/entities/p2p-account.entity';
+import { GiftCard } from 'src/repositories/gift-cards/entities/gift-card.entity';
 
 @Entity('users')
 export class User {
@@ -62,4 +63,7 @@ export class User {
 
   @OneToMany(() => P2PAccount, (p2pAccounts) => p2pAccounts.user)
   p2pAccounts: P2PAccount[];
+
+  @OneToMany(() => GiftCard, (giftCard) => giftCard.user)
+  giftCard: GiftCard[];
 }

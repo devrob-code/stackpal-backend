@@ -12,6 +12,8 @@ export class GetFiatDepositsUseCase {
   ) {}
 
   public async exec(): Promise<FiatDepositResponse[]> {
-    return this.fiatDepositRepo.find();
+    return this.fiatDepositRepo.find({
+      relations: ['p2pAccount', 'wallet', 'wallet.user', 'wallet.currency'],
+    });
   }
 }
