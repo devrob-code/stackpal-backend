@@ -109,4 +109,30 @@ export class BlockchainService {
       return 0;
     }
   }
+
+  public async getBCHBalance(userId: number): Promise<any> {
+    const userWallet =
+      await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+        userId,
+        'bitcoincash',
+      );
+
+    try {
+      const res = await firstValueFrom(
+        this.httpService.post(
+          `https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          { headers: { 'api-key': NOWNodesApiKey } },
+        ),
+      )
+        .then(async (response) => {
+          return response.data.balance / 10 ** totalDecimal['BCH'];
+        })
+        .catch((err) => {
+          return 0;
+        });
+      return res;
+    } catch (error) {
+      return 0;
+    }
+  }
 }
