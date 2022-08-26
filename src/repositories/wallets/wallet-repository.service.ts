@@ -8,6 +8,7 @@ import { GetByIdAndUserIdUseCase } from './usecases/get-by-id-and-user-id.usecas
 import { GetByIdUseCase } from './usecases/get-by-id.usecase';
 import { GetUserWalletByCurrencyIdUseCase } from './usecases/get-user-wallet-by-currency-id.usecase';
 import { GetUserWalletUseCase } from './usecases/get-user-wallet.usecase';
+import { GetWalletByUserIdAndNetworkUsecase } from './usecases/get-wallet-by-user-id-and-network.usecase';
 import { GetWalletByUserIdUsecase } from './usecases/get-wallet-by-user-id.usecase';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class WalletRepositoryService {
     private readonly getByIdAndUserIdUseCase: GetByIdAndUserIdUseCase,
     private readonly changeWalletBalanceUseCase: ChangeWalletBalanceUseCase,
     private readonly getWalletByUserIdUsecase: GetWalletByUserIdUsecase,
+    private readonly getWalletByUserIdAndNetworkUsecase: GetWalletByUserIdAndNetworkUsecase,
   ) {}
 
   public async getUserWallet(
@@ -51,7 +53,10 @@ export class WalletRepositoryService {
     return this.getByIdAndUserIdUseCase.exec(id, userId);
   }
 
-  public async getWalletsByUserId(userId: number, network?:string): Promise<Wallet[]> {
+  public async getWalletsByUserId(
+    userId: number,
+    network?: string,
+  ): Promise<Wallet[] | Wallet> {
     return this.getWalletByUserIdUsecase.exec(userId, network);
   }
 
@@ -61,5 +66,12 @@ export class WalletRepositoryService {
     action: WalletAction,
   ) {
     return this.changeWalletBalanceUseCase.exec(id, amount, action);
+  }
+
+  public async getWalletByUserIdAndNetwork(
+    userId: number,
+    network: string,
+  ): Promise<Wallet> {
+    return this.getWalletByUserIdAndNetworkUsecase.exec(userId, network);
   }
 }

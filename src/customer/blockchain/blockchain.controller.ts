@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BlockchainService } from './blockchain.service';
 
@@ -10,5 +10,11 @@ export class BlockchainController {
   @Get('prices/all')
   public async getCoinPrices(): Promise<any> {
     return this.blockchainService.getCoinPrices();
+  }
+
+  @Get('balance/xrp')
+  public async getXrpBalance(@Request() req): Promise<any> {
+    const userId = req.user.id;
+    return this.blockchainService.getXrpBalance(userId);
   }
 }

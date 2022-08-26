@@ -99,14 +99,9 @@ export class AuthController {
 
   @Post('get-wallets-by-user-id')
   @UseGuards(AuthGuard('jwt'))
-  public async getWalletsByUserId(@Body() body: UserIdDto): Promise<Wallet[]> {
+  public async getWalletsByUserId(
+    @Body() body: UserIdDto,
+  ): Promise<Wallet[] | Wallet> {
     return await this.authService.getWalletsByUserId(body.userId, null);
-  }
-
-  @Post('get-wallets-by-user-data')
-  @UseGuards(AuthGuard('jwt'))
-  public async getIdByUserData(@Body() body: UserDataDto): Promise<Wallet[]> {
-    const userID = await this.authService.getIdByUserData(body.userInfo);
-    return await this.authService.getWalletsByUserId(userID, body.network);
   }
 }
