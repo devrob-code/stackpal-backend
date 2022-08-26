@@ -58,8 +58,9 @@ export class BlockchainService {
 
     try {
       const rippleApi = new RippleAPI({
-        // server: 'wss://s.altnet.rippletest.net:51233',
+        //server: 'wss://s.altnet.rippletest.net:51233',
         server: 'wss://s1.ripple.com',
+        timeout: 60000,
       });
       var balance = 0;
       const res = await rippleApi
@@ -69,6 +70,7 @@ export class BlockchainService {
             .getAccountInfo(userWallet.address)
             .then((info: any) => {
               balance = parseFloat(info.xrpBalance);
+              console.log(info);
             });
         })
         .then(() => {
@@ -95,11 +97,13 @@ export class BlockchainService {
       const res = await firstValueFrom(
         this.httpService.post(
           `https://btcbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          '',
           { headers: { 'api-key': NOWNodesApiKey } },
         ),
       )
         .then(async (response) => {
-          return response.data.balance / 10 ** totalDecimal['BCH'];
+          //return response.data.balance / 10 ** totalDecimal['BTC'];
+          return response.data;
         })
         .catch((err) => {
           return 0;
@@ -121,11 +125,12 @@ export class BlockchainService {
       const res = await firstValueFrom(
         this.httpService.post(
           `https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          '',
           { headers: { 'api-key': NOWNodesApiKey } },
         ),
       )
         .then(async (response) => {
-          return response.data.balance / 10 ** totalDecimal['BCH'];
+          return response.data;
         })
         .catch((err) => {
           return 0;
@@ -147,12 +152,12 @@ export class BlockchainService {
       const res = await firstValueFrom(
         this.httpService.post(
           `https://eth-blockbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          '',
           { headers: { 'api-key': NOWNodesApiKey } },
         ),
       )
         .then(async (response) => {
-          var ethCurrentBalance =
-            response.data.balance / 10 ** totalDecimal['ETH'];
+          var ethCurrentBalance = response.data;
           var usdtCurrentBalance = 0;
           var usdcCurrentBalance = 0;
 
