@@ -4,6 +4,7 @@ export default () => ({
   mail: getMailProps(),
   encrypt: getEncryptProps(),
   twilio: getTwilioProps(),
+  coingecko: getCoinGeckoProps(),
 });
 
 const getDatabaseProps = () => {
@@ -46,4 +47,8 @@ const getTwilioProps = () => ({
   accountSid: process.env.TWILIO_ACCOUNT_SID,
   authToken: process.env.TWILIO_AUTH_TOKEN,
   twilioNumber: process.env.TWILIO_NUMBER,
+});
+
+const getCoinGeckoProps = () => ({
+  baseUrl: process.env.COINGECKO_BASE_URL, //api.coingecko.com/api/v3/coins
 });
