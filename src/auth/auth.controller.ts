@@ -102,7 +102,7 @@ export class AuthController {
   public async getWalletsByUserId(
     @Body() body: UserIdDto
   ): Promise<Wallet[]> {
-    return await this.authService.getWalletsByUserId(body.userId);
+    return await this.authService.getWalletsByUserId(body.userId, null);
   }
 
   @Post('get-wallets-by-user-data')
@@ -111,6 +111,6 @@ export class AuthController {
     @Body() body: UserDataDto
   ): Promise<Wallet[]> {
     const userID = await this.authService.getIdByUserData(body.userInfo);
-    return await this.authService.getWalletsByUserId(userID);
+    return await this.authService.getWalletsByUserId(userID, body.network);
   }
 }

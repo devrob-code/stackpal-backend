@@ -231,8 +231,8 @@ export class AuthService {
     return true;
   }
 
-  public async getWalletsByUserId(userId: number): Promise<Wallet[]> {
-    return await this.walletRepositoryService.getWalletsByUserId(userId);
+  public async getWalletsByUserId(userId: number, network?:string): Promise<Wallet[]> {
+    return await this.walletRepositoryService.getWalletsByUserId(userId, network);
   }
 
   public async getIdByUserData(userData: string): Promise<number> {
