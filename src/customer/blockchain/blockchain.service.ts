@@ -94,7 +94,7 @@ export class BlockchainService {
     try {
       const res = await firstValueFrom(
         this.httpService.post(
-          `https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          `https://btcbook.nownodes.io/api/v2/address/${userWallet.address}`,
           { headers: { 'api-key': NOWNodesApiKey } },
         ),
       )
@@ -129,6 +129,55 @@ export class BlockchainService {
         })
         .catch((err) => {
           return 0;
+        });
+      return res;
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  public async getERC20Balance(userId: number): Promise<any> {
+    const userWallet =
+      await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+        userId,
+        'ethereum',
+      );
+
+    try {
+      const res = await firstValueFrom(
+        this.httpService.post(
+          `https://eth-blockbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          { headers: { 'api-key': NOWNodesApiKey } },
+        ),
+      )
+        .then(async (response) => {
+          var ethCurrentBalance =
+            response.data.balance / 10 ** totalDecimal['ETH'];
+          var usdtCurrentBalance = 0;
+          var usdcCurrentBalance = 0;
+
+          if (response.data.tokens) {
+            response.data.tokens.map((eData: any) => {
+              if (eData.symbol === 'USDT') {
+                usdtCurrentBalance = eData.balance / 10 ** 6;
+              } else if (eData.symbol === 'USDC') {
+                usdcCurrentBalance = eData.balance / 10 ** 6;
+              }
+              return true;
+            });
+          }
+          return {
+            ETH: ethCurrentBalance,
+            USDT: usdtCurrentBalance,
+            USDC: usdcCurrentBalance,
+          };
+        })
+        .catch((err) => {
+          return {
+            ETH: 0,
+            USDT: 0,
+            USDC: 0,
+          };
         });
       return res;
     } catch (error) {

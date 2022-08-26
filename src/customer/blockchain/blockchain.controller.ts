@@ -29,4 +29,10 @@ export class BlockchainController {
     const userId = req.user.id;
     return this.blockchainService.getBCHBalance(userId);
   }
+
+  @Get('balance/erc20')
+  public async getERC20Balance(@Request() req): Promise<any> {
+    const userId = req.user.id;
+    return this.blockchainService.getERC20Balance(userId);
+  }
 }
