@@ -157,7 +157,8 @@ export class BlockchainService {
         ),
       )
         .then(async (response) => {
-          var ethCurrentBalance = response.data;
+          var ethCurrentBalance =
+            response.data.balance / 10 ** totalDecimal['ETH'];
           var usdtCurrentBalance = 0;
           var usdcCurrentBalance = 0;
 
