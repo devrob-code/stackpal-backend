@@ -324,7 +324,7 @@ export class BlockchainService {
     await this.getBCHBalance(userId);
     const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);
 
-    if (bitcoinTxids) {
+    if (bitcoinCashTxids) {
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
 
       userWallet.map((eData: any) => {
