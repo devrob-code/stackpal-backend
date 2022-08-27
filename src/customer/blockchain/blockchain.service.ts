@@ -15,6 +15,7 @@ const totalDecimal: { [key: string]: number } = {
   BCH: 8,
 };
 let ethereumTxids;
+let bitcoinTxids;
 
 @Injectable()
 export class BlockchainService {
@@ -91,6 +92,9 @@ export class BlockchainService {
         }),
       )
         .then(async (response) => {
+          if (response.data.txids) {
+            bitcoinTxids = response.data.txids;
+          }
           //return response.data.balance / 10 ** totalDecimal['BTC'];
           return response.data;
         })
@@ -126,8 +130,6 @@ export class BlockchainService {
 
   public async getERC20Balance(userId: number): Promise<any> {
     const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'ethereum');
-
-    console.log(userWallet);
 
     try {
       const res = await firstValueFrom(
@@ -233,6 +235,76 @@ export class BlockchainService {
             });
         }
 
+        return totalHis;
+      } catch (error) {
+        console.log(error);
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
+  public async getBTCTransactionHistory(userId: number): Promise<any> {
+    await this.getBTCBalance(userId);
+    const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);
+
+    if (bitcoinTxids) {
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      try {
+        let totalHis: any = [];
+        await Promise.all(
+          bitcoinTxids.map(async (eTxids) => {
+            await firstValueFrom(
+              this.httpService.post(
+                `https://btcbook.nownodes.io/api/v2/tx/${eTxids}`,
+                {},
+                {
+                  headers: { 'api-key': NOWNodesApiKey },
+                },
+              ),
+            )
+              .then(async (response) => {
+                if (!userWallet) return [];
+                var value;
+                var state;
+                response.data.vin.map((eData: any) => {
+                  if (eData.addresses[0] === wallets['bitcoin'].address) {
+                    value = eData.value / 10 ** totalDecimal['BTC'];
+                    state = 'Sent';
+                  }
+                });
+                response.data.vout.map((eData: any) => {
+                  if (eData.addresses[0] === wallets['bitcoin'].address) {
+                    value = eData.value / 10 ** totalDecimal['BTC'];
+                    state = 'Received';
+                  }
+                });
+                var data = {
+                  scanURL: `https://www.blockchain.com/btc/tx/${response.data.txid}`,
+                  network: 'Bitcoin',
+                  symbol: 'BTC',
+                  blocktime: response.data.blockTime,
+                  amount: value,
+                  fee: response.data.fees / 10 ** totalDecimal['BTC'],
+                  status: response.data.confirmations > 3 ? state : 'Pending',
+                };
+                totalHis.push(data);
+              })
+              .catch((err) => {
+                return [];
+              });
+          }),
+        );
         return totalHis;
       } catch (error) {
         console.log(error);

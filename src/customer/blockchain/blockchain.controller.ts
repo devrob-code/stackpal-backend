@@ -41,4 +41,10 @@ export class BlockchainController {
     const userId = req.user.id;
     return this.blockchainService.getETHTransactionHistory(userId);
   }
+
+  @Get('transaction-history/btc')
+  public async getBTCTransactionHistory(@Request() req): Promise<any> {
+    const userId = req.user.id;
+    return this.blockchainService.getBTCTransactionHistory(userId);
+  }
 }
