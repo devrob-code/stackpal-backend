@@ -14,6 +14,7 @@ const totalDecimal: { [key: string]: number } = {
   XRP: 6,
   BCH: 8,
 };
+let ethereumTxids;
 
 @Injectable()
 export class BlockchainService {
@@ -50,11 +51,7 @@ export class BlockchainService {
   }
 
   public async getXrpBalance(userId: number): Promise<any> {
-    const userWallet =
-      await this.walletRepositoryService.getWalletByUserIdAndNetwork(
-        userId,
-        'ripple',
-      );
+    const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'ripple');
 
     try {
       const rippleApi = new RippleAPI({
@@ -66,12 +63,10 @@ export class BlockchainService {
       const res = await rippleApi
         .connect()
         .then(async () => {
-          await rippleApi
-            .getAccountInfo(userWallet.address)
-            .then((info: any) => {
-              balance = parseFloat(info.xrpBalance);
-              console.log(info);
-            });
+          await rippleApi.getAccountInfo(userWallet.address).then((info: any) => {
+            balance = parseFloat(info.xrpBalance);
+            console.log(info);
+          });
         })
         .then(() => {
           rippleApi.disconnect();
@@ -87,19 +82,13 @@ export class BlockchainService {
   }
 
   public async getBTCBalance(userId: number): Promise<any> {
-    const userWallet =
-      await this.walletRepositoryService.getWalletByUserIdAndNetwork(
-        userId,
-        'bitcoin',
-      );
+    const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'bitcoin');
 
     try {
       const res = await firstValueFrom(
-        this.httpService.post(
-          `https://btcbook.nownodes.io/api/v2/address/${userWallet.address}`,
-          '',
-          { headers: { 'api-key': NOWNodesApiKey } },
-        ),
+        this.httpService.post(`https://btcbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
+          headers: { 'api-key': NOWNodesApiKey },
+        }),
       )
         .then(async (response) => {
           //return response.data.balance / 10 ** totalDecimal['BTC'];
@@ -115,19 +104,13 @@ export class BlockchainService {
   }
 
   public async getBCHBalance(userId: number): Promise<any> {
-    const userWallet =
-      await this.walletRepositoryService.getWalletByUserIdAndNetwork(
-        userId,
-        'bitcoincash',
-      );
+    const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'bitcoincash');
 
     try {
       const res = await firstValueFrom(
-        this.httpService.post(
-          `https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`,
-          '',
-          { headers: { 'api-key': NOWNodesApiKey } },
-        ),
+        this.httpService.post(`https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
+          headers: { 'api-key': NOWNodesApiKey },
+        }),
       )
         .then(async (response) => {
           return response.data;
@@ -142,25 +125,24 @@ export class BlockchainService {
   }
 
   public async getERC20Balance(userId: number): Promise<any> {
-    const userWallet =
-      await this.walletRepositoryService.getWalletByUserIdAndNetwork(
-        userId,
-        'ethereum',
-      );
+    const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'ethereum');
+
+    console.log(userWallet);
 
     try {
       const res = await firstValueFrom(
-        this.httpService.post(
-          `https://eth-blockbook.nownodes.io/api/v2/address/${userWallet.address}`,
-          '',
-          { headers: { 'api-key': NOWNodesApiKey } },
-        ),
+        this.httpService.post(`https://eth-blockbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
+          headers: { 'api-key': NOWNodesApiKey },
+        }),
       )
         .then(async (response) => {
-          var ethCurrentBalance =
-            response.data.balance / 10 ** totalDecimal['ETH'];
+          var ethCurrentBalance = response.data.balance / 10 ** totalDecimal['ETH'];
           var usdtCurrentBalance = 0;
           var usdcCurrentBalance = 0;
+
+          if (response.data.txids) {
+            ethereumTxids = response.data.txids;
+          }
 
           if (response.data.tokens) {
             response.data.tokens.map((eData: any) => {
@@ -188,6 +170,76 @@ export class BlockchainService {
       return res;
     } catch (error) {
       return 0;
+    }
+  }
+
+  public async getETHTransactionHistory(userId: number): Promise<any> {
+    await this.getERC20Balance(userId);
+    let totalHis: any = [];
+    const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);
+
+    if (ethereumTxids) {
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      try {
+        for (const eTxids of ethereumTxids) {
+          // `https://ethbook-ropsten.nownodes.io/api/v2/tx/${eTxids}`,
+
+          await firstValueFrom(
+            this.httpService.post(
+              `https://eth-blockbook.nownodes.io/api/v2/tx/${eTxids}`,
+              {},
+              {
+                headers: { 'api-key': NOWNodesApiKey },
+              },
+            ),
+          )
+            .then(async (response) => {
+              if (!userWallet) return [];
+              var data = {
+                scanURL: `https://www.blockchain.com/eth/tx/${response.data.txid}`,
+                network: 'Ethereum',
+                symbol: response.data.tokenTransfers ? response.data.tokenTransfers[0].symbol : 'ETH',
+                blocktime: response.data.blockTime,
+                amount: response.data.tokenTransfers
+                  ? response.data.tokenTransfers[0].value / 10 ** response.data.tokenTransfers[0].decimals
+                  : response.data.value / 10 ** totalDecimal['ETH'],
+                fee: response.data.fees / 10 ** totalDecimal['ETH'],
+                status:
+                  response.data.confirmations > 6
+                    ? response.data.tokenTransfers
+                      ? response.data.tokenTransfers[0].from === wallets['ethereum'].address
+                        ? 'Sent'
+                        : 'Received'
+                      : response.data.vin[0].addresses[0] === wallets['ethereum'].address
+                      ? 'Sent'
+                      : 'Received'
+                    : 'Pending',
+              };
+
+              totalHis.push(data);
+            })
+            .catch((err) => {
+              console.log(err);
+              return [];
+            });
+        }
+
+        return totalHis;
+      } catch (error) {
+        console.log(error);
+        return [];
+      }
+    } else {
+      return [];
     }
   }
 }

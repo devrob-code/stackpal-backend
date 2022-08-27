@@ -56,7 +56,7 @@ export class WalletRepositoryService {
   public async getWalletsByUserId(
     userId: number,
     network?: string,
-  ): Promise<Wallet[] | Wallet> {
+  ): Promise<Wallet[]> {
     return this.getWalletByUserIdUsecase.exec(userId, network);
   }
 

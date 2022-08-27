@@ -11,25 +11,12 @@ export class GetWalletByUserIdUsecase {
     private readonly walletRepo: Repository<Wallet>,
   ) {}
 
-  public async exec(
-    userId: number,
-    network?: string,
-  ): Promise<Wallet[] | Wallet> {
-    if (network) {
-      return await this.walletRepo.findOne({
-        where: {
-          userId,
-          network,
-        },
-        relations: ['currency'],
-      });
-    } else {
-      return await this.walletRepo.find({
-        where: {
-          userId,
-        },
-        relations: ['currency'],
-      });
-    }
+  public async exec(userId: number, network?: string): Promise<Wallet[]> {
+    return await this.walletRepo.find({
+      where: {
+        userId,
+      },
+      relations: ['currency'],
+    });
   }
 }
