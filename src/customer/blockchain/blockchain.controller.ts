@@ -53,4 +53,10 @@ export class BlockchainController {
     const userId = req.user.id;
     return this.blockchainService.getBCHTransactionHistory(userId);
   }
+
+  @Get('transaction-history/xrp')
+  public async getXRPTransactionHistory(@Request() req): Promise<any> {
+    const userId = req.user.id;
+    return this.blockchainService.getXRPTransactionHistory(userId);
+  }
 }

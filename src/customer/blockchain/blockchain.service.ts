@@ -389,4 +389,70 @@ export class BlockchainService {
       return [];
     }
   }
+
+  public async getXRPTransactionHistory(userId: number): Promise<any> {
+    const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);
+    try {
+      const rippleApi = new RippleAPI({
+        // server: 'wss://s.altnet.rippletest.net:51233',
+        server: 'wss://s2.ripple.com',
+        timeout: 60000,
+      });
+      let totalHis: any = [];
+
+      if (userWallet === null) return [];
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+      const history = await rippleApi
+        .connect()
+        .then(async () => {
+          const result = await rippleApi.request('account_tx', {
+            id: 2,
+            command: 'account_tx',
+            account: wallets['ripple'].address ? wallets['ripple'].address : '',
+            ledger_index_min: -1,
+            ledger_index_max: -1,
+            binary: false,
+            limit: 5,
+            forward: false,
+          });
+          result.transactions.map((eData: any) => {
+            var data = {
+              scanURL: `https://bithomp.com/explorer/${eData.tx.hash}`,
+              network: 'Ripple',
+              symbol: 'XRP',
+              blocktime: eData.tx.date + 946684800,
+              amount: eData.tx.Amount / 10 ** totalDecimal['XRP'],
+              fee: 0.000001,
+              status:
+                eData.meta.TransactionResult === 'tesSUCCESS'
+                  ? eData.tx.Account === wallets['ripple'].address
+                    ? 'Sent'
+                    : 'Received'
+                  : eData.meta.TransactionResult,
+            };
+            totalHis.push(data);
+            return true;
+          });
+        })
+        .then(() => {
+          rippleApi.disconnect();
+          return totalHis;
+        })
+        .catch((err: any) => {
+          return [];
+        });
+      return history;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  }
 }
