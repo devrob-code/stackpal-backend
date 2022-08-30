@@ -1,6 +1,7 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Body, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BlockchainService } from './blockchain.service';
+import { SendCoinDto } from './dto/request/send-coin.dto';
 
 @Controller('blockchain')
 @UseGuards(AuthGuard('jwt'))
@@ -58,5 +59,15 @@ export class BlockchainController {
   public async getXRPTransactionHistory(@Request() req): Promise<any> {
     const userId = req.user.id;
     return this.blockchainService.getXRPTransactionHistory(userId);
+  }
+
+  @Post('send/btc')
+  public async sendBTC(@Request() req, @Body() body: SendCoinDto): Promise<any> {
+    const data: SendCoinDto = {
+      userId: req.user.id,
+      ...body,
+    };
+
+    return this.blockchainService.sendBTC(data);
   }
 }

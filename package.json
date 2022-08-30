@@ -62,6 +62,7 @@
     "ripple-keypairs": "^1.1.4",
     "ripple-lib": "^1.10.1",
     "rxjs": "^7.2.0",
+    "send-crypto": "^0.2.37",
     "twilio": "^3.76.1",
     "typeorm": "^0.2.45"
   },

@@ -3,7 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
+import { SendCoinDto } from './dto/request/send-coin.dto';
 const RippleAPI = require('ripple-lib').RippleAPI;
+const CryptoAccount = require('send-crypto');
 const NOWNodesApiKey = 'c6c243ff-9a7a-43dd-86d9-1ca9bec25e76';
 const totalDecimal: { [key: string]: number } = {
   BTC: 8,
@@ -18,6 +20,16 @@ let ethereumTxids;
 let bitcoinTxids;
 let bitcoinCashTxids;
 
+const gasLimit: { [key: string]: number } = {
+  BTC: 224,
+  ETH: 21000,
+  USDT: 70000,
+  USDC: 70000,
+  BNB: 21000,
+  XRP: 1,
+  BCH: 0.5,
+};
+
 @Injectable()
 export class BlockchainService {
   constructor(
@@ -28,6 +40,7 @@ export class BlockchainService {
 
   public async getCoinPrices(): Promise<any> {
     let result = [];
+    let tPrices = {};
     const tokens = [
       { token: 'BTC', network: 'bitcoin' },
       { token: 'ETH', network: 'ethereum' },
@@ -45,11 +58,11 @@ export class BlockchainService {
     data.map((eRes: any) => {
       tokens.map((eToken) => {
         if (eToken.token.toLowerCase() === eRes.symbol) {
-          result.push(eRes);
+          tPrices[eToken.token] = eRes.market_data.current_price.usd;
         }
       });
     });
-    return result;
+    return tPrices;
   }
 
   public async getXrpBalance(userId: number): Promise<any> {
@@ -97,6 +110,7 @@ export class BlockchainService {
             bitcoinTxids = response.data.txids;
           }
           //return response.data.balance / 10 ** totalDecimal['BTC'];
+          response.data.balance = response.data.balance / 10 ** totalDecimal['BTC'];
           return response.data;
         })
         .catch((err) => {
@@ -283,17 +297,21 @@ export class BlockchainService {
                 var value;
                 var state;
                 response.data.vin.map((eData: any) => {
+                  console.log(eData.addresses[0]);
                   if (eData.addresses[0] === wallets['bitcoin'].address) {
                     value = eData.value / 10 ** totalDecimal['BTC'];
                     state = 'Sent';
-                  }
-                });
-                response.data.vout.map((eData: any) => {
-                  if (eData.addresses[0] === wallets['bitcoin'].address) {
+                  } else {
                     value = eData.value / 10 ** totalDecimal['BTC'];
                     state = 'Received';
                   }
                 });
+                // response.data.vout.map((eData: any) => {
+                //   if (eData.addresses[0] === wallets['bitcoin'].address) {
+                //     value = eData.value / 10 ** totalDecimal['BTC'];
+                //     state = 'Received';
+                //   }
+                // });
                 var data = {
                   scanURL: `https://www.blockchain.com/btc/tx/${response.data.txid}`,
                   network: 'Bitcoin',
@@ -301,7 +319,7 @@ export class BlockchainService {
                   blocktime: response.data.blockTime,
                   amount: value,
                   fee: response.data.fees / 10 ** totalDecimal['BTC'],
-                  status: response.data.confirmations > 3 ? state : 'Pending',
+                  status: response.data.confirmations >= 3 ? state : 'Pending',
                 };
                 totalHis.push(data);
               })
@@ -310,7 +328,7 @@ export class BlockchainService {
               });
           }),
         );
-        return totalHis;
+        return totalHis.map((res) => res);
       } catch (error) {
         console.log(error);
         return [];
@@ -453,6 +471,59 @@ export class BlockchainService {
     } catch (error) {
       console.log(error);
       return [];
+    }
+  }
+
+  public async sendBTC(data: SendCoinDto): Promise<any> {
+    try {
+      let tGasPrice = {};
+
+      const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
+        (res) => res.data,
+      );
+
+      tGasPrice['low'] = Math.floor(btcFee.low_fee_per_kb / 1000) + 1;
+      tGasPrice['medium'] = Math.floor(btcFee.medium_fee_per_kb / 1000) + 1;
+      tGasPrice['high'] = Math.floor(btcFee.high_fee_per_kb / 1000) + 1;
+
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['bitcoin'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(data.amount)) ? data.amount : '';
+      let totalPrices = await this.getCoinPrices();
+      // if (!isNaN(parseFloat(data.amount)) && parseFloat(data.amount) > 0) {
+      //   sendAmount = (
+      //     Math.floor((parseFloat(data.amount) / totalPrices[sendTokenType]) * 100000000) / 100000000
+      //   ).toString();
+      // }
+
+      //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
+      console.log(0.00014501);
+      await new Promise((resolve, reject) =>
+        account
+          .send(data.receiver, sendAmount, 'BTC', {
+            confirmations: 3,
+            fee: tGasPrice[data.sendSpeed] * gasLimit['BTC'],
+            subtractFee: false,
+          })
+          .on('confirmation', (confirmations: any) => {
+            console.log(confirmations);
+            if (confirmations >= 3) {
+              resolve(true);
+            }
+          })
+          .catch(reject),
+      );
+    } catch (error) {
+      console.log(error);
     }
   }
 }
