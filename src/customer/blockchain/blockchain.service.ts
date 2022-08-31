@@ -564,7 +564,8 @@ export class BlockchainService {
           .catch(reject),
       );
     } catch (error) {
-      alert(error);
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
     }
   }
 
@@ -596,6 +597,54 @@ export class BlockchainService {
       });
       const result = await bchWallet.send(outputs);
       return result;
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
+    }
+  }
+
+  public async sendUSDC(data: SendCoinDto): Promise<any> {
+    try {
+      let tGasPrice = {};
+      const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
+        (res) => res.data,
+      );
+      tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
+      tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
+      tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+      await new Promise((resolve, reject) =>
+        account
+          .send(
+            data.receiver,
+            parseFloat(data.amount),
+            {
+              type: 'ERC20',
+              name: 'USDC',
+            },
+            {
+              gas: gasLimit['USDC'],
+              gasPrice: tGasPrice[data.sendSpeed],
+            },
+          )
+          .on('confirmation', (confirmations: any) => {
+            console.log(confirmations);
+            if (confirmations >= 3) {
+              resolve(true);
+            }
+          })
+          .catch(reject),
+      );
     } catch (error) {
       console.log(error);
       return { status: false, message: 'Error. Try again later.' };
