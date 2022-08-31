@@ -110,4 +110,14 @@ export class BlockchainController {
 
     return this.blockchainService.sendUSDT(data);
   }
+
+  @Post('send/xrp')
+  public async sendXRP(@Request() req, @Body() body: SendCoinDto): Promise<any> {
+    const data: SendCoinDto = {
+      userId: req.user.id,
+      ...body,
+    };
+
+    return this.blockchainService.sendXRP(data);
+  }
 }

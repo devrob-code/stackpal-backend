@@ -698,4 +698,71 @@ export class BlockchainService {
       return { status: false, message: 'Error. Try again later.' };
     }
   }
+
+  public async sendXRP(data: SendCoinDto): Promise<any> {
+    const rippleApi = new RippleAPI({
+      // server: 'wss://s.altnet.rippletest.net:51233',
+      server: 'wss://s1.ripple.com',
+      timeout: 60000,
+    });
+
+    const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
+    let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+    userWallet.map((eData: any) => {
+      let networkKey = eData.network;
+      wallets[networkKey] = {
+        address: eData.address,
+        privateKey: eData.private_key,
+      };
+    });
+
+    // SEND ADDRESS 1
+    const ADDRESS_1 = wallets ? wallets['ripple'].address : '';
+    const SECRET_1 = wallets ? wallets['ripple'].privateKey : '';
+    // RECEIVE ADDRESS 2
+    const ADDRESS_2 = data.receiver;
+    const instructions = { maxLedgerVersionOffset: 5 };
+    const currency = 'XRP';
+    const amount = data.amount;
+    const payment = {
+      source: {
+        address: ADDRESS_1,
+        maxAmount: {
+          value: amount,
+          currency: currency,
+        },
+      },
+      destination: {
+        address: ADDRESS_2,
+        amount: {
+          value: amount,
+          currency: currency,
+        },
+      },
+    };
+    try {
+      await new Promise((resolve, reject) =>
+        rippleApi
+          .connect()
+          .then(() => {
+            console.log('Connected...');
+            rippleApi.preparePayment(ADDRESS_1, payment, instructions).then((prepared: any) => {
+              const { signedTransaction } = rippleApi.sign(prepared.txJSON, SECRET_1);
+              rippleApi.submit(signedTransaction).then((result: any) => {
+                console.log(result);
+                rippleApi.disconnect();
+                return result;
+              });
+            });
+          })
+          .then(() => {
+            rippleApi.disconnect();
+          })
+          .catch(reject),
+      );
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
+    }
+  }
 }
