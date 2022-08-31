@@ -6,6 +6,7 @@ import { WalletRepositoryService } from 'src/repositories/wallets/wallet-reposit
 import { SendCoinDto } from './dto/request/send-coin.dto';
 const RippleAPI = require('ripple-lib').RippleAPI;
 const CryptoAccount = require('send-crypto');
+const BchWallet = require('minimal-bch-wallet/index');
 const NOWNodesApiKey = 'c6c243ff-9a7a-43dd-86d9-1ca9bec25e76';
 const totalDecimal: { [key: string]: number } = {
   BTC: 8,
@@ -564,6 +565,40 @@ export class BlockchainService {
       );
     } catch (error) {
       alert(error);
+    }
+  }
+
+  public async sendBCH(data: SendCoinDto): Promise<any> {
+    try {
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      if (!wallets) return;
+      const RECEIVER = data.receiver;
+      const SATS_TO_SEND = parseFloat(data.amount) * totalDecimal['BCH'];
+      const bchWallet = new BchWallet(wallets['bitcoincash'].privateKey);
+      await bchWallet.walletInfoPromise;
+      const balance = await bchWallet.getBalance();
+      if (balance === 0) {
+        return { status: false, message: 'The balance of your wallet is zero.' };
+      }
+      const outputs = [];
+      outputs.push({
+        address: RECEIVER,
+        amountSat: SATS_TO_SEND,
+      });
+      const result = await bchWallet.send(outputs);
+      return result;
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
     }
   }
 }

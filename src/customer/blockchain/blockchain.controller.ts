@@ -80,4 +80,14 @@ export class BlockchainController {
 
     return this.blockchainService.sendETH(data);
   }
+
+  @Post('send/bch')
+  public async sendBCH(@Request() req, @Body() body: SendCoinDto): Promise<any> {
+    const data: SendCoinDto = {
+      userId: req.user.id,
+      ...body,
+    };
+
+    return this.blockchainService.sendBCH(data);
+  }
 }
