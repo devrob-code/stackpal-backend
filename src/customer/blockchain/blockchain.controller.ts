@@ -100,4 +100,14 @@ export class BlockchainController {
 
     return this.blockchainService.sendUSDC(data);
   }
+
+  @Post('send/usdt')
+  public async sendUSDT(@Request() req, @Body() body: SendCoinDto): Promise<any> {
+    const data: SendCoinDto = {
+      userId: req.user.id,
+      ...body,
+    };
+
+    return this.blockchainService.sendUSDT(data);
+  }
 }
