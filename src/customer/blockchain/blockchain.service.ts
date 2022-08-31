@@ -506,7 +506,6 @@ export class BlockchainService {
       // }
 
       //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
-      console.log(0.00014501);
       await new Promise((resolve, reject) =>
         account
           .send(data.receiver, sendAmount, 'BTC', {
@@ -524,6 +523,47 @@ export class BlockchainService {
       );
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  public async sendETH(data: SendCoinDto): Promise<any> {
+    try {
+      let tGasPrice = {};
+      const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
+        (res) => res.data,
+      );
+      tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
+      tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
+      tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
+
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(data.amount)) ? data.amount : '';
+      await new Promise((resolve, reject) =>
+        account
+          .send(data.receiver, parseFloat(sendAmount), 'ETH', {
+            gas: gasLimit['ETH'],
+            gasPrice: tGasPrice[data.sendSpeed],
+          })
+          .on('confirmation', (confirmations: any) => {
+            console.log(confirmations);
+            if (confirmations >= 3) {
+              resolve(true);
+            }
+          })
+          .catch(reject),
+      );
+    } catch (error) {
+      alert(error);
     }
   }
 }
