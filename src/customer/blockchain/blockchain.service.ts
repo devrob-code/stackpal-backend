@@ -507,21 +507,18 @@ export class BlockchainService {
       // }
 
       //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
-      await new Promise((resolve, reject) =>
-        account
-          .send(data.receiver, sendAmount, 'BTC', {
-            confirmations: 3,
-            fee: tGasPrice[data.sendSpeed] * gasLimit['BTC'],
-            subtractFee: false,
-          })
-          .on('confirmation', (confirmations: any) => {
-            console.log(confirmations);
-            if (confirmations >= 3) {
-              resolve(true);
-            }
-          })
-          .catch(reject),
-      );
+      const result = await account
+        .send(data.receiver, sendAmount, 'BTC', {
+          confirmations: 3,
+          fee: tGasPrice[data.sendSpeed] * gasLimit['BTC'],
+          subtractFee: false,
+        })
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        return { status: true };
+      }
     } catch (error) {
       console.log(error);
     }
@@ -549,20 +546,17 @@ export class BlockchainService {
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
       let sendAmount = !isNaN(parseFloat(data.amount)) ? data.amount : '';
-      await new Promise((resolve, reject) =>
-        account
-          .send(data.receiver, parseFloat(sendAmount), 'ETH', {
-            gas: gasLimit['ETH'],
-            gasPrice: tGasPrice[data.sendSpeed],
-          })
-          .on('confirmation', (confirmations: any) => {
-            console.log(confirmations);
-            if (confirmations >= 3) {
-              resolve(true);
-            }
-          })
-          .catch(reject),
-      );
+      const result = await account
+        .send(data.receiver, parseFloat(sendAmount), 'ETH', {
+          gas: gasLimit['ETH'],
+          gasPrice: tGasPrice[data.sendSpeed],
+        })
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        return { status: true };
+      }
     } catch (error) {
       console.log(error);
       return { status: false, message: 'Error. Try again later.' };
@@ -623,28 +617,25 @@ export class BlockchainService {
       });
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
-      await new Promise((resolve, reject) =>
-        account
-          .send(
-            data.receiver,
-            parseFloat(data.amount),
-            {
-              type: 'ERC20',
-              name: 'USDC',
-            },
-            {
-              gas: gasLimit['USDC'],
-              gasPrice: tGasPrice[data.sendSpeed],
-            },
-          )
-          .on('confirmation', (confirmations: any) => {
-            console.log(confirmations);
-            if (confirmations >= 3) {
-              resolve(true);
-            }
-          })
-          .catch(reject),
-      );
+      const result = await account
+        .send(
+          data.receiver,
+          parseFloat(data.amount),
+          {
+            type: 'ERC20',
+            name: 'USDC',
+          },
+          {
+            gas: gasLimit['USDC'],
+            gasPrice: tGasPrice[data.sendSpeed],
+          },
+        )
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        return { status: true };
+      }
     } catch (error) {
       console.log(error);
       return { status: false, message: 'Error. Try again later.' };
@@ -671,28 +662,25 @@ export class BlockchainService {
       });
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
-      await new Promise((resolve, reject) =>
-        account
-          .send(
-            data.receiver,
-            parseFloat(data.amount),
-            {
-              type: 'ERC20',
-              name: 'USDT',
-            },
-            {
-              gas: gasLimit['USDT'],
-              gasPrice: tGasPrice[data.sendSpeed],
-            },
-          )
-          .on('confirmation', (confirmations: any) => {
-            console.log(confirmations);
-            if (confirmations >= 3) {
-              resolve(true);
-            }
-          })
-          .catch(reject),
-      );
+      const result = await account
+        .send(
+          data.receiver,
+          parseFloat(data.amount),
+          {
+            type: 'ERC20',
+            name: 'USDT',
+          },
+          {
+            gas: gasLimit['USDT'],
+            gasPrice: tGasPrice[data.sendSpeed],
+          },
+        )
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        return { status: true };
+      }
     } catch (error) {
       console.log(error);
       return { status: false, message: 'Error. Try again later.' };
