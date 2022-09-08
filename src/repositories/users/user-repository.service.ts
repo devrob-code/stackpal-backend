@@ -9,9 +9,7 @@ import { GetUserByEmailUseCase } from './usecases/get-user-by-email.usecase';
 import { GetUserByUsernameUseCase } from './usecases/get-user-by-username.usecase';
 import { UpdateUserByEmailUseCase } from './usecases/update-user-by-email.usecase';
 import { GetIdByUserDataUsecase } from './usecases/get-user-id-by-user-data.usecase';
-import {
-  Keypair,
-} from "@solana/web3.js";
+import { Keypair } from '@solana/web3.js';
 @Injectable()
 export class UserRepositoryService {
   constructor(
@@ -49,17 +47,17 @@ export class UserRepositoryService {
 
     const walletData = [ethereumWallet, bitcoinWallet, rippleWallet, bitcoincashWallet];
 
-    walletData.map(eData => {
+    walletData.map((eData) => {
       const createWalletData = {
         userId: createdUser.id,
         currencyId: 1,
-        balance:0,
-        isLocked:true,
+        balance: 0,
+        isLocked: true,
         network: eData.network,
         address: eData.address,
         private_key: eData.privateKey,
-        mnemonic: eData.mnemonic
-      }
+        mnemonic: eData.mnemonic,
+      };
       this.createUserWalletUseCase.exec(createWalletData);
     });
     return createdUser;
@@ -69,10 +67,7 @@ export class UserRepositoryService {
     return this.getUserByEmailAndIdUseCase.exec(email, id);
   }
 
-  public async updateUserByEmail(
-    email: string,
-    data: Partial<User>,
-  ): Promise<boolean> {
+  public async updateUserByEmail(email: string, data: Partial<User>): Promise<boolean> {
     return this.updateUserByEmailUseCase.exec(email, data);
   }
 
@@ -81,31 +76,30 @@ export class UserRepositoryService {
   }
 
   private async createEthereumWallet(): Promise<any> {
-    const ethers = require('ethers')
-    const wallet = ethers.Wallet.createRandom()
+    const ethers = require('ethers');
+    const wallet = ethers.Wallet.createRandom();
     return {
-      network: "ethereum",
+      network: 'ethereum',
       address: wallet.address,
       privateKey: wallet.privateKey,
-      mnemonic : wallet.mnemonic.phrase
-    }
+      mnemonic: wallet.mnemonic.phrase,
+    };
   }
 
   private async createBitcoinWallet(): Promise<any> {
-    const CoinKey = require('coinkey')   //btc
-    const btcWallet = new CoinKey.createRandom()
-    const privateKey = btcWallet.privateKey.toString('hex')
-    var ck = new CoinKey(Buffer.from(privateKey, 'hex'))
+    const CoinKey = require('coinkey'); //btc
+    const btcWallet = new CoinKey.createRandom();
+    const privateKey = btcWallet.privateKey.toString('hex');
+    var ck = new CoinKey(Buffer.from(privateKey, 'hex'));
     return {
-      network: "bitcoin",
+      network: 'bitcoin',
       address: ck.publicAddress,
       privateKey: privateKey,
-      mnemonic: ck.privateWif
-    }
+      mnemonic: ck.privateWif,
+    };
   }
 
   private async createSolanaWallet(): Promise<any> {
-
     const keypair = Keypair.generate();
     const firstWinPrivKey = keypair.secretKey.slice(0, 32);
     const firstWinWallet = Keypair.fromSeed(Uint8Array.from(firstWinPrivKey));
@@ -113,45 +107,50 @@ export class UserRepositoryService {
     // setSolWalletAddress((firstWinWallet.publicKey).toString());
 
     return {
-      network: "solana",
+      network: 'solana',
       address: firstWinWallet.publicKey.toString(),
-      privateKey: firstWinWallet.secretKey
-    }
+      privateKey: firstWinWallet.secretKey,
+    };
   }
 
   private async createRippleWallet(): Promise<any> {
-    const bip39 = require("bip39");
-    const bip32 = require("ripple-bip32");
-    const ripple = require('ripple-keypairs')
-    const mnemonic = bip39.generateMnemonic()
-    const seed = bip39.mnemonicToSeed(mnemonic)
-    const m = bip32.fromSeedBuffer(seed)
-    const keyPair = m.derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs()
-    const privateKey = ripple.deriveAddress(keyPair.privateKey);
-    const address = ripple.deriveAddress(keyPair.publicKey)
+    const bip39 = require('bip39');
+    const bip32 = require('ripple-bip32');
+    const ripple = require('ripple-keypairs');
+    const mnemonic = bip39.generateMnemonic();
+    const seed = bip39.mnemonicToSeed(mnemonic);
+    const m = bip32.fromSeedBuffer(seed);
+    //const keyPair = m.derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs();
+    const secret = ripple.generateSeed();
+    const keyPair = ripple.deriveKeypair(secret);
+    const privateKey = keyPair.privateKey;
+    const address = ripple.deriveAddress(keyPair.publicKey);
+
+    console.log({ privateKey, address, secret });
+
     return {
-      network: "ripple",
+      network: 'ripple',
       address: address,
       privateKey: privateKey,
-      mnemonic: mnemonic
-    }
+      mnemonic: mnemonic,
+    };
   }
 
   private async createBinanceWallet(): Promise<any> {
-    const ethers = require('ethers')
-    const wallet = ethers.Wallet.createRandom()
+    const ethers = require('ethers');
+    const wallet = ethers.Wallet.createRandom();
     return {
-      network: "binance",
+      network: 'binance',
       address: wallet.address,
       privateKey: wallet.privateKey,
-      mnemonic : wallet.mnemonic.phrase
-    }
+      mnemonic: wallet.mnemonic.phrase,
+    };
   }
 
   private async createBitcoinCashWallet(): Promise<any> {
-    const BchWallet = require('minimal-bch-wallet/index')
-    const bchWallet = new BchWallet()
-    await bchWallet.walletInfoPromise // Wait for wallet to be created.
+    const BchWallet = require('minimal-bch-wallet/index');
+    const bchWallet = new BchWallet();
+    await bchWallet.walletInfoPromise; // Wait for wallet to be created.
     // // 12 words seed phrase for the wallet
     // console.log(bchWallet.walletInfo.mnemonic)
 
@@ -164,18 +163,18 @@ export class UserRepositoryService {
     // // private key for the BCH address derived from the seed (derivation path: m/44'/245'/0'/0/0)
     // console.log(bchWallet.walletInfo.privateKey)
     return {
-      network: "bitcoincash",
+      network: 'bitcoincash',
       address: bchWallet.walletInfo.cashAddress,
       privateKey: bchWallet.walletInfo.mnemonic,
-      mnemonic: bchWallet.walletInfo.privateKey
-    }
+      mnemonic: bchWallet.walletInfo.privateKey,
+    };
   }
 
-  private async createMoneroWallet():Promise<any> {
+  private async createMoneroWallet(): Promise<any> {
     return {
-      network: "monero",
-      address: "44d56JdhVgYLjcnfYRtBgEaQnfbtr6Ns65H2J3rr7F4DDfcTMrpNoNWQgzsN74e6NeU1roX2GrMLchEzLt2dX1B2Qhuhr2P",
-      privateKey: "41fd8b839b386a0f8f97046884056717a118b8164ad795303c50dbcb39123209"
-    }
+      network: 'monero',
+      address: '44d56JdhVgYLjcnfYRtBgEaQnfbtr6Ns65H2J3rr7F4DDfcTMrpNoNWQgzsN74e6NeU1roX2GrMLchEzLt2dX1B2Qhuhr2P',
+      privateKey: '41fd8b839b386a0f8f97046884056717a118b8164ad795303c50dbcb39123209',
+    };
   }
 }

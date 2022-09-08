@@ -137,7 +137,7 @@ export class BlockchainService {
             bitcoinCashTxids = response.data.txids;
           }
 
-          return response.data;
+          return response.data.balance / 10 ** totalDecimal['BCH'];
         })
         .catch((err) => {
           return 0;
@@ -565,6 +565,16 @@ export class BlockchainService {
 
   public async sendBCH(data: SendCoinDto): Promise<any> {
     try {
+      let tGasPrice = {};
+
+      const bchFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/bch/tx/fee`)).then(
+        (res) => res.data,
+      );
+
+      tGasPrice['low'] = bchFee.feePerKb;
+      tGasPrice['medium'] = bchFee.feePerKb;
+      tGasPrice['high'] = bchFee.feePerKb;
+
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {
@@ -575,26 +585,61 @@ export class BlockchainService {
         };
       });
 
-      if (!wallets) return;
-      const RECEIVER = data.receiver;
-      const SATS_TO_SEND = parseFloat(data.amount) * totalDecimal['BCH'];
-      const bchWallet = new BchWallet(wallets['bitcoincash'].privateKey);
-      await bchWallet.walletInfoPromise;
-      const balance = await bchWallet.getBalance();
-      if (balance === 0) {
-        return { status: false, message: 'The balance of your wallet is zero.' };
+      const account = new CryptoAccount(wallets ? wallets['bitcoincash'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(data.amount)) ? data.amount : '';
+      let totalPrices = await this.getCoinPrices();
+      // if (!isNaN(parseFloat(data.amount)) && parseFloat(data.amount) > 0) {
+      //   sendAmount = (
+      //     Math.floor((parseFloat(data.amount) / totalPrices[sendTokenType]) * 100000000) / 100000000
+      //   ).toString();
+      // }
+
+      //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
+      const result = await account
+        .send(data.receiver, sendAmount, 'BCH', {
+          confirmations: 3,
+          fee: tGasPrice[data.sendSpeed] * gasLimit['BCH'],
+          subtractFee: false,
+        })
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        return { status: true };
       }
-      const outputs = [];
-      outputs.push({
-        address: RECEIVER,
-        amountSat: SATS_TO_SEND,
-      });
-      const result = await bchWallet.send(outputs);
-      return result;
     } catch (error) {
       console.log(error);
-      return { status: false, message: 'Error. Try again later.' };
     }
+    // try {
+    //   const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
+    //   let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+    //   userWallet.map((eData: any) => {
+    //     let networkKey = eData.network;
+    //     wallets[networkKey] = {
+    //       address: eData.address,
+    //       privateKey: eData.private_key,
+    //     };
+    //   });
+    //   if (!wallets) return;
+    //   const RECEIVER = data.receiver;
+    //   const SATS_TO_SEND = parseFloat(data.amount) * totalDecimal['BCH'];
+    //   const bchWallet = new BchWallet(wallets['bitcoincash'].privateKey);
+    //   await bchWallet.walletInfoPromise;
+    //   const balance = await bchWallet.getBalance();
+    //   if (balance === 0) {
+    //     return { status: false, message: 'The balance of your wallet is zero.' };
+    //   }
+    //   const outputs = [];
+    //   outputs.push({
+    //     address: RECEIVER,
+    //     amountSat: SATS_TO_SEND,
+    //   });
+    //   const result = await bchWallet.send(outputs);
+    //   return result;
+    // } catch (error) {
+    //   console.log(error);
+    //   return { status: false, message: 'Error. Try again later.' };
+    // }
   }
 
   public async sendUSDC(data: SendCoinDto): Promise<any> {
@@ -690,7 +735,7 @@ export class BlockchainService {
   public async sendXRP(data: SendCoinDto): Promise<any> {
     const rippleApi = new RippleAPI({
       // server: 'wss://s.altnet.rippletest.net:51233',
-      server: 'wss://s1.ripple.com',
+      server: 'wss://s2.ripple.com',
       timeout: 60000,
     });
 
@@ -706,12 +751,14 @@ export class BlockchainService {
 
     // SEND ADDRESS 1
     const ADDRESS_1 = wallets ? wallets['ripple'].address : '';
-    const SECRET_1 = wallets ? wallets['ripple'].privateKey : '';
+    const SECRET_1 = 'saUkuF7vDWDi7zj1xkekYsrF6cGb3'; //wallets ? wallets['ripple'].privateKey : '';
+
     // RECEIVE ADDRESS 2
     const ADDRESS_2 = data.receiver;
     const instructions = { maxLedgerVersionOffset: 5 };
     const currency = 'XRP';
     const amount = data.amount;
+
     const payment = {
       source: {
         address: ADDRESS_1,
@@ -728,6 +775,7 @@ export class BlockchainService {
         },
       },
     };
+
     try {
       await new Promise((resolve, reject) =>
         rippleApi
@@ -739,18 +787,17 @@ export class BlockchainService {
               rippleApi.submit(signedTransaction).then((result: any) => {
                 console.log(result);
                 rippleApi.disconnect();
-                return result;
               });
             });
           })
           .then(() => {
-            rippleApi.disconnect();
+            console.log('d');
+            //rippleApi.disconnect();
           })
           .catch(reject),
       );
     } catch (error) {
-      console.log(error);
-      return { status: false, message: 'Error. Try again later.' };
+      alert(error);
     }
   }
 }

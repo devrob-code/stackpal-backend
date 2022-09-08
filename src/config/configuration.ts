@@ -5,6 +5,7 @@ export default () => ({
   encrypt: getEncryptProps(),
   twilio: getTwilioProps(),
   coingecko: getCoinGeckoProps(),
+  vtu: getVTUProps(),
 });
 
 const getDatabaseProps = () => {
@@ -51,4 +52,11 @@ const getTwilioProps = () => ({
 
 const getCoinGeckoProps = () => ({
   baseUrl: process.env.COINGECKO_BASE_URL, //api.coingecko.com/api/v3/coins
+});
+
+const getVTUProps = () => ({
+  baseUrl: process.env.VTU_BASE_URL,
+  apiKey: process.env.VTU_API_KEY,
+  publicKey: process.env.VTU_PUBLIC_KEY,
+  privateKey: process.env.VTU_PRIVATE_KEY,
 });
