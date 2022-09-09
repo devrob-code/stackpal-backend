@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
+import { DataNetworkTypes } from './bills.constants';
 
 @Injectable()
 export class BillsService {
@@ -52,7 +53,28 @@ export class BillsService {
 
       return data;
     } catch (e) {
-      console.log(e);
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async getDataPlan(network: DataNetworkTypes): Promise<any> {
+    try {
+      let url;
+
+      if (network === DataNetworkTypes.smile) {
+        url = `${this.baseURL}/service-variations?serviceID=${network}-direct`;
+      } else if (network === DataNetworkTypes.spectranet) {
+        url = `${this.baseURL}/service-variations?serviceID=${network}`;
+      } else {
+        url = `${this.baseURL}/service-variations?serviceID=${network}-data`;
+      }
+
+      const { data } = await firstValueFrom(
+        this.httpService.get(url, { headers: { 'api-key': this.apiKey, 'public-key': this.publicKey } }),
+      );
+
+      return data;
+    } catch (e) {
       throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
