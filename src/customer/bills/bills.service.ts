@@ -84,15 +84,24 @@ export class BillsService {
     try {
       const url = `${this.baseURL}/pay`;
       const requestId = this.todayDate + this.generateRandomString();
+      let serviceId;
+      if (body.network === DataNetworkTypes.smile) {
+        serviceId = `${body.network}-direct`;
+      } else if (body.network === DataNetworkTypes.spectranet) {
+        serviceId = `${body.network}`;
+      } else {
+        serviceId = `${body.network}-data`;
+      }
 
       const { data } = await firstValueFrom(
         this.httpService.post(
           url,
           {
             request_id: requestId,
-            serviceID: `${body.network}-data`,
+            serviceID: serviceId,
             variation_code: body.variationCode,
             phone: `0${parseInt(body.phone)}`,
+            billersCode: body.billersCode,
           },
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),

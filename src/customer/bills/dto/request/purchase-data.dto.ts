@@ -1,12 +1,17 @@
-import { IsEnum, IsInt, IsString } from 'class-validator';
-import { DataNetworkTypes, NetworkTypes } from '../../bills.constants';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { DataNetworkTypes } from '../../bills.constants';
 
 export class PurchaseDataDto {
   @IsString()
   variationCode: string;
 
+  @IsOptional()
   @IsString()
-  phone: string;
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  billersCode?: string;
 
   @IsEnum(DataNetworkTypes)
   network: DataNetworkTypes;
