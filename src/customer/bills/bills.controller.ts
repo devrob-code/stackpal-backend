@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { DataNetworkTypes } from './bills.constants';
 import { BillsService } from './bills.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
+import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 
 @Controller('bills')
 @UseGuards(AuthGuard('jwt'))
@@ -22,5 +23,10 @@ export class BillsController {
   @Get('data/:network')
   public async getDataPlan(@Param('network') network: DataNetworkTypes): Promise<any> {
     return this.billsService.getDataPlan(network);
+  }
+
+  @Post('data')
+  public async buyDataPlan(@Body() body: PurchaseDataDto): Promise<any> {
+    return this.billsService.buyDataPlan(body);
   }
 }

@@ -6,6 +6,7 @@ import { WalletRepositoryService } from 'src/repositories/wallets/wallet-reposit
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
 import { DataNetworkTypes } from './bills.constants';
+import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 
 @Injectable()
 export class BillsService {
@@ -13,6 +14,7 @@ export class BillsService {
   private apiKey = this.configService.get('vtu.apiKey');
   private publicKey = this.configService.get('vtu.publicKey');
   private privateKey = this.configService.get('vtu.privateKey');
+  private todayDate = moment().format('YYYYMMDDHHmm');
 
   constructor(
     private httpService: HttpService,
@@ -40,8 +42,7 @@ export class BillsService {
   public async purchaseAirtime(body: PurchaseAirtimeDto): Promise<any> {
     try {
       const url = `${this.baseURL}/pay`;
-      const todayDate = moment().format('YYYYMMDDHHmm');
-      const requestId = todayDate + this.generateRandomString();
+      const requestId = this.todayDate + this.generateRandomString();
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -71,6 +72,30 @@ export class BillsService {
 
       const { data } = await firstValueFrom(
         this.httpService.get(url, { headers: { 'api-key': this.apiKey, 'public-key': this.publicKey } }),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async buyDataPlan(body: PurchaseDataDto): Promise<any> {
+    try {
+      const url = `${this.baseURL}/pay`;
+      const requestId = this.todayDate + this.generateRandomString();
+
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          url,
+          {
+            request_id: requestId,
+            serviceID: `${body.network}-data`,
+            variation_code: body.variationCode,
+            phone: `0${parseInt(body.phone)}`,
+          },
+          { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
+        ),
       );
 
       return data;
