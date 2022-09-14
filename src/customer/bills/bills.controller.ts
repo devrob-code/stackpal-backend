@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { DataNetworkTypes, TVNetworkTypes } from './bills.constants';
+import { DataNetworkTypes, ElectricityNetworkTypes, ElectricityPaymentTypes, TVNetworkTypes } from './bills.constants';
 import { BillsService } from './bills.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
@@ -47,5 +47,19 @@ export class BillsController {
   @Post('tv')
   public async payTVBills(@Body() body: PurchaseTVSubscriptionDto): Promise<any> {
     return this.billsService.payTVBills(body);
+  }
+
+  @Get('electricity/list')
+  public async getElectricityList(): Promise<any> {
+    return this.billsService.getElectricityList();
+  }
+
+  @Get('verify-meter-number/:cardNumber/:network/:type')
+  public async verifyMeterNumber(
+    @Param('network') network: ElectricityNetworkTypes,
+    @Param('cardNumber', new ParseIntPipe()) cardNumber: number,
+    @Param('type') type: ElectricityPaymentTypes,
+  ): Promise<any> {
+    return this.billsService.verifyMeterNumber(cardNumber, network, type);
   }
 }

@@ -5,7 +5,14 @@ import { firstValueFrom } from 'rxjs';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
-import { DataNetworkTypes, TVNetworkTypes, TVSubscriptionType } from './bills.constants';
+import {
+  DataNetworkTypes,
+  ElectricityList,
+  ElectricityNetworkTypes,
+  ElectricityPaymentTypes,
+  TVNetworkTypes,
+  TVSubscriptionType,
+} from './bills.constants';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 
@@ -166,6 +173,36 @@ export class BillsService {
             phone: `${parseInt(phone)}`,
             subscription_type: TVSubscriptionType.renew,
             variation_code: variationCode,
+          },
+          { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
+        ),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async getElectricityList(): Promise<any> {
+    return ElectricityList;
+  }
+
+  public async verifyMeterNumber(
+    cardNumber: number,
+    network: ElectricityNetworkTypes,
+    type: ElectricityPaymentTypes,
+  ): Promise<any> {
+    try {
+      const url = `${this.baseURL}/merchant-verify`;
+
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          url,
+          {
+            serviceID: network,
+            billersCode: cardNumber,
+            type,
           },
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
