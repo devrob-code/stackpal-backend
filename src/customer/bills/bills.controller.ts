@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { DataNetworkTypes, TVNetworkTypes } from './bills.constants';
 import { BillsService } from './bills.service';
@@ -33,5 +33,13 @@ export class BillsController {
   @Get('tv/:network')
   public async getTVPlans(@Param('network') network: TVNetworkTypes): Promise<any> {
     return this.billsService.getTVPlan(network);
+  }
+
+  @Get('verify-card-number/:network/:cardNumber')
+  public async verifyCardNumber(
+    @Param('network') network: TVNetworkTypes,
+    @Param('cardNumber', new ParseIntPipe()) cardNumber: number,
+  ): Promise<any> {
+    return this.billsService.verifyCardNumber(cardNumber, network);
   }
 }

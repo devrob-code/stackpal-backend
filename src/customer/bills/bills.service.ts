@@ -126,4 +126,25 @@ export class BillsService {
       throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  public async verifyCardNumber(cardNumber: number, network: TVNetworkTypes): Promise<any> {
+    try {
+      const url = `${this.baseURL}/merchant-verify`;
+
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          url,
+          {
+            serviceID: network,
+            billersCode: cardNumber,
+          },
+          { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
+        ),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
