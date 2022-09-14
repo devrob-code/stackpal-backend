@@ -17,4 +17,5 @@ export enum DataNetworkTypes {
 export enum TVNetworkTypes {
   dstv = 'dstv',
   gotv = 'gotv',
+  startimes = 'startimes',
 }
