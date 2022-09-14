@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
-import { DataNetworkTypes } from './bills.constants';
+import { DataNetworkTypes, TVNetworkTypes } from './bills.constants';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 
 @Injectable()
@@ -105,6 +105,20 @@ export class BillsService {
           },
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async getTVPlan(network: TVNetworkTypes): Promise<any> {
+    try {
+      let url = `${this.baseURL}/service-variations?serviceID=${network}`;
+
+      const { data } = await firstValueFrom(
+        this.httpService.get(url, { headers: { 'api-key': this.apiKey, 'public-key': this.publicKey } }),
       );
 
       return data;

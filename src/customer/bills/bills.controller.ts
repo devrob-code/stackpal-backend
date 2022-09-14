@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { DataNetworkTypes } from './bills.constants';
+import { DataNetworkTypes, TVNetworkTypes } from './bills.constants';
 import { BillsService } from './bills.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
@@ -28,5 +28,10 @@ export class BillsController {
   @Post('data')
   public async buyDataPlan(@Body() body: PurchaseDataDto): Promise<any> {
     return this.billsService.buyDataPlan(body);
+  }
+
+  @Get('tv/:network')
+  public async getTVPlans(@Param('network') network: TVNetworkTypes): Promise<any> {
+    return this.billsService.getTVPlan(network);
   }
 }

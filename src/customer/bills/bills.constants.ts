@@ -13,3 +13,7 @@ export enum DataNetworkTypes {
   smile = 'smile',
   spectranet = 'spectranet',
 }
+
+export enum TVNetworkTypes {
+  dstv = 'dstv',
+}
