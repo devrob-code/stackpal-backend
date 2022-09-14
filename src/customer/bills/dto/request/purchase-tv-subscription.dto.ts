@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsString } from 'class-validator';
-import { DataNetworkTypes } from '../../bills.constants';
+import { TVNetworkTypes } from '../../bills.constants';
 
 export class PurchaseTVSubscriptionDto {
   @IsString()
@@ -11,6 +11,9 @@ export class PurchaseTVSubscriptionDto {
   @IsString()
   phone: string;
 
-  @IsEnum(DataNetworkTypes)
-  network: DataNetworkTypes;
+  @IsEnum(TVNetworkTypes)
+  network: TVNetworkTypes;
+
+  @IsString()
+  variationCode: string;
 }

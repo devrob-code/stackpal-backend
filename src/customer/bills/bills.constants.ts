@@ -20,3 +20,7 @@ export enum TVNetworkTypes {
   startimes = 'startimes',
   showmax = 'showmax',
 }
+
+export enum TVSubscriptionType {
+  renew = 'renew',
+}

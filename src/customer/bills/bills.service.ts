@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
-import { DataNetworkTypes, TVNetworkTypes } from './bills.constants';
+import { DataNetworkTypes, TVNetworkTypes, TVSubscriptionType } from './bills.constants';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 
@@ -151,7 +151,7 @@ export class BillsService {
 
   public async payTVBills(body: PurchaseTVSubscriptionDto): Promise<any> {
     try {
-      const { network, billersCode, amount, phone } = body;
+      const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
       const requestId = this.todayDate + this.generateRandomString();
 
@@ -163,7 +163,9 @@ export class BillsService {
             serviceID: network,
             billersCode,
             amount,
-            phone,
+            phone: `${parseInt(phone)}`,
+            subscription_type: TVSubscriptionType.renew,
+            variation_code: variationCode,
           },
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
