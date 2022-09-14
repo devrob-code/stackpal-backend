@@ -4,6 +4,7 @@ import { DataNetworkTypes, TVNetworkTypes } from './bills.constants';
 import { BillsService } from './bills.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
+import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 
 @Controller('bills')
 @UseGuards(AuthGuard('jwt'))
@@ -41,5 +42,10 @@ export class BillsController {
     @Param('cardNumber', new ParseIntPipe()) cardNumber: number,
   ): Promise<any> {
     return this.billsService.verifyCardNumber(cardNumber, network);
+  }
+
+  @Post('tv')
+  public async payTVBills(@Body() body: PurchaseTVSubscriptionDto): Promise<any> {
+    return this.billsService.payTVBills(body);
   }
 }

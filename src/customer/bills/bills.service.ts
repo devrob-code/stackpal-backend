@@ -7,6 +7,7 @@ import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
 import { DataNetworkTypes, TVNetworkTypes } from './bills.constants';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
+import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 
 @Injectable()
 export class BillsService {
@@ -137,6 +138,32 @@ export class BillsService {
           {
             serviceID: network,
             billersCode: cardNumber,
+          },
+          { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
+        ),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async payTVBills(body: PurchaseTVSubscriptionDto): Promise<any> {
+    try {
+      const { network, billersCode, amount, phone } = body;
+      const url = `${this.baseURL}/pay`;
+      const requestId = this.todayDate + this.generateRandomString();
+
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          url,
+          {
+            request_id: requestId,
+            serviceID: network,
+            billersCode,
+            amount,
+            phone,
           },
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
