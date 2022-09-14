@@ -18,4 +18,5 @@ export enum TVNetworkTypes {
   dstv = 'dstv',
   gotv = 'gotv',
   startimes = 'startimes',
+  showmax = 'showmax',
 }
