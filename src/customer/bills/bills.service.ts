@@ -17,6 +17,7 @@ import {
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 import { PurchaseElectricityDto } from './dto/request/purchase-electricity.dto';
+import { PurchaseEducationDto } from './dto/request/purchase-education.dto';
 
 @Injectable()
 export class BillsService {
@@ -250,6 +251,33 @@ export class BillsService {
 
       const { data } = await firstValueFrom(
         this.httpService.get(url, { headers: { 'api-key': this.apiKey, 'public-key': this.publicKey } }),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async payEducationBills(body: PurchaseEducationDto): Promise<any> {
+    try {
+      const { network, amount, phone, variationCode } = body;
+      const url = `${this.baseURL}/pay`;
+      const requestId = this.todayDate + this.generateRandomString();
+
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          url,
+          {
+            request_id: requestId,
+            serviceID: network,
+            amount,
+            phone: `${parseInt(phone)}`,
+            subscription_type: TVSubscriptionType.renew,
+            variation_code: variationCode,
+          },
+          { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
+        ),
       );
 
       return data;

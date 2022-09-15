@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsString } from 'class-validator';
-import { ElectricityNetworkTypes, ElectricityPaymentTypes, TVNetworkTypes } from '../../bills.constants';
+import { ElectricityNetworkTypes, ElectricityPaymentTypes } from '../../bills.constants';
 
 export class PurchaseElectricityDto {
   @IsString()

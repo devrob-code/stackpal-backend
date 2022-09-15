@@ -10,6 +10,7 @@ import {
 import { BillsService } from './bills.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
+import { PurchaseEducationDto } from './dto/request/purchase-education.dto';
 import { PurchaseElectricityDto } from './dto/request/purchase-electricity.dto';
 import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 
@@ -78,5 +79,10 @@ export class BillsController {
   @Get('education/:network')
   public async getEducationPlans(@Param('network') network: EducationTypes): Promise<any> {
     return this.billsService.getEducationPlans(network);
+  }
+
+  @Post('education')
+  public async payEducationBills(@Body() body: PurchaseEducationDto): Promise<any> {
+    return this.billsService.payEducationBills(body);
   }
 }
