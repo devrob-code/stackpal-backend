@@ -4,6 +4,7 @@ import { DataNetworkTypes, ElectricityNetworkTypes, ElectricityPaymentTypes, TVN
 import { BillsService } from './bills.service';
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
+import { PurchaseElectricityDto } from './dto/request/purchase-electricity.dto';
 import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 
 @Controller('bills')
@@ -61,5 +62,10 @@ export class BillsController {
     @Param('type') type: ElectricityPaymentTypes,
   ): Promise<any> {
     return this.billsService.verifyMeterNumber(cardNumber, network, type);
+  }
+
+  @Post('electricity')
+  public async payElectricity(@Body() body: PurchaseElectricityDto): Promise<any> {
+    return this.billsService.payElectricity(body);
   }
 }

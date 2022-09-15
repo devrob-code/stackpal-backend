@@ -15,6 +15,7 @@ import {
 } from './bills.constants';
 import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
+import { PurchaseElectricityDto } from './dto/request/purchase-electricity.dto';
 
 @Injectable()
 export class BillsService {
@@ -203,6 +204,34 @@ export class BillsService {
             serviceID: network,
             billersCode: cardNumber,
             type,
+          },
+          { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
+        ),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async payElectricity(body: PurchaseElectricityDto): Promise<any> {
+    try {
+      const { network, billersCode, amount, phone, variationCode } = body;
+      const url = `${this.baseURL}/pay`;
+      const requestId = this.todayDate + this.generateRandomString();
+
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          url,
+          {
+            request_id: requestId,
+            serviceID: network,
+            billersCode,
+            amount,
+            phone: `${parseInt(phone)}`,
+            subscription_type: TVSubscriptionType.renew,
+            variation_code: variationCode,
           },
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
