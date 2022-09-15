@@ -7,6 +7,7 @@ import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
 import {
   DataNetworkTypes,
+  EducationTypes,
   ElectricityList,
   ElectricityNetworkTypes,
   ElectricityPaymentTypes,
@@ -235,6 +236,20 @@ export class BillsService {
           },
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
+      );
+
+      return data;
+    } catch (e) {
+      throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async getEducationPlans(network: EducationTypes): Promise<any> {
+    try {
+      let url = `${this.baseURL}/service-variations?serviceID=${network}`;
+
+      const { data } = await firstValueFrom(
+        this.httpService.get(url, { headers: { 'api-key': this.apiKey, 'public-key': this.publicKey } }),
       );
 
       return data;

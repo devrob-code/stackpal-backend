@@ -51,3 +51,8 @@ export const ElectricityList = [
   { name: 'Kaduna Electricity', image: null, ACRN: 'KAEDCO', network: ' kaduna-electric' },
   { name: 'Abuja Electricity', image: null, ACRN: 'AEDC', network: 'abuja-electric' },
 ];
+
+export enum EducationTypes {
+  waec = 'waec',
+  jamb = 'jamb',
+}
