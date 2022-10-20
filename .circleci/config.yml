@@ -55,7 +55,7 @@ jobs:
       - checkout
 
       - add_ssh_keys:
-          fingerprints: ["99:79:fc:a4:d7:71:29:bd:aa:55:f7:15:a8:f7:61:35"]
+          fingerprints: ["ee:df:bf:12:b1:74:0c:27:c3:95:f2:68:eb:04:50:bf"]
 
       - run:
           name: Install SSH
