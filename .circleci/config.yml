@@ -1,0 +1,89 @@
+version: 2.1
+
+jobs:
+  containerize-and-push-to-ecr:
+    docker:
+      - image: circleci/node
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: v1-deps-{{ checksum "package-lock.json" }}
+
+      - run:
+          name: Install AWS CLI
+          command: |
+            sudo apt update
+            sudo apt install curl unzip -y
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+      - run:
+          name: Copy Important files from S3
+          command: |
+            aws s3 cp  s3://stackpal-backend-env/.env .
+
+      - run:
+          name: Install Project Dependencies
+          command: |
+            npm install
+
+      - run:
+          name: Run Migration
+          command: |
+            npm run typeorm:migrate
+
+      - setup_remote_docker:
+          version: 20.10.17
+          docker_layer_caching: true
+
+      - run:
+          name: Build, tag, and push image to Amazon ECR
+          command: |
+            aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 557768989386.dkr.ecr.us-east-1.amazonaws.com
+            docker build -t stackpal .
+            docker tag stackpal:latest 557768989386.dkr.ecr.us-east-1.amazonaws.com/stackpal:latest
+            docker push 557768989386.dkr.ecr.us-east-1.amazonaws.com/stackpal:latest
+
+  deploy-to-ec2:
+    docker:
+      - image: ubuntu:latest
+
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints: ["99:79:fc:a4:d7:71:29:bd:aa:55:f7:15:a8:f7:61:35"]
+
+      - run:
+          name: Install SSH
+          command: |
+            apt update -y
+            apt install curl openssh-server -y
+
+      - run:
+          name: SSH Into Server and deploy
+          command: |
+            ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} " cd /home/ubuntu/stackpal && ./docker-deploy.sh "
+
+      - run:
+          name: SSH Into LAMBDA Server and deploy
+          command: |
+            ssh -o StrictHostKeyChecking=no ubuntu@${LAMBDA_PUBLIC_IP} " cd /home/ubuntu/stackpal && ./docker-deploy.sh "
+
+workflows:
+  backend-pipeline:
+    jobs:
+      - containerize-and-push-to-ecr:
+          filters:
+            branches:
+              only:
+                - main
+      - deploy-to-ec2:
+          requires: [containerize-and-push-to-ecr]
+          filters:
+            branches:
+              only:
+                - main

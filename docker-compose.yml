@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: ${DB_CONTAINER_NAME}
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
+    volumes:
+      - ./.postgres:/var/lib/postgresql/data
+
+  localstack_stackpal:
+    image: localstack/localstack
+    container_name: localstack-now
+    network_mode: bridge
+    ports:
+      - 4563-4599:4563-4599
+      - 8055:8080
+    environment:
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - NO_REPLY_EMAIL=${NO_REPLAY_EMAIL}
+      - SERVICES=s3,ses
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - ./local-deployment/aws:/docker-entrypoint-initaws.d
+      - ./.docker/localstack-volume:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
