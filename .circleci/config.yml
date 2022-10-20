@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Build, tag, and push image to Amazon ECR
           command: |
-            aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 557768989386.dkr.ecr.us-east-1.amazonaws.com
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 557768989386.dkr.ecr.us-east-1.amazonaws.com
             docker build -t stackpal .
             docker tag stackpal:latest 557768989386.dkr.ecr.us-east-1.amazonaws.com/stackpal:latest
             docker push 557768989386.dkr.ecr.us-east-1.amazonaws.com/stackpal:latest
