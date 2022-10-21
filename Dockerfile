@@ -1,8 +1,9 @@
-FROM node:14.15.0-alpine as dependencies
+FROM node:18 as dependencies
 
 WORKDIR /home/app
 COPY . /home/app
-RUN npm ci
+RUN npm cache clean --force
+RUN npm install
 
 FROM dependencies as test
 #RUN npm run lint

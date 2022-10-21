@@ -1,15 +1,15 @@
 import { ConfigService } from '@nestjs/config';
-import { ConnectionOptions, DataSource, DataSourceOptions } from 'typeorm';
+import { DataSource } from 'typeorm';
+import dotenv from 'dotenv';
 
-//config is used for creating new migration with empty up and down methods
 const configService = new ConfigService();
-const config = new DataSource({
+export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: 'localhossdsdsdsdt',
-  port: 5432,
-  username: 'postgresq',
-  password: '1234dsdsdsd56',
-  database: 'crypsdsdsdsdtokn',
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   synchronize: false,
   logging: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
@@ -19,5 +19,3 @@ const config = new DataSource({
   migrations: ['dist/migrations/*{.ts,.js}'],
   migrationsRun: true,
 });
-
-export default config;
