@@ -31,9 +31,9 @@ jobs:
             npm install
 
       - run:
-        name: L
-        command: |
-          cat ./src/data-source.ts
+          name: Ls files
+          command: |
+            cat ./src/data-source.ts
 
       - run:
           name: Run Migration
