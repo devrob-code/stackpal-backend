@@ -5,11 +5,11 @@ import { ConnectionOptions, DataSource, DataSourceOptions } from 'typeorm';
 const configService = new ConfigService();
 const config = new DataSource({
   type: 'postgres',
-  host: 'localhossdsdsdsdt',
-  port: 5432,
-  username: 'postgresq',
-  password: '1234dsdsdsd56',
-  database: 'crypsdsdsdsdtokn',
+  host: configService.get('DB_HOST'),
+  port: configService.get('DB_PORT'),
+  username: configService.get('DB_USERNAME'),
+  password: configService.get('DB_PASSWORD'),
+  database: configService.get('DB_NAME'),
   synchronize: false,
   logging: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
