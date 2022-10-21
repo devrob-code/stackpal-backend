@@ -1,23 +1,24 @@
 import { ConfigService } from '@nestjs/config';
-import { ConnectionOptions, DataSource, DataSourceOptions } from 'typeorm';
+import { ConnectionOptions } from 'typeorm';
 
 //config is used for creating new migration with empty up and down methods
 const configService = new ConfigService();
-const config = new DataSource({
+const config: ConnectionOptions = {
   type: 'postgres',
   host: configService.get('DB_HOST'),
   port: configService.get('DB_PORT'),
   username: configService.get('DB_USERNAME'),
   password: configService.get('DB_PASSWORD'),
   database: configService.get('DB_NAME'),
+  entities: [`${__dirname}/**/*.entity{.ts,.js}`],
   synchronize: false,
   logging: true,
-  entities: ['dist/**/*.entity{.ts,.js}'],
-  //entities: [`${__dirname}/**/*.entity{.ts,.js}`],
-  subscribers: [],
-  //migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],
-  migrations: ['dist/migrations/*{.ts,.js}'],
+  logger: 'file',
   migrationsRun: true,
-});
+  migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],
+  cli: {
+    migrationsDir: 'src/migrations',
+  },
+};
 
-export default config;
+export = config;
