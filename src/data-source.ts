@@ -1,16 +1,14 @@
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import dotenv from 'dotenv';
 
-const configService = new ConfigService();
-export const AppDataSource = new DataSource({
+const AppDataSource = new DataSource({
   type: 'postgres',
-  host: configService.get('DB_HOST'),
-  port: configService.get('DB_PORT'),
-  username: configService.get('DB_USERNAME'),
-  password: configService.get('DB_PASSWORD'),
-  database: configService.get('DB_NAME'),
-  synchronize: false,
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT, 10) || 5432,
+  database: process.env.DB_NAME,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  synchronize: true,
   logging: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
   //entities: [`${__dirname}/**/*.entity{.ts,.js}`],
@@ -19,3 +17,5 @@ export const AppDataSource = new DataSource({
   migrations: ['dist/migrations/*{.ts,.js}'],
   migrationsRun: true,
 });
+
+export default AppDataSource;
