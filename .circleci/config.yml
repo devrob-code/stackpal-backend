@@ -31,6 +31,11 @@ jobs:
             npm install
 
       - run:
+        name: L
+        command: |
+          cat ./src/data-source.ts
+
+      - run:
           name: Run Migration
           command: |
             npm run typeorm:migrate
