@@ -15,7 +15,7 @@ RUN npm prune --omit=dev && \
     rm -rf test
 
 FROM node:16 as build
-RUN adduser -D stackpaluser
+RUN adduser  --disabled-password stackpaluser
 WORKDIR /home/stackpaluser/app
 RUN chown -R stackpaluser:stackpaluser ./
 USER stackpaluser
