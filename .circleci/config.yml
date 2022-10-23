@@ -74,11 +74,6 @@ jobs:
           command: |
             ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} " cd /home/ubuntu/stackpal && ./docker-deploy.sh "
 
-      - run:
-          name: SSH Into LAMBDA Server and deploy
-          command: |
-            ssh -o StrictHostKeyChecking=no ubuntu@${LAMBDA_PUBLIC_IP} " cd /home/ubuntu/stackpal && ./docker-deploy.sh "
-
 workflows:
   backend-pipeline:
     jobs:
