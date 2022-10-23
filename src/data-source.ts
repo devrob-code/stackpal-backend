@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const AppDataSource = new DataSource({
+  host: process.env.DB_NAME,
   type: 'postgres',
   port: parseInt(process.env.DB_PORT, 10) || 5432,
   database: process.env.DB_NAME,
