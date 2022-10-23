@@ -33,7 +33,8 @@ jobs:
       - run:
           name: Ls files
           command: |
-            cat ./src/data-source.ts
+            # cat ./src/data-source.ts
+            ls
 
       - run:
           name: Run Migration
