@@ -29,6 +29,8 @@ AppDataSource.initialize()
     console.log(`Data Source has been initialized ${database} `);
   })
   .catch((err) => {
+    let database = process.env.DB_NAME;
+    console.log({ database });
     console.error(`Data Source initialization error`, err);
   });
 
