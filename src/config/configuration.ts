@@ -11,6 +11,7 @@ export default () => ({
   host: process.env.DB_HOST,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
+  environment: process.env.NODE_ENV,
 });
 
 const getDatabaseProps = () => {
