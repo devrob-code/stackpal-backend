@@ -6,6 +6,11 @@ export default () => ({
   twilio: getTwilioProps(),
   coingecko: getCoinGeckoProps(),
   vtu: getVTUProps(),
+  port: process.env.PORT,
+  type: process.env.DB_TYPE,
+  host: process.env.DB_HOST,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
 });
 
 const getDatabaseProps = () => {

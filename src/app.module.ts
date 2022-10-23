@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
   controllers: [AppController],
   providers: [AppService],
   imports: [
+    ConfigModule.forRoot(),
     CoreModule,
     UserModule,
     AuthModule,
