@@ -11,10 +11,7 @@ export class MailService {
     private helperService: HelperService,
   ) {}
 
-  public async sendUserEmailVerificationToken(
-    email: string,
-    code: string,
-  ): Promise<boolean> {
+  public async sendUserEmailVerificationToken(email: string, code: string): Promise<boolean> {
     const encryptedCode = await this.helperService.encryptString(code);
     const encryptedEmail = await this.helperService.encryptString(email);
 
@@ -23,10 +20,8 @@ export class MailService {
       to: email.toLowerCase(),
       from: `Stackpal <${this.configService.get('mail.defaultMailFrom')}>`,
       subject: 'Stackpal - Please verify your email',
-      template: '/confirmation',
-      replyTo: `Stackpal No-Reply <${this.configService.get(
-        'mail.defaultReplyTo',
-      )}>`,
+      template: './confirmation',
+      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
       context: {
         url,
       },
@@ -43,10 +38,8 @@ export class MailService {
       to: email.toLowerCase(),
       from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
       subject: 'Stackpal - Recover Password',
-      template: '/forgot-password',
-      replyTo: `Stackpal No-Reply <${this.configService.get(
-        'mail.defaultReplyTo',
-      )}>`,
+      template: './forgot-password',
+      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
       context: {
         url,
       },
