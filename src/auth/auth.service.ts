@@ -23,6 +23,7 @@ import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { CurrencyTypes } from 'src/customer/currency/currency.constants';
 import { Wallet } from 'src/repositories/wallets/entities/wallet.entity';
+import { APP_SOURCE, WEB_SOURCE } from './auth.constants';
 
 @Injectable()
 export class AuthService {
@@ -76,10 +77,7 @@ export class AuthService {
   }
 
   public async validateUser(payload: PayloadResponse): Promise<User> {
-    const user = await this.userRepositoryService.getByEmailAndId(
-      payload.email,
-      payload.id,
-    );
+    const user = await this.userRepositoryService.getByEmailAndId(payload.email, payload.id);
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
@@ -95,10 +93,9 @@ export class AuthService {
     };
   }
 
-  public async sendEmailVerificationCode(body: {
-    email: string;
-  }): Promise<boolean> {
+  public async sendEmailVerificationCode(body: { email: string; source?: string }): Promise<boolean> {
     const code = this.helperService.generateCode(6);
+    const requestSource = !body.source ? WEB_SOURCE : APP_SOURCE;
 
     // Save Code to db
     await this.verificationRepositoryService.createEmailVerificationCode({
@@ -107,44 +104,31 @@ export class AuthService {
     });
 
     // Send the verification code
-    return await this.mailService.sendUserEmailVerificationToken(
-      body.email,
-      code,
-    );
+    return await this.mailService.sendUserEmailVerificationToken(body.email, code, requestSource);
   }
 
-  public async verifyEmailAddress(
-    body: VerifyEmailDto,
-  ): Promise<boolean | string> {
+  public async verifyEmailAddress(body: VerifyEmailDto): Promise<boolean | string> {
     const encryptedEmail = body.email;
     const encryptedCode = body.code;
 
     const email = await this.helperService.decryptString(encryptedEmail);
     const code = await this.helperService.decryptString(encryptedCode);
 
-    const foundData =
-      await this.verificationRepositoryService.getEmailVerificationByEmailAndCode(
-        email,
-        code,
-      );
+    const foundData = await this.verificationRepositoryService.getEmailVerificationByEmailAndCode(email, code);
 
     if (foundData) {
       await this.userRepositoryService.updateUserByEmail(email, {
         emailVerified: true,
       });
 
-      await this.verificationRepositoryService.deleteEmailVerificationCodeById(
-        foundData.id,
-      );
+      await this.verificationRepositoryService.deleteEmailVerificationCodeById(foundData.id);
 
       return email;
     }
     return false;
   }
 
-  public async sendPhoneVerificationCode(
-    body: PhoneVerificationDto,
-  ): Promise<boolean> {
+  public async sendPhoneVerificationCode(body: PhoneVerificationDto): Promise<boolean> {
     const code = this.helperService.generateCode(6);
 
     // Save Code to db
@@ -154,10 +138,7 @@ export class AuthService {
     });
 
     // Send the code
-    return await this.smsService.sendUserPhoneVerificationToken(
-      body.phone,
-      code,
-    );
+    return await this.smsService.sendUserPhoneVerificationToken(body.phone, code);
   }
 
   public async verifyPhone(body: VerifyPhoneDto): Promise<boolean | string> {
@@ -165,11 +146,7 @@ export class AuthService {
     const code = body.code;
     const email = body.email;
 
-    const foundData =
-      await this.verificationRepositoryService.getPhoneVerificationByPhoneAndCode(
-        phone,
-        code,
-      );
+    const foundData = await this.verificationRepositoryService.getPhoneVerificationByPhoneAndCode(phone, code);
 
     if (foundData) {
       await this.userRepositoryService.updateUserByEmail(email, {
@@ -177,9 +154,7 @@ export class AuthService {
         phone,
       });
 
-      await this.verificationRepositoryService.deletePhoneVerificationCodeById(
-        foundData.id,
-      );
+      await this.verificationRepositoryService.deletePhoneVerificationCodeById(foundData.id);
 
       return true;
     }
@@ -209,36 +184,22 @@ export class AuthService {
   }
 
   private async assignFiatCurrenciesToUser(userId: number): Promise<boolean> {
-    const fiatCurrencies =
-      await this.currencyRepositoryService.getFiatCurrencies();
+    const fiatCurrencies = await this.currencyRepositoryService.getFiatCurrencies();
 
     fiatCurrencies.forEach(async (fiatCurrency) => {
       // Check if user has this currency
-      const wallet =
-        await this.walletRepositoryService.getUserWalletByCurrencyId(
-          userId,
-          fiatCurrency.id,
-        );
+      const wallet = await this.walletRepositoryService.getUserWalletByCurrencyId(userId, fiatCurrency.id);
 
       if (!wallet) {
-        await this.walletRepositoryService.createWallet(
-          userId,
-          fiatCurrency.id,
-        );
+        await this.walletRepositoryService.createWallet(userId, fiatCurrency.id);
       }
     });
 
     return true;
   }
 
-  public async getWalletsByUserId(
-    userId: number,
-    network?: string,
-  ): Promise<Wallet[] | Wallet> {
-    return await this.walletRepositoryService.getWalletsByUserId(
-      userId,
-      network,
-    );
+  public async getWalletsByUserId(userId: number, network?: string): Promise<Wallet[] | Wallet> {
+    return await this.walletRepositoryService.getWalletsByUserId(userId, network);
   }
 
   public async getIdByUserData(userData: string): Promise<number> {

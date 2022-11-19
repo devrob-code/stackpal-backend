@@ -1,6 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { APP_SOURCE, MailRequestSource, WEB_SOURCE } from 'src/auth/auth.constants';
 import { HelperService } from '../helpers/helper.service';
 
 @Injectable()
@@ -11,23 +12,44 @@ export class MailService {
     private helperService: HelperService,
   ) {}
 
-  public async sendUserEmailVerificationToken(email: string, code: string): Promise<boolean> {
+  public async sendUserEmailVerificationToken(
+    email: string,
+    code: string,
+    requestSource: MailRequestSource,
+  ): Promise<boolean> {
     const encryptedCode = await this.helperService.encryptString(code);
     const encryptedEmail = await this.helperService.encryptString(email);
+    let sendEmailVerification;
 
     const url = `https://stackpal.io/verify-email?el=${encryptedEmail}&ce=${encryptedCode}`;
-    const sendEmailVerificationCode = this.mailerService.sendMail({
-      to: email.toLowerCase(),
-      from: `Stackpal <${this.configService.get('mail.defaultMailFrom')}>`,
-      subject: 'Stackpal - Please verify your email',
-      template: './confirmation',
-      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
-      context: {
-        url,
-      },
-    });
 
-    return !!sendEmailVerificationCode;
+    if (requestSource === WEB_SOURCE) {
+      sendEmailVerification = this.mailerService.sendMail({
+        to: email.toLowerCase(),
+        from: `Stackpal <${this.configService.get('mail.defaultMailFrom')}>`,
+        subject: 'Stackpal - Please verify your email',
+        template: './confirmation-link',
+        replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+        context: {
+          url,
+        },
+      });
+    }
+
+    if (requestSource === APP_SOURCE) {
+      sendEmailVerification = this.mailerService.sendMail({
+        to: email.toLowerCase(),
+        from: `Stackpal <${this.configService.get('mail.defaultMailFrom')}>`,
+        subject: 'Stackpal - Please verify your email',
+        template: './confirmation-code',
+        replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+        context: {
+          code,
+        },
+      });
+    }
+
+    return !!sendEmailVerification;
   }
 
   public async forgotPassword(email: string): Promise<boolean> {
