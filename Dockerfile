@@ -20,5 +20,5 @@ WORKDIR /home/stackpaluser/app
 RUN chown -R stackpaluser:stackpaluser ./
 USER stackpaluser
 COPY --chown=stackpaluser --from=prebuild /home/app .
-RUN npm run typeorm:migrate
+#RUN npm run typeorm:migrate
 CMD ["npm", "run", "start:prod"]
