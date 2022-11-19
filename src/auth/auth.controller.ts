@@ -1,15 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Wallet } from 'src/repositories/wallets/entities/wallet.entity';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
+import { MailRequestSource } from './auth.constants';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
 import { LoginDto } from './dto/request/login.dto';
@@ -32,11 +25,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  @UseGuards(
-    AccountExistsGuard,
-    CheckEmailVerifiedGuard,
-    CheckPhoneVerifiedGuard,
-  )
+  @UseGuards(AccountExistsGuard, CheckEmailVerifiedGuard, CheckPhoneVerifiedGuard)
   public async login(@Body() body: LoginDto): Promise<LoginResponse> {
     return this.authService.login(body);
   }
@@ -48,46 +37,33 @@ export class AuthController {
   }
 
   @Post('send-email-verification-code')
-  public async sendEmailVerificationCode(
-    @Body() body: { email: string },
-  ): Promise<boolean> {
+  public async sendEmailVerificationCode(@Body() body: { email: string; source: MailRequestSource }): Promise<boolean> {
     return await this.authService.sendEmailVerificationCode(body);
   }
 
   @Post('send-phone-verification-code')
   @UseGuards(PhoneExistsGuard)
-  public async sendPhoneVerificationCode(
-    @Body() body: PhoneVerificationDto,
-  ): Promise<boolean> {
+  public async sendPhoneVerificationCode(@Body() body: PhoneVerificationDto): Promise<boolean> {
     return await this.authService.sendPhoneVerificationCode(body);
   }
 
   @Get('verify-email')
-  public async verifyEmailAddress(
-    @Query('el') email: string,
-    @Query('ce') code: string,
-  ): Promise<boolean | string> {
+  public async verifyEmailAddress(@Query('el') email: string, @Query('ce') code: string): Promise<boolean | string> {
     return await this.authService.verifyEmailAddress({ email, code });
   }
 
   @Post('verify-phone')
-  public async VerifyPhone(
-    @Body() body: VerifyPhoneDto,
-  ): Promise<boolean | string> {
+  public async VerifyPhone(@Body() body: VerifyPhoneDto): Promise<boolean | string> {
     return await this.authService.verifyPhone(body);
   }
 
   @Post('forgot-password')
-  public async forgotPassword(
-    @Body() body: ForgotPasswordDto,
-  ): Promise<boolean> {
+  public async forgotPassword(@Body() body: ForgotPasswordDto): Promise<boolean> {
     return await this.authService.forgotPassword(body);
   }
 
   @Post('recover-password')
-  public async recoverPassword(
-    @Body() body: RecoverPasswordDto,
-  ): Promise<boolean> {
+  public async recoverPassword(@Body() body: RecoverPasswordDto): Promise<boolean> {
     return await this.authService.recoverPassword(body);
   }
 
@@ -99,9 +75,7 @@ export class AuthController {
 
   @Post('get-wallets-by-user-id')
   @UseGuards(AuthGuard('jwt'))
-  public async getWalletsByUserId(
-    @Body() body: UserIdDto,
-  ): Promise<Wallet[] | Wallet> {
+  public async getWalletsByUserId(@Body() body: UserIdDto): Promise<Wallet[] | Wallet> {
     return await this.authService.getWalletsByUserId(body.userId, null);
   }
 }
