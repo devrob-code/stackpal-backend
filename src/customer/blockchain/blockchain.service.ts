@@ -89,6 +89,7 @@ export class BlockchainService {
           return balance;
         })
         .catch((err: any) => {
+          console.log(err);
           return 0;
         });
       return res;
@@ -115,6 +116,7 @@ export class BlockchainService {
           return response.data;
         })
         .catch((err) => {
+          console.log(err);
           return 0;
         });
       return res;
@@ -183,6 +185,7 @@ export class BlockchainService {
           };
         })
         .catch((err) => {
+          console.log(err);
           return {
             ETH: 0,
             USDT: 0,
