@@ -206,7 +206,7 @@ export class AuthService {
     return await this.userRepositoryService.getIdByUserData(userData);
   }
 
-  public async verifyEmailAddressCode(body: VerifyEmailDto): Promise<boolean | { email: string }> {
+  public async verifyEmailAddressCode(body: VerifyEmailDto): Promise<boolean> {
     const { code, email } = body;
 
     const foundData = await this.verificationRepositoryService.getEmailVerificationByEmailAndCode(email, code);
@@ -218,7 +218,7 @@ export class AuthService {
 
       await this.verificationRepositoryService.deleteEmailVerificationCodeByEmail(email);
 
-      return { email };
+      return true;
     }
     return false;
   }
