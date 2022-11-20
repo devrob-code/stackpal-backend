@@ -6,14 +6,8 @@ import { Twilio } from 'twilio';
 export class SmsService {
   constructor(public readonly configService: ConfigService) {}
 
-  public async sendUserPhoneVerificationToken(
-    phone: string,
-    code: string,
-  ): Promise<boolean> {
-    const client = new Twilio(
-      this.configService.get('twilio.accountSid'),
-      this.configService.get('twilio.authToken'),
-    );
+  public async sendUserPhoneVerificationToken(phone: string, code: string): Promise<boolean> {
+    const client = new Twilio(this.configService.get('twilio.accountSid'), this.configService.get('twilio.authToken'));
 
     client.messages
       .create({
@@ -21,9 +15,10 @@ export class SmsService {
         to: phone,
         body: `Your Stackpal verification code is ${code}`,
       })
-      .then((message) =>
-        Logger.log(`SMS Message Sent Successfully to ${message.sid}`),
-      );
+      .then((message) => Logger.log(`SMS Message Sent Successfully to ${message.sid}`))
+      .catch((e) => {
+        Logger.error(e);
+      });
 
     return true;
   }
