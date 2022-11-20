@@ -10,6 +10,7 @@ import { PhoneVerificationDto } from './dto/request/phone-verification.dto';
 import { RecoverPasswordDto } from './dto/request/recover-password.dto';
 import { UserDataDto } from './dto/request/user-data.dto';
 import { UserIdDto } from './dto/request/user-id.dto';
+import { VerifyEmailDto } from './dto/request/verify-email.dto';
 import { VerifyPhoneDto } from './dto/request/verify-phone.dto';
 import { LoginResponse } from './dto/response/login.response';
 import { SignupResponse } from './dto/response/signup.response';
@@ -77,5 +78,10 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   public async getWalletsByUserId(@Body() body: UserIdDto): Promise<Wallet[] | Wallet> {
     return await this.authService.getWalletsByUserId(body.userId, null);
+  }
+
+  @Post('verify-email')
+  public async verifyEmailAddressCode(@Body() body: VerifyEmailDto): Promise<boolean | string> {
+    return await this.authService.verifyEmailAddressCode(body);
   }
 }
