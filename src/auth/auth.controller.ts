@@ -81,7 +81,7 @@ export class AuthController {
   }
 
   @Post('verify-email')
-  public async verifyEmailAddressCode(@Body() body: VerifyEmailDto): Promise<boolean | string> {
+  public async verifyEmailAddressCode(@Body() body: VerifyEmailDto): Promise<boolean | { email: string }> {
     return await this.authService.verifyEmailAddressCode(body);
   }
 }
