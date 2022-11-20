@@ -218,7 +218,7 @@ export class AuthService {
 
       await this.verificationRepositoryService.deleteEmailVerificationCodeByEmail(email);
 
-      return email;
+      return JSON.parse(email);
     }
     return false;
   }
