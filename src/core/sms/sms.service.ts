@@ -15,11 +15,13 @@ export class SmsService {
         to: phone,
         body: `Your Stackpal verification code is ${code}`,
       })
-      .then((message) => Logger.log(`SMS Message Sent Successfully to ${message.sid}`))
+      .then((message) => {
+        Logger.log(`SMS Message Sent Successfully to ${message.sid}`);
+        return true;
+      })
       .catch((e) => {
         Logger.error(e);
       });
-
-    return true;
+    return false;
   }
 }

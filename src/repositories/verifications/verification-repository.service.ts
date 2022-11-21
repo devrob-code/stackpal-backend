@@ -46,7 +46,7 @@ export class VerificationRepositoryService {
     return this.getPhoneVerificationByPhoneAndCodeUseCase.exec(phone, code);
   }
 
-  public async deletePhoneVerificationCodeById(id: number) {
-    return this.deletePhoneVerificationCodeByIdUseCase.exec(id);
+  public async deletePhoneVerificationCodeByPhone(phone: string) {
+    return this.deletePhoneVerificationCodeByIdUseCase.exec(phone);
   }
 }

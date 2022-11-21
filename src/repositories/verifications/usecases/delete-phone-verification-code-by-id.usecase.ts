@@ -10,12 +10,12 @@ export class DeletePhoneVerificationCodeByIdUseCase {
     private readonly phoneVerification: Repository<PhoneVerification>,
   ) {}
 
-  public async exec(id: number): Promise<boolean> {
+  public async exec(phone: string): Promise<boolean> {
     const result = await this.phoneVerification
       .createQueryBuilder()
       .delete()
       .from(PhoneVerification)
-      .where('id = :id', { id })
+      .where('phone = :phone', { phone })
       .execute();
 
     return !!result;

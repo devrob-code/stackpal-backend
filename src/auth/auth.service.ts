@@ -154,7 +154,7 @@ export class AuthService {
         phone,
       });
 
-      await this.verificationRepositoryService.deletePhoneVerificationCodeById(foundData.id);
+      await this.verificationRepositoryService.deletePhoneVerificationCodeByPhone(phone);
 
       return true;
     }
