@@ -17,11 +17,6 @@ const AppDataSource = new DataSource({
   //migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],
   migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],
   migrationsRun: true,
-  //   extra: {
-  //     ssl: {
-  //       rejectUnauthorized: false,
-  //     },
-  //   },
 });
 
 AppDataSource.initialize()
