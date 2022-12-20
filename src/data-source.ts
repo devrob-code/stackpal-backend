@@ -12,6 +12,7 @@ const AppDataSource = new DataSource({
   synchronize: true,
   logging: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
+  ssl: process.env.DB_SSL.toString() == 'true' ? true : false,
   //entities: [`${__dirname}/**/*.entity{.ts,.js}`],
   subscribers: [],
   //migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],

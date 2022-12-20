@@ -26,6 +26,7 @@ const getDatabaseProps = () => {
     entities: process.env.DB_ENTITIES_PATH,
     migrationsRun: process.env.DB_MIGRATIONS_RUN === 'true',
     migrations: process.env.DB_MIGRATIONS,
+    ssl: process.env.DB_SSL.toString() == 'true' ? true : false,
   };
 };
 
