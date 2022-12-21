@@ -37,6 +37,12 @@ export class BlockchainController {
     return this.blockchainService.getERC20Balance(userId);
   }
 
+  @Get('balance/ngn')
+  public async getNGNBalance(@Request() req): Promise<any> {
+    const userId = req.user.id;
+    return this.blockchainService.getNGNBalance(userId);
+  }
+
   @Get('transaction-history/eth')
   public async getETHTransactionHistory(@Request() req): Promise<any> {
     const userId = req.user.id;

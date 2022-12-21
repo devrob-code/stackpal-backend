@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 export default async function (configService: ConfigService): Promise<PostgresConnectionOptions> {
-  const { type, host, port, username, database, password, entities, migrationsRun, migrations } =
+  const { type, host, port, username, database, password, entities, migrationsRun, migrations, ssl } =
     configService.get('database');
 
   return {
@@ -17,6 +17,6 @@ export default async function (configService: ConfigService): Promise<PostgresCo
     // migrations: [migrations],
     entities: [entities],
     logging: true,
-    ssl: true,
+    ssl,
   };
 }

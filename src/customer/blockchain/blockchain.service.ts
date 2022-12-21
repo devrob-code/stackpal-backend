@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-repository.service';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { SendCoinDto } from './dto/request/send-coin.dto';
 const RippleAPI = require('ripple-lib').RippleAPI;
@@ -37,6 +38,7 @@ export class BlockchainService {
     private httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly walletRepositoryService: WalletRepositoryService,
+    private readonly currencyRepositoryService: CurrencyRepositoryService,
   ) {}
 
   public async getCoinPrices(): Promise<any> {
@@ -196,6 +198,12 @@ export class BlockchainService {
     } catch (error) {
       return 0;
     }
+  }
+
+  public async getNGNBalance(userId: number): Promise<any> {
+    const currency = await this.currencyRepositoryService.getByCurrencyAlias('NGN');
+    const wallet = await this.walletRepositoryService.getUserWalletByCurrencyId(userId, currency.id);
+    return { balance: wallet.balance };
   }
 
   public async getETHTransactionHistory(userId: number): Promise<any> {
