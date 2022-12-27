@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsArray } from 'class-validator';
+import { IsEmail, IsString, IsArray, IsOptional } from 'class-validator';
 
 interface Wallet {
   network: string;
@@ -21,4 +21,7 @@ export class CreateUserDto {
 
   @IsEmail()
   email: string;
+
+  @IsOptional()
+  transactionPin?: string;
 }
