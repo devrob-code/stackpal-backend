@@ -55,6 +55,9 @@ export class User {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
+  @Column({ type: 'varchar' })
+  transactionPin: string;
+
   @OneToMany(() => Wallet, (wallet) => wallet.user)
   wallet: Wallet[];
 

@@ -222,4 +222,13 @@ export class AuthService {
     }
     return false;
   }
+
+  public async createPin(body: { pin: string; email: string }): Promise<boolean> {
+    const pin = await bcrypt.hash(body.pin, 10);
+    const createPin = await this.userRepositoryService.updateUserByEmail(body.email, {
+      transactionPin: pin,
+    });
+
+    return !!createPin;
+  }
 }

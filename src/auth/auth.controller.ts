@@ -84,4 +84,9 @@ export class AuthController {
   public async verifyEmailAddressCode(@Body() body: VerifyEmailDto): Promise<boolean | string> {
     return await this.authService.verifyEmailAddressCode(body);
   }
+
+  @Post('create-pin')
+  public async createPin(@Body() body: { pin: string; email: string }): Promise<boolean> {
+    return await this.authService.createPin(body);
+  }
 }

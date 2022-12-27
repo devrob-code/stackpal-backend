@@ -165,8 +165,8 @@ export class UserRepositoryService {
     return {
       network: 'bitcoincash',
       address: bchWallet.walletInfo.cashAddress,
-      privateKey: bchWallet.walletInfo.mnemonic,
-      mnemonic: bchWallet.walletInfo.privateKey,
+      privateKey: bchWallet.walletInfo.privateKey,
+      mnemonic: bchWallet.walletInfo.mnemonic,
     };
   }
 

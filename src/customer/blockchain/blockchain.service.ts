@@ -129,27 +129,28 @@ export class BlockchainService {
 
   public async getBCHBalance(userId: number): Promise<any> {
     const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'bitcoincash');
+    // const simpleWallet = new SimpleWallet(userWallet.mnemonic);
 
-    try {
-      const res = await firstValueFrom(
-        this.httpService.post(`https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
-          headers: { 'api-key': NOWNodesApiKey },
-        }),
-      )
-        .then(async (response) => {
-          if (response.data.txids) {
-            bitcoinCashTxids = response.data.txids;
-          }
+    // try {
+    //   const res = await firstValueFrom(
+    //     this.httpService.post(`https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
+    //       headers: { 'api-key': NOWNodesApiKey },
+    //     }),
+    //   )
+    //     .then(async (response) => {
+    //       if (response.data.txids) {
+    //         bitcoinCashTxids = response.data.txids;
+    //       }
 
-          return response.data.balance / 10 ** totalDecimal['BCH'];
-        })
-        .catch((err) => {
-          return 0;
-        });
-      return res;
-    } catch (error) {
-      return 0;
-    }
+    //       return response.data.balance / 10 ** totalDecimal['BCH'];
+    //     })
+    //     .catch((err) => {
+    //       return 0;
+    //     });
+    //   return res;
+    // } catch (error) {
+    //   return 0;
+    // }
   }
 
   public async getERC20Balance(userId: number): Promise<any> {
@@ -596,7 +597,16 @@ export class BlockchainService {
         };
       });
 
-      const account = new CryptoAccount(wallets ? wallets['bitcoincash'].privateKey : '');
+      console.log(wallets ? wallets['bitcoincash'].privateKey : '');
+
+      //return;
+
+      const account = new CryptoAccount('xbGotygnqWj7A63nFw5mi1BELFvh3Y7s69jVpjEofaija1bAHVC');
+
+      console.log(account);
+
+      return;
+
       let sendAmount = !isNaN(parseFloat(data.amount)) ? data.amount : '';
       let totalPrices = await this.getCoinPrices();
       // if (!isNaN(parseFloat(data.amount)) && parseFloat(data.amount) > 0) {
