@@ -24,4 +24,7 @@ export class CreateUserDto {
 
   @IsOptional()
   transactionPin?: string;
+
+  @IsOptional()
+  phone?: string;
 }
