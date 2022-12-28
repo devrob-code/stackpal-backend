@@ -174,10 +174,13 @@ export class AuthService {
   }
 
   public async forgotPassword(body: ForgotPasswordDto): Promise<boolean> {
+    const code = this.helperService.generateCode(6);
+    const requestSource = !body.source ? WEB_SOURCE : APP_SOURCE;
+
     const user = await this.userRepositoryService.getByEmail(body.email);
 
     if (user) {
-      return this.mailService.forgotPassword(body.email);
+      return this.mailService.forgotPassword(body.email, code, requestSource);
     }
   }
 

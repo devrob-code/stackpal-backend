@@ -52,20 +52,36 @@ export class MailService {
     return !!sendEmailVerification;
   }
 
-  public async forgotPassword(email: string): Promise<boolean> {
+  public async forgotPassword(email: string, code: string, requestSource: MailRequestSource): Promise<boolean> {
+    let sendForgotPasswordMail;
     const encryptedEmail = await this.helperService.encryptString(email);
-
     const url = `https://stackpal.io/forgot-password?token=${encryptedEmail}`;
-    const sendForgotPasswordMail = this.mailerService.sendMail({
-      to: email.toLowerCase(),
-      from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
-      subject: 'Stackpal - Recover Password',
-      template: './forgot-password',
-      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
-      context: {
-        url,
-      },
-    });
+
+    if (requestSource === WEB_SOURCE) {
+      sendForgotPasswordMail = this.mailerService.sendMail({
+        to: email.toLowerCase(),
+        from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
+        subject: 'Stackpal - Recover Password',
+        template: './forgot-password',
+        replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+        context: {
+          url,
+        },
+      });
+    }
+
+    if (requestSource === APP_SOURCE) {
+      sendForgotPasswordMail = this.mailerService.sendMail({
+        to: email.toLowerCase(),
+        from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
+        subject: 'Stackpal - Recover Password',
+        template: './forgot-password-code',
+        replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+        context: {
+          url,
+        },
+      });
+    }
 
     return !!sendForgotPasswordMail;
   }
