@@ -78,7 +78,7 @@ export class MailService {
         template: './forgot-password-code',
         replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
         context: {
-          url,
+          code,
         },
       });
     }
