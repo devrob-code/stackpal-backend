@@ -44,11 +44,19 @@ export class AuthService {
   }
 
   public async signup(body: CreateUserDto): Promise<SignupResponse> {
+    let data;
     if (body.transactionPin !== null) {
       body.transactionPin = await bcrypt.hash(body.transactionPin, 10);
+      data = {
+        phoneVerified: true,
+        emailVerified: true,
+        ...body,
+      };
+    } else {
+      data = body;
     }
 
-    const signupUser = await this.userRepositoryService.createUser(body);
+    const signupUser = await this.userRepositoryService.createUser(data);
     return plainToInstance(SignupResponse, signupUser);
   }
 
