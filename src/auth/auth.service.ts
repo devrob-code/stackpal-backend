@@ -180,6 +180,14 @@ export class AuthService {
     const user = await this.userRepositoryService.getByEmail(body.email);
 
     if (user) {
+      if (requestSource === WEB_SOURCE) {
+        // Save Code to db
+        await this.verificationRepositoryService.createEmailVerificationCode({
+          email: body.email,
+          code,
+        });
+      }
+
       return this.mailService.forgotPassword(body.email, code, requestSource);
     }
   }
