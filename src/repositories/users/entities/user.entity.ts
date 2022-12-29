@@ -58,6 +58,9 @@ export class User {
   @Column({ type: 'varchar' })
   transactionPin: string;
 
+  @Column({ type: 'varchar' })
+  avatar: string;
+
   @OneToMany(() => Wallet, (wallet) => wallet.user)
   wallet: Wallet[];
 

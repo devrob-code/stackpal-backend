@@ -35,4 +35,7 @@ export class LoginResponse {
 
   @Expose()
   expiresIn?: string;
+
+  @Expose()
+  avatar?: string;
 }
