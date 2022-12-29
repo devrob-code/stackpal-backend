@@ -129,28 +129,28 @@ export class BlockchainService {
 
   public async getBCHBalance(userId: number): Promise<any> {
     const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'bitcoincash');
-    // const simpleWallet = new SimpleWallet(userWallet.mnemonic);
+    //const simpleWallet = new SimpleWallet(userWallet.mnemonic);
 
-    // try {
-    //   const res = await firstValueFrom(
-    //     this.httpService.post(`https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
-    //       headers: { 'api-key': NOWNodesApiKey },
-    //     }),
-    //   )
-    //     .then(async (response) => {
-    //       if (response.data.txids) {
-    //         bitcoinCashTxids = response.data.txids;
-    //       }
+    try {
+      const res = await firstValueFrom(
+        this.httpService.post(`https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
+          headers: { 'api-key': NOWNodesApiKey },
+        }),
+      )
+        .then(async (response) => {
+          if (response.data.txids) {
+            bitcoinCashTxids = response.data.txids;
+          }
 
-    //       return response.data.balance / 10 ** totalDecimal['BCH'];
-    //     })
-    //     .catch((err) => {
-    //       return 0;
-    //     });
-    //   return res;
-    // } catch (error) {
-    //   return 0;
-    // }
+          return response.data.balance / 10 ** totalDecimal['BCH'];
+        })
+        .catch((err) => {
+          return 0;
+        });
+      return res;
+    } catch (error) {
+      return 0;
+    }
   }
 
   public async getERC20Balance(userId: number): Promise<any> {
@@ -204,7 +204,7 @@ export class BlockchainService {
   public async getNGNBalance(userId: number): Promise<any> {
     const currency = await this.currencyRepositoryService.getByCurrencyAlias('NGN');
     const wallet = await this.walletRepositoryService.getUserWalletByCurrencyId(userId, currency.id);
-    return { balance: wallet.balance };
+    return { balance: Number(wallet.balance) };
   }
 
   public async getETHTransactionHistory(userId: number): Promise<any> {
@@ -820,5 +820,24 @@ export class BlockchainService {
     } catch (error) {
       alert(error);
     }
+  }
+
+  public async dashboardBalances(userId: number) {
+    const ngnBalance: any = await this.getNGNBalance(userId);
+    const btcBalance: any = await this.getBTCBalance(userId);
+    //const bchBalance = await this.getBCHBalance(userId);
+    const erc20Balance: any = await this.getERC20Balance(userId);
+
+    const balances = Promise.all([ngnBalance, btcBalance, erc20Balance]).then((values) => {
+      return {
+        ngnBalance: ngnBalance.balance,
+        btcBalance: btcBalance.balance,
+        ethBalance: erc20Balance.ETH,
+        usdtBalance: erc20Balance.USDT,
+        usdcBalance: erc20Balance.USDC,
+      };
+    });
+
+    return balances;
   }
 }

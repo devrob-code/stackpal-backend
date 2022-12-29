@@ -126,4 +126,9 @@ export class BlockchainController {
 
     return this.blockchainService.sendXRP(data);
   }
+
+  @Get('dashboard/balance')
+  public async dashboardBalances(@Request() req): Promise<any> {
+    return this.blockchainService.dashboardBalances(req.user.id);
+  }
 }
