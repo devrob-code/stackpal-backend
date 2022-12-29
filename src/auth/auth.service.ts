@@ -254,4 +254,13 @@ export class AuthService {
 
     return !!createPin;
   }
+
+  public async resetPassword(body: { password: string; email: string }): Promise<boolean> {
+    const password = await bcrypt.hash(body.password, 10);
+    const createPassword = await this.userRepositoryService.updateUserByEmail(body.email, {
+      password: password,
+    });
+
+    return !!createPassword;
+  }
 }

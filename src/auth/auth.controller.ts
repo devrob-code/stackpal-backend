@@ -89,4 +89,9 @@ export class AuthController {
   public async createPin(@Body() body: { pin: string; email: string }): Promise<boolean> {
     return await this.authService.createPin(body);
   }
+
+  @Post('reset-password')
+  public async resetPassword(@Body() body: { password: string; email: string }): Promise<boolean> {
+    return await this.authService.resetPassword(body);
+  }
 }
