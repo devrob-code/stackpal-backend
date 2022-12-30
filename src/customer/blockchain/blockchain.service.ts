@@ -830,12 +830,12 @@ export class BlockchainService {
 
     const balances = Promise.all([ngnBalance, btcBalance, erc20Balance]).then((values) => {
       return {
-        ngnBalance: ngnBalance.balance,
-        btcBalance: btcBalance.balance,
-        ethBalance: erc20Balance.ETH,
-        usdtBalance: erc20Balance.USDT,
-        usdcBalance: erc20Balance.USDC,
-        usd: 750,
+        ngnBalance: ngnBalance.balance.toString(),
+        btcBalance: btcBalance.balance.toString(),
+        ethBalance: erc20Balance.ETH.toString(),
+        usdtBalance: erc20Balance.USDT.toString(),
+        usdcBalance: erc20Balance.USDC.toString(),
+        usd: (750).toString(),
       };
     });
 
