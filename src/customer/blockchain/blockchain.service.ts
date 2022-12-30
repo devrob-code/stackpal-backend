@@ -835,6 +835,7 @@ export class BlockchainService {
         ethBalance: erc20Balance.ETH,
         usdtBalance: erc20Balance.USDT,
         usdcBalance: erc20Balance.USDC,
+        usd: 750,
       };
     });
 
