@@ -53,19 +53,25 @@ export class BlockchainService {
       { token: 'XRP', network: 'ripple' },
       { token: 'BCH', network: 'bitcoincash' },
     ];
+    try {
+      const baseURL = this.configService.get('coingecko.baseUrl');
+      const url = `${baseURL}/coins`;
+      const { data } = await firstValueFrom(
+        this.httpService.get(url, { headers: { 'Accept-Encoding': 'gzip,deflate,compress' } }),
+      );
 
-    const baseURL = this.configService.get('coingecko.baseUrl');
-    const url = `${baseURL}/coins`;
-    const { data } = await firstValueFrom(this.httpService.get(url));
-
-    data.map((eRes: any) => {
-      tokens.map((eToken) => {
-        if (eToken.token.toLowerCase() === eRes.symbol) {
-          tPrices[eToken.token] = eRes.market_data.current_price.usd;
-        }
+      //return data;
+      data.map((eRes: any) => {
+        tokens.map((eToken) => {
+          if (eToken.token.toLowerCase() === eRes.symbol) {
+            tPrices[eToken.token] = eRes.market_data.current_price.usd;
+          }
+        });
       });
-    });
-    return tPrices;
+      return tPrices;
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   public async getXrpBalance(userId: number): Promise<any> {
@@ -827,8 +833,9 @@ export class BlockchainService {
     const btcBalance: any = await this.getBTCBalance(userId);
     //const bchBalance = await this.getBCHBalance(userId);
     const erc20Balance: any = await this.getERC20Balance(userId);
+    const coinsDollarPrices: any = await this.getCoinPrices();
 
-    const balances = Promise.all([ngnBalance, btcBalance, erc20Balance]).then((values) => {
+    const balances = Promise.all([ngnBalance, btcBalance, erc20Balance, coinsDollarPrices]).then((values) => {
       return {
         ngnBalance: ngnBalance.balance.toString(),
         btcBalance: btcBalance.balance.toString(),
@@ -836,6 +843,7 @@ export class BlockchainService {
         usdtBalance: erc20Balance.USDT.toString(),
         usdcBalance: erc20Balance.USDC.toString(),
         usd: (750).toString(),
+        coinsDollarPrices,
       };
     });
 
