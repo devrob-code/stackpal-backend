@@ -868,7 +868,7 @@ export class BlockchainService {
         ethBalance: erc20Balance.ETH.toString(),
         usdtBalance: erc20Balance.USDT.toString(),
         usdcBalance: erc20Balance.USDC.toString(),
-        usd: usdRate,
+        usd: usdRate.toString(),
         coinsDollarPrices,
       };
     });
