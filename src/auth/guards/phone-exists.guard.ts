@@ -1,10 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepositoryService } from 'src/repositories/users/user-repository.service';
 
 @Injectable()
@@ -18,10 +12,7 @@ export class PhoneExistsGuard implements CanActivate {
     const phoneExists = await this.userRepo.getByPhone(phone);
 
     if (phoneExists) {
-      throw new HttpException(
-        'Phone number already associated with another user',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Phone number already associated with another user', HttpStatus.BAD_REQUEST);
     }
 
     return true;

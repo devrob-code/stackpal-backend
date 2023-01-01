@@ -131,4 +131,9 @@ export class BlockchainController {
   public async dashboardBalances(@Request() req): Promise<any> {
     return this.blockchainService.dashboardBalances(req.user.id);
   }
+
+  @Get('/usd/rate')
+  public async getUsdRate(): Promise<any> {
+    return this.blockchainService.getUsdRate();
+  }
 }

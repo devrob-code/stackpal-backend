@@ -828,21 +828,47 @@ export class BlockchainService {
     }
   }
 
+  public async getUsdRate() {
+    let price;
+    const tokens = [{ token: 'USDT', network: 'ethereum' }];
+    try {
+      const baseURL = this.configService.get('coingecko.baseUrl');
+      const url = `${baseURL}/coins`;
+      const { data } = await firstValueFrom(
+        this.httpService.get(url, { headers: { 'Accept-Encoding': 'gzip,deflate,compress' } }),
+      );
+
+      //return data;
+      data.map((eRes: any) => {
+        tokens.map((eToken) => {
+          if (eToken.token.toLowerCase() === eRes.symbol) {
+            price = eRes.market_data.current_price.ngn + 277;
+          }
+        });
+      });
+
+      return price;
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
   public async dashboardBalances(userId: number) {
     const ngnBalance: any = await this.getNGNBalance(userId);
     const btcBalance: any = await this.getBTCBalance(userId);
     //const bchBalance = await this.getBCHBalance(userId);
     const erc20Balance: any = await this.getERC20Balance(userId);
     const coinsDollarPrices: any = await this.getCoinPrices();
+    const usdRate = await this.getUsdRate();
 
-    const balances = Promise.all([ngnBalance, btcBalance, erc20Balance, coinsDollarPrices]).then((values) => {
+    const balances = Promise.all([ngnBalance, btcBalance, erc20Balance, usdRate, coinsDollarPrices]).then((values) => {
       return {
         ngnBalance: ngnBalance.balance.toString(),
         btcBalance: btcBalance.balance.toString(),
         ethBalance: erc20Balance.ETH.toString(),
         usdtBalance: erc20Balance.USDT.toString(),
         usdcBalance: erc20Balance.USDC.toString(),
-        usd: (750).toString(),
+        usdBalance: usdRate,
         coinsDollarPrices,
       };
     });
