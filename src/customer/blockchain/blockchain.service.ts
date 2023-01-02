@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-repository.service';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
+import { AdminBuyCoinDto } from './dto/request/admin-buy-coin.dto';
 import { SendCoinDto } from './dto/request/send-coin.dto';
 const RippleAPI = require('ripple-lib').RippleAPI;
 const CryptoAccount = require('send-crypto');
@@ -911,5 +912,65 @@ export class BlockchainService {
     });
 
     return balances;
+  }
+
+  public async adminSendBTC(receiverId: number, body: AdminBuyCoinDto) {
+    try {
+      let tGasPrice = {};
+
+      const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
+        (res) => res.data,
+      );
+
+      tGasPrice['low'] = Math.floor(btcFee.low_fee_per_kb / 1000) + 1;
+      tGasPrice['medium'] = Math.floor(btcFee.medium_fee_per_kb / 1000) + 1;
+      tGasPrice['high'] = Math.floor(btcFee.high_fee_per_kb / 1000) + 1;
+
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(receiverId);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      receiverWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        receiverWallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['bitcoin'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(body.amount)) ? body.amount : '';
+
+      let totalPrices = await this.getCoinPrices();
+      // if (!isNaN(parseFloat(data.amount)) && parseFloat(data.amount) > 0) {
+      //   sendAmount = (
+      //     Math.floor((parseFloat(data.amount) / totalPrices[sendTokenType]) * 100000000) / 100000000
+      //   ).toString();
+      // }
+
+      //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
+      const result = await account
+        .send(receiverWallets['bitcoin'].address, sendAmount, 'BTC', {
+          confirmations: 3,
+          fee: tGasPrice['low'] * gasLimit['BTC'],
+          subtractFee: false,
+        })
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        return { status: true };
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
