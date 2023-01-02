@@ -829,8 +829,16 @@ export class BlockchainService {
   }
 
   public async getUsdRate() {
-    let price;
-    const tokens = [{ token: 'USDT', network: 'ethereum' }];
+    let tPrices = {};
+    const tokens = [
+      { token: 'BTC', network: 'bitcoin' },
+      { token: 'ETH', network: 'ethereum' },
+      { token: 'USDT', network: 'ethereum' },
+      { token: 'USDC', network: 'ethereum' },
+      // {token: "BNB", network: "binance"},
+      { token: 'XRP', network: 'ripple' },
+      { token: 'BCH', network: 'bitcoincash' },
+    ];
     try {
       const baseURL = this.configService.get('coingecko.baseUrl');
       const url = `${baseURL}/coins`;
@@ -842,12 +850,15 @@ export class BlockchainService {
       data.map((eRes: any) => {
         tokens.map((eToken) => {
           if (eToken.token.toLowerCase() === eRes.symbol) {
-            price = eRes.market_data.current_price.ngn + 277;
+            tPrices[eToken.token] = eRes.market_data.current_price.usd;
+          }
+
+          if (eRes.symbol === 'usdt') {
+            tPrices['rate'] = eRes.market_data.current_price.ngn + 277;
           }
         });
       });
-
-      return price;
+      return tPrices;
     } catch (e) {
       console.log(e.message);
     }
