@@ -968,9 +968,12 @@ export class BlockchainService {
 
       if (result) {
         return { status: true };
+      } else {
+        return { status: false };
       }
     } catch (error) {
       console.log(error);
+      return { status: false };
     }
   }
 }
