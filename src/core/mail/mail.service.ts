@@ -85,4 +85,28 @@ export class MailService {
 
     return !!sendForgotPasswordMail;
   }
+
+  public async buyCoin(
+    email: string,
+    coin: string,
+    naira: string,
+    coinValue: string,
+    username: String,
+  ): Promise<boolean> {
+    let sendBuyCoinEmail = this.mailerService.sendMail({
+      to: email.toLowerCase(),
+      from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
+      subject: 'Stackpal - New Transaction',
+      template: './buy-coin',
+      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+      context: {
+        coin,
+        naira,
+        coinValue,
+        username,
+      },
+    });
+
+    return !!sendBuyCoinEmail;
+  }
 }

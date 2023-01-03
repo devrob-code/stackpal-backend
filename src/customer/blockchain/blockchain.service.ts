@@ -2,7 +2,9 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { MailService } from 'src/core/mail/mail.service';
 import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-repository.service';
+import { UserRepositoryService } from 'src/repositories/users/user-repository.service';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { WalletAction } from '../wallet/wallet.constants';
 import { AdminBuyCoinDto } from './dto/request/admin-buy-coin.dto';
@@ -41,6 +43,8 @@ export class BlockchainService {
     private readonly configService: ConfigService,
     private readonly walletRepositoryService: WalletRepositoryService,
     private readonly currencyRepositoryService: CurrencyRepositoryService,
+    private readonly mailService: MailService,
+    private readonly userRepositoryService: UserRepositoryService,
   ) {}
 
   public async getCoinPrices(): Promise<any> {
@@ -918,6 +922,7 @@ export class BlockchainService {
   public async adminSendBTC(receiverId: number, body: AdminBuyCoinDto) {
     try {
       let tGasPrice = {};
+      const user = await this.userRepositoryService.getById(receiverId);
 
       const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
         (res) => res.data,
@@ -955,7 +960,7 @@ export class BlockchainService {
       const account = new CryptoAccount(wallets ? wallets['bitcoin'].privateKey : '');
       let sendAmount = !isNaN(parseFloat(body.amount)) ? body.amount : '';
 
-      let totalPrices = await this.getCoinPrices();
+      //let totalPrices = await this.getCoinPrices();
       // if (!isNaN(parseFloat(data.amount)) && parseFloat(data.amount) > 0) {
       //   sendAmount = (
       //     Math.floor((parseFloat(data.amount) / totalPrices[sendTokenType]) * 100000000) / 100000000
@@ -973,6 +978,9 @@ export class BlockchainService {
         .on('confirmation', console.log);
 
       if (result) {
+        // Send Email Notification
+        this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
+
         return { status: true };
       } else {
         return { status: false };

@@ -11,12 +11,10 @@ import { GetUserByUsernameUseCase } from './usecases/get-user-by-username.usecas
 import { UpdateUserByEmailUseCase } from './usecases/update-user-by-email.usecase';
 import { UserRepositoryService } from './user-repository.service';
 import { GetIdByUserDataUsecase } from './usecases/get-user-id-by-user-data.usecase';
+import { GetUserByIdUseCase } from './usecases/get-user-by-id.usecase';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    TypeOrmModule.forFeature([Wallet]),
-  ],
+  imports: [TypeOrmModule.forFeature([User]), TypeOrmModule.forFeature([Wallet])],
   providers: [
     UserRepositoryService,
     GetUserByEmailUseCase,
@@ -27,9 +25,8 @@ import { GetIdByUserDataUsecase } from './usecases/get-user-id-by-user-data.usec
     UpdateUserByEmailUseCase,
     GetUserByPhoneUseCase,
     GetIdByUserDataUsecase,
+    GetUserByIdUseCase,
   ],
-  exports: [
-    UserRepositoryService
-  ],
+  exports: [UserRepositoryService],
 })
 export class UserRepositoryModule {}
