@@ -860,7 +860,7 @@ export class BlockchainService {
           }
 
           if (eRes.symbol === 'usdt') {
-            tPrices['rate'] = eRes.market_data.current_price.ngn + 277;
+            tPrices['rate'] = eRes.market_data.current_price.ngn + 284;
           }
         });
       });
@@ -885,7 +885,7 @@ export class BlockchainService {
       data.map((eRes: any) => {
         tokens.map((eToken) => {
           if (eToken.token.toLowerCase() === eRes.symbol) {
-            price = eRes.market_data.current_price.ngn + 277;
+            price = eRes.market_data.current_price.ngn + 284;
           }
         });
       });
