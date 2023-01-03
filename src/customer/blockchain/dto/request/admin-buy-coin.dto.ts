@@ -6,4 +6,8 @@ export class AdminBuyCoinDto {
 
   @IsString()
   amount: string;
+
+  @IsString()
+  @IsOptional()
+  naira: string;
 }

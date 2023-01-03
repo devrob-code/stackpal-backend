@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-repository.service';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
+import { WalletAction } from '../wallet/wallet.constants';
 import { AdminBuyCoinDto } from './dto/request/admin-buy-coin.dto';
 import { SendCoinDto } from './dto/request/send-coin.dto';
 const RippleAPI = require('ripple-lib').RippleAPI;
@@ -938,12 +939,17 @@ export class BlockchainService {
         };
       });
 
-      receiverWallet.map((eData: any) => {
+      receiverWallet.map((eData) => {
         let networkKey = eData.network;
         receiverWallets[networkKey] = {
           address: eData.address,
           privateKey: eData.private_key,
         };
+
+        if (eData.currencyId == 3) {
+          let amountToDeduct = parseInt(body.naira);
+          this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
+        }
       });
 
       const account = new CryptoAccount(wallets ? wallets['bitcoin'].privateKey : '');
