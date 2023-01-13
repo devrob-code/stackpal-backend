@@ -1034,7 +1034,7 @@ export class BlockchainService {
         .on('confirmation', console.log);
 
       if (result) {
-        // Send Email Notification
+        // Send Email Notifications
         this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
         return { status: true };
       }
