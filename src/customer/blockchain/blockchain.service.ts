@@ -7,7 +7,7 @@ import { CurrencyRepositoryService } from 'src/repositories/currencies/currency-
 import { UserRepositoryService } from 'src/repositories/users/user-repository.service';
 import { WalletRepositoryService } from 'src/repositories/wallets/wallet-repository.service';
 import { WalletAction } from '../wallet/wallet.constants';
-import { AdminBuyCoinDto } from './dto/request/admin-buy-coin.dto';
+import { AdminBuyCoinDto, AdminSellCoinDto } from './dto/request/admin-buy-coin.dto';
 import { SendCoinDto } from './dto/request/send-coin.dto';
 const RippleAPI = require('ripple-lib').RippleAPI;
 const CryptoAccount = require('send-crypto');
@@ -1165,6 +1165,245 @@ export class BlockchainService {
 
       if (result) {
         this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
+        return { status: true };
+      }
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
+    }
+  }
+
+  public async adminSellBTC(senderId: number, body: AdminSellCoinDto) {
+    try {
+      let tGasPrice = {};
+      const sender = await this.userRepositoryService.getById(senderId);
+
+      const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
+        (res) => res.data,
+      );
+
+      tGasPrice['low'] = Math.floor(btcFee.low_fee_per_kb / 1000) + 1;
+      tGasPrice['medium'] = Math.floor(btcFee.medium_fee_per_kb / 1000) + 1;
+      tGasPrice['high'] = Math.floor(btcFee.high_fee_per_kb / 1000) + 1;
+
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      receiverWallet.map((eData) => {
+        let networkKey = eData.network;
+        receiverWallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['bitcoin'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(body.amount)) ? body.amount : '';
+
+      //let totalPrices = await this.getCoinPrices();
+      // if (!isNaN(parseFloat(data.amount)) && parseFloat(data.amount) > 0) {
+      //   sendAmount = (
+      //     Math.floor((parseFloat(data.amount) / totalPrices[sendTokenType]) * 100000000) / 100000000
+      //   ).toString();
+      // }
+
+      //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
+      const result = await account
+        .send(receiverWallets['bitcoin'].address, sendAmount, 'BTC', {
+          confirmations: 3,
+          fee: tGasPrice['low'] * gasLimit['BTC'],
+          subtractFee: false,
+        })
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        // Send Email Notification
+        this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
+
+        return { status: true };
+      } else {
+        return { status: false };
+      }
+    } catch (error) {
+      console.log(error);
+      return { status: false };
+    }
+  }
+
+  public async adminSellETH(senderId: number, body: AdminSellCoinDto): Promise<any> {
+    try {
+      let tGasPrice = {};
+      const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
+        (res) => res.data,
+      );
+      tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
+      tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
+      tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
+
+      const sender = await this.userRepositoryService.getById(senderId);
+
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      receiverWallet.map((eData) => {
+        let networkKey = eData.network;
+        receiverWallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(body.amount)) ? body.amount : '';
+      const result = await account
+        .send(receiverWallets['ethereum'].address, parseFloat(sendAmount), 'ETH', {
+          gas: gasLimit['ETH'],
+          gasPrice: tGasPrice['low'],
+        })
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        // Send Email Notifications
+        this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
+        return { status: true };
+      }
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
+    }
+  }
+
+  public async adminSellUSDT(senderId: number, body: AdminSellCoinDto): Promise<any> {
+    try {
+      let tGasPrice = {};
+      const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
+        (res) => res.data,
+      );
+      tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
+      tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
+      tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
+
+      const sender = await this.userRepositoryService.getById(senderId);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      receiverWallet.map((eData) => {
+        let networkKey = eData.network;
+        receiverWallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(body.amount)) ? body.amount : '';
+      const result = await account
+        .send(
+          receiverWallets['ethereum'].address,
+          parseFloat(sendAmount),
+          {
+            type: 'ERC20',
+            name: 'USDT',
+          },
+          {
+            gas: gasLimit['USDT'],
+            gasPrice: tGasPrice['low'],
+          },
+        )
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        // Send Email Notifications
+        this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
+        return { status: true };
+      }
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
+    }
+  }
+
+  public async adminSellUSDC(senderId: number, body: AdminSellCoinDto): Promise<any> {
+    try {
+      let tGasPrice = {};
+      const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
+        (res) => res.data,
+      );
+      tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
+      tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
+      tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
+
+      const sender = await this.userRepositoryService.getById(senderId);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      receiverWallet.map((eData) => {
+        let networkKey = eData.network;
+        receiverWallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(body.amount)) ? body.amount : '';
+      const result = await account
+        .send(
+          receiverWallets['ethereum'].address,
+          parseFloat(sendAmount),
+          {
+            type: 'ERC20',
+            name: 'USDC',
+          },
+          {
+            gas: gasLimit['USDC'],
+            gasPrice: tGasPrice['low'],
+          },
+        )
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
         return { status: true };
       }
     } catch (error) {

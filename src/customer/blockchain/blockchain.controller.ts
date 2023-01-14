@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards, Request, Body, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BlockchainService } from './blockchain.service';
-import { AdminBuyCoinDto } from './dto/request/admin-buy-coin.dto';
+import { AdminBuyCoinDto, AdminSellCoinDto } from './dto/request/admin-buy-coin.dto';
 import { SendCoinDto } from './dto/request/send-coin.dto';
 
 @Controller('blockchain')
@@ -156,5 +156,25 @@ export class BlockchainController {
   @Post('/send/now/usdc')
   public async adminSendUSDC(@Request() req, @Body() body: AdminBuyCoinDto): Promise<any> {
     return this.blockchainService.adminSendUSDC(req.user.id, body);
+  }
+
+  @Post('/sell/now/btc')
+  public async adminSellBTC(@Request() req, @Body() body: AdminSellCoinDto): Promise<any> {
+    return this.blockchainService.adminSellBTC(req.user.id, body);
+  }
+
+  @Post('/sell/now/eth')
+  public async adminSellETH(@Request() req, @Body() body: AdminSellCoinDto): Promise<any> {
+    return this.blockchainService.adminSellETH(req.user.id, body);
+  }
+
+  @Post('/sell/now/usdt')
+  public async adminSellUSDT(@Request() req, @Body() body: AdminSellCoinDto): Promise<any> {
+    return this.blockchainService.adminSellETH(req.user.id, body);
+  }
+
+  @Post('/sell/now/usdc')
+  public async adminSellUSDC(@Request() req, @Body() body: AdminSellCoinDto): Promise<any> {
+    return this.blockchainService.adminSellUSDC(req.user.id, body);
   }
 }

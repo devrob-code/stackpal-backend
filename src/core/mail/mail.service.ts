@@ -109,4 +109,27 @@ export class MailService {
 
     return !!sendBuyCoinEmail;
   }
+
+  public async sellCoin(
+    email: string,
+    coin: string,
+    amount: string,
+
+    username: String,
+  ): Promise<boolean> {
+    let sendBuyCoinEmail = this.mailerService.sendMail({
+      to: email.toLowerCase(),
+      from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
+      subject: 'Stackpal - New Transaction',
+      template: './sell-coin',
+      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+      context: {
+        coin,
+        amount,
+        username,
+      },
+    });
+
+    return !!sendBuyCoinEmail;
+  }
 }
