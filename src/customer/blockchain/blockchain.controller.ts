@@ -145,6 +145,11 @@ export class BlockchainController {
 
   @Post('/send/now/eth')
   public async adminSendETH(@Request() req, @Body() body: AdminBuyCoinDto): Promise<any> {
-    return this.blockchainService.adminSendBTC(req.user.id, body);
+    return this.blockchainService.adminSendETH(req.user.id, body);
+  }
+
+  @Post('/send/now/usdt')
+  public async adminSendUSDT(@Request() req, @Body() body: AdminBuyCoinDto): Promise<any> {
+    return this.blockchainService.adminSendUSDT(req.user.id, body);
   }
 }

@@ -1043,4 +1043,69 @@ export class BlockchainService {
       return { status: false, message: 'Error. Try again later.' };
     }
   }
+
+  public async adminSendUSDT(receiverId: number, body: AdminBuyCoinDto): Promise<any> {
+    try {
+      let tGasPrice = {};
+      const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
+        (res) => res.data,
+      );
+      tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
+      tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
+      tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
+
+      const user = await this.userRepositoryService.getById(receiverId);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(receiverId);
+      let wallets: { [key: string]: { address: string; privateKey: string } } = {};
+      let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
+      userWallet.map((eData: any) => {
+        let networkKey = eData.network;
+        wallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+      });
+
+      receiverWallet.map((eData) => {
+        let networkKey = eData.network;
+        receiverWallets[networkKey] = {
+          address: eData.address,
+          privateKey: eData.private_key,
+        };
+
+        if (eData.currencyId == 3) {
+          let amountToDeduct = parseInt(body.naira);
+          this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
+        }
+      });
+
+      const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+      let sendAmount = !isNaN(parseFloat(body.amount)) ? body.amount : '';
+      const result = await account
+        .send(
+          receiverWallets['ethereum'].address,
+          parseFloat(sendAmount),
+          {
+            type: 'ERC20',
+            name: 'USDT',
+          },
+          {
+            gas: gasLimit['USDT'],
+            gasPrice: tGasPrice['low'],
+          },
+        )
+        .on('transactionHash', console.log)
+        .on('confirmation', console.log);
+
+      if (result) {
+        // Send Email Notifications
+        this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
+        return { status: true };
+      }
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
+    }
+  }
 }
