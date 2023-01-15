@@ -947,10 +947,10 @@ export class BlockchainService {
           privateKey: eData.private_key,
         };
 
-        if (eData.currencyId == 3) {
-          let amountToDeduct = parseInt(body.naira);
-          this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
-        }
+        // if (eData.currencyId == 3) {
+        //   let amountToDeduct = parseInt(body.naira);
+        //   this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
+        // }
       });
 
       const account = new CryptoAccount(wallets ? wallets['bitcoin'].privateKey : '');
@@ -976,7 +976,12 @@ export class BlockchainService {
       if (result) {
         // Send Email Notification
         this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
-
+        const receiverWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(receiverId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          receiverWallet.id,
+          parseInt(body.naira) * 100,
+          WalletAction.increase,
+        );
         return { status: true };
       } else {
         return { status: false };
@@ -1017,10 +1022,10 @@ export class BlockchainService {
           privateKey: eData.private_key,
         };
 
-        if (eData.currencyId == 3) {
-          let amountToDeduct = parseInt(body.naira);
-          this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
-        }
+        // if (eData.currencyId == 3) {
+        //   let amountToDeduct = parseInt(body.naira);
+        //   this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
+        // }
       });
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
@@ -1036,6 +1041,12 @@ export class BlockchainService {
       if (result) {
         // Send Email Notifications
         this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
+        const receiverWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(receiverId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          receiverWallet.id,
+          parseInt(body.naira) * 100,
+          WalletAction.increase,
+        );
         return { status: true };
       }
     } catch (error) {
@@ -1074,10 +1085,10 @@ export class BlockchainService {
           privateKey: eData.private_key,
         };
 
-        if (eData.currencyId == 3) {
-          let amountToDeduct = parseInt(body.naira);
-          this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
-        }
+        // if (eData.currencyId == 3) {
+        //   let amountToDeduct = parseInt(body.naira);
+        //   this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
+        // }
       });
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
@@ -1101,6 +1112,13 @@ export class BlockchainService {
       if (result) {
         // Send Email Notifications
         this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
+
+        const receiverWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(receiverId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          receiverWallet.id,
+          parseInt(body.naira) * 100,
+          WalletAction.increase,
+        );
         return { status: true };
       }
     } catch (error) {
@@ -1139,10 +1157,10 @@ export class BlockchainService {
           privateKey: eData.private_key,
         };
 
-        if (eData.currencyId == 3) {
-          let amountToDeduct = parseInt(body.naira);
-          this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
-        }
+        // if (eData.currencyId == 3) {
+        //   let amountToDeduct = parseInt(body.naira);
+        //   this.walletRepositoryService.changeWalletBalance(eData.id, amountToDeduct, WalletAction.deduct);
+        // }
       });
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
@@ -1165,6 +1183,12 @@ export class BlockchainService {
 
       if (result) {
         this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
+        const receiverWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(receiverId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          receiverWallet.id,
+          parseInt(body.naira) * 100,
+          WalletAction.increase,
+        );
         return { status: true };
       }
     } catch (error) {
@@ -1229,6 +1253,12 @@ export class BlockchainService {
       if (result) {
         // Send Email Notification
         this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
+        const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          senderWallet.id,
+          parseFloat(body.ngnValue) * 100,
+          WalletAction.increase,
+        );
 
         return { status: true };
       } else {
@@ -1285,6 +1315,12 @@ export class BlockchainService {
       if (result) {
         // Send Email Notifications
         this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
+        const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          senderWallet.id,
+          parseFloat(body.ngnValue) * 100,
+          WalletAction.increase,
+        );
         return { status: true };
       }
     } catch (error) {
@@ -1345,6 +1381,12 @@ export class BlockchainService {
       if (result) {
         // Send Email Notifications
         this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
+        const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          senderWallet.id,
+          parseFloat(body.ngnValue) * 100,
+          WalletAction.increase,
+        );
         return { status: true };
       }
     } catch (error) {
@@ -1404,6 +1446,12 @@ export class BlockchainService {
 
       if (result) {
         this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
+        const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
+        await this.walletRepositoryService.changeWalletBalance(
+          senderWallet.id,
+          parseFloat(body.ngnValue) * 100,
+          WalletAction.increase,
+        );
         return { status: true };
       }
     } catch (error) {
