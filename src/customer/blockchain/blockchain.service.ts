@@ -501,6 +501,7 @@ export class BlockchainService {
 
   public async sendBTC(data: SendCoinDto): Promise<any> {
     try {
+      let receiverAddress = data.receiver;
       let tGasPrice = {};
 
       const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
@@ -531,8 +532,17 @@ export class BlockchainService {
       // }
 
       //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
+
+      if (data.receiverId) {
+        const receiverWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+          data.receiverId,
+          'bitcoin',
+        );
+        receiverAddress = receiverWallet.address;
+      }
+
       const result = await account
-        .send(data.receiver, sendAmount, 'BTC', {
+        .send(receiverAddress, sendAmount, 'BTC', {
           confirmations: 3,
           fee: tGasPrice[data.sendSpeed] * gasLimit['BTC'],
           subtractFee: false,
@@ -570,8 +580,17 @@ export class BlockchainService {
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
       let sendAmount = !isNaN(parseFloat(data.amount)) ? data.amount : '';
+      let receiverAddress = data.receiver;
+      if (data.receiverId) {
+        const receiverWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+          data.receiverId,
+          'ethereum',
+        );
+        receiverAddress = receiverWallet.address;
+      }
+
       const result = await account
-        .send(data.receiver, parseFloat(sendAmount), 'ETH', {
+        .send(receiverAddress, parseFloat(sendAmount), 'ETH', {
           gas: gasLimit['ETH'],
           gasPrice: tGasPrice[data.sendSpeed],
         })
@@ -624,8 +643,17 @@ export class BlockchainService {
       // }
 
       //console.log(Math.floor((parseFloat(data.amount) / totalPrices['BTC']) * 100000000) / 100000000);
+
+      let receiverAddress = data.receiver;
+      if (data.receiverId) {
+        const receiverWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+          data.receiverId,
+          'bitcoincash',
+        );
+        receiverAddress = receiverWallet.address;
+      }
       const result = await account
-        .send(data.receiver, sendAmount, 'BCH', {
+        .send(receiverAddress, sendAmount, 'BCH', {
           confirmations: 3,
           fee: tGasPrice[data.sendSpeed] * gasLimit['BCH'],
           subtractFee: false,
@@ -691,9 +719,18 @@ export class BlockchainService {
       });
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+
+      let receiverAddress = data.receiver;
+      if (data.receiverId) {
+        const receiverWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+          data.receiverId,
+          'ethereum',
+        );
+        receiverAddress = receiverWallet.address;
+      }
       const result = await account
         .send(
-          data.receiver,
+          receiverAddress,
           parseFloat(data.amount),
           {
             type: 'ERC20',
@@ -736,9 +773,17 @@ export class BlockchainService {
       });
 
       const account = new CryptoAccount(wallets ? wallets['ethereum'].privateKey : '');
+      let receiverAddress = data.receiver;
+      if (data.receiverId) {
+        const receiverWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(
+          data.receiverId,
+          'ethereum',
+        );
+        receiverAddress = receiverWallet.address;
+      }
       const result = await account
         .send(
-          data.receiver,
+          receiverAddress,
           parseFloat(data.amount),
           {
             type: 'ERC20',
@@ -782,8 +827,14 @@ export class BlockchainService {
     const ADDRESS_1 = wallets ? wallets['ripple'].address : '';
     const SECRET_1 = 'saUkuF7vDWDi7zj1xkekYsrF6cGb3'; //wallets ? wallets['ripple'].privateKey : '';
 
+    let receiverAddress = data.receiver;
+    if (data.receiverId) {
+      const receiverWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(data.receiverId, 'ripple');
+      receiverAddress = receiverWallet.address;
+    }
+
     // RECEIVE ADDRESS 2
-    const ADDRESS_2 = data.receiver;
+    const ADDRESS_2 = receiverAddress;
     const instructions = { maxLedgerVersionOffset: 5 };
     const currency = 'XRP';
     const amount = data.amount;

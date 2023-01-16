@@ -14,4 +14,7 @@ export class SendCoinDto {
   // TODO: Enum Send Speed, high, low, medium
   @IsString()
   sendSpeed: string;
+
+  @IsOptional()
+  receiverId: number;
 }
