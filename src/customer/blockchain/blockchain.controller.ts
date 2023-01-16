@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Body, Post } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Body, Post, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BlockchainService } from './blockchain.service';
 import { AdminBuyCoinDto, AdminSellCoinDto } from './dto/request/admin-buy-coin.dto';
@@ -176,5 +176,11 @@ export class BlockchainController {
   @Post('/sell/now/usdc')
   public async adminSellUSDC(@Request() req, @Body() body: AdminSellCoinDto): Promise<any> {
     return this.blockchainService.adminSellUSDC(req.user.id, body);
+  }
+
+  @Get('/calculate-send-fee/:token/:speed')
+  public async calculateSendFee(@Param('token') token: string, @Param('speed') speed: string): Promise<any> {
+    token = token.toUpperCase();
+    return this.blockchainService.calculateSendFee(token, speed);
   }
 }

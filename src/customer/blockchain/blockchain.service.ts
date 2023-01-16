@@ -1510,4 +1510,106 @@ export class BlockchainService {
       return { status: false, message: 'Error. Try again later.' };
     }
   }
+
+  public async calculateSendFee(sendTokenType, sendSpeed): Promise<any> {
+    try {
+      let gasPrice: { [key: string]: number } = {};
+      let price;
+      let tGasPrice = { ...gasPrice };
+      if (sendTokenType === 'ETH' || sendTokenType === 'USDT' || sendTokenType === 'USDC') {
+        const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
+          (res) => res.data,
+        );
+        tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
+        tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
+        tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
+        gasPrice = tGasPrice;
+      } else if (sendTokenType === 'BTC') {
+        const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
+          (res) => res.data,
+        );
+        tGasPrice['low'] = Math.floor(btcFee.low_fee_per_kb / 1000) + 1;
+        tGasPrice['medium'] = Math.floor(btcFee.medium_fee_per_kb / 1000) + 1;
+        tGasPrice['high'] = Math.floor(btcFee.high_fee_per_kb / 1000) + 1;
+        gasPrice = tGasPrice;
+      } else if (sendTokenType === 'BCH') {
+        const bchFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/bch/tx/fee`)).then(
+          (res) => res.data,
+        );
+        tGasPrice['low'] = bchFee.feePerKb;
+        tGasPrice['medium'] = bchFee.feePerKb;
+        tGasPrice['high'] = bchFee.feePerKb;
+        gasPrice = tGasPrice;
+      } else if (sendTokenType === 'XRP') {
+        const xrpFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/xrp/tx/fee`)).then(
+          (res) => res.data,
+        );
+        tGasPrice['low'] = xrpFee.feeEstimate;
+        tGasPrice['medium'] = xrpFee.feeEstimate;
+        tGasPrice['high'] = xrpFee.feeEstimate;
+        gasPrice = tGasPrice;
+      }
+      // else if (sendTokenType === "BNB") {
+      //     const Web3 = require("web3");
+      //     const binanceWeb3 = new Web3(new Web3.providers.HttpProvider("https://bsc-dataseed1.binance.org:443"));
+      //     binanceWeb3.eth.getGasPrice().then((res:any) => {
+      //         tGasPrice["low"] = res;
+      //         tGasPrice["medium"] = res;
+      //         tGasPrice["high"] = res;
+      //         setGasPrice(tGasPrice)
+      //     })
+      // }
+
+      let totalPrices = await this.getCoinPrices();
+
+      if (sendTokenType != 'BTC' && sendTokenType != 'BCH') {
+        if (
+          isNaN(
+            (gasPrice[sendSpeed] * gasLimit[sendTokenType] * totalPrices['ETH']) / 10 ** totalDecimal[sendTokenType],
+          )
+        ) {
+          console.log(gasPrice[sendSpeed], gasLimit[sendTokenType], totalPrices['ETH']);
+        } else {
+          return {
+            sendingFee:
+              Math.floor(
+                ((gasPrice[sendSpeed] * gasLimit[sendTokenType] * totalPrices['ETH']) /
+                  10 ** totalDecimal[sendTokenType]) *
+                  1000,
+              ) / 1000,
+          };
+        }
+
+        // return isNaN(
+        //   (gasPrice[sendSpeed] *
+        //     gasLimit[sendTokenType] *
+        //     (sendTokenType === 'ETH' || sendTokenType === 'USDT' || sendTokenType === 'USDC'
+        //       ? totalPrices['ETH']
+        //       : totalPrices[sendTokenType])) /
+        //     10 ** totalDecimal[sendTokenType],
+        // )
+        //   ? 0
+        //   : Math.floor(
+        //       ((gasPrice[sendSpeed] *
+        //         gasLimit[sendTokenType] *
+        //         (sendTokenType === 'ETH' || sendTokenType === 'USDT' || sendTokenType === 'USDC'
+        //           ? totalPrices['ETH']
+        //           : totalPrices[sendTokenType])) /
+        //         10 ** totalDecimal[sendTokenType]) *
+        //         1000,
+        //     ) / 1000;
+      } else {
+        return {
+          sendingFee:
+            Math.floor(
+              ((gasPrice[sendSpeed] * gasLimit[sendTokenType] * totalPrices[sendTokenType]) /
+                10 ** totalDecimal[sendTokenType]) *
+                1000,
+            ) / 1000,
+        };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
