@@ -12,6 +12,7 @@ export default () => ({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   environment: process.env.NODE_ENV,
+  nownode: getNowNodeProps(),
 });
 
 const getDatabaseProps = () => {
@@ -66,4 +67,8 @@ const getVTUProps = () => ({
   apiKey: process.env.VTU_API_KEY,
   publicKey: process.env.VTU_PUBLIC_KEY,
   privateKey: process.env.VTU_PRIVATE_KEY,
+});
+
+const getNowNodeProps = () => ({
+  apiKey: process.env.NOWNODE_API_KEY,
 });

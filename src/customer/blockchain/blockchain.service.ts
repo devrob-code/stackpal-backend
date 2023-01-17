@@ -12,7 +12,7 @@ import { SendCoinDto } from './dto/request/send-coin.dto';
 const RippleAPI = require('ripple-lib').RippleAPI;
 const CryptoAccount = require('send-crypto');
 const BchWallet = require('minimal-bch-wallet/index');
-const NOWNodesApiKey = 'c6c243ff-9a7a-43dd-86d9-1ca9bec25e76';
+
 const totalDecimal: { [key: string]: number } = {
   BTC: 8,
   ETH: 18,
@@ -114,23 +114,29 @@ export class BlockchainService {
 
   public async getBTCBalance(userId: number): Promise<any> {
     const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'bitcoin');
+    const NOWNodesApiKey = this.configService.get('nownode.apiKey');
 
     try {
       const res = await firstValueFrom(
-        this.httpService.post(`https://btcbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
-          headers: { 'api-key': NOWNodesApiKey },
-        }),
+        this.httpService.post(
+          `https://btcbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          {},
+          {
+            headers: { 'Accept-Encoding': 'gzip,deflate,compress', 'api-key': NOWNodesApiKey },
+          },
+        ),
       )
         .then(async (response) => {
           if (response.data.txids) {
             bitcoinTxids = response.data.txids;
           }
+
           //return response.data.balance / 10 ** totalDecimal['BTC'];
           response.data.balance = response.data.balance / 10 ** totalDecimal['BTC'];
           return response.data;
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return 0;
         });
       return res;
@@ -140,6 +146,7 @@ export class BlockchainService {
   }
 
   public async getBCHBalance(userId: number): Promise<any> {
+    const NOWNodesApiKey = this.configService.get('nownode.apiKey');
     const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'bitcoincash');
     //const simpleWallet = new SimpleWallet(userWallet.mnemonic);
 
@@ -166,6 +173,7 @@ export class BlockchainService {
   }
 
   public async getERC20Balance(userId: number): Promise<any> {
+    const NOWNodesApiKey = this.configService.get('nownode.apiKey');
     const userWallet = await this.walletRepositoryService.getWalletByUserIdAndNetwork(userId, 'ethereum');
 
     try {
@@ -220,6 +228,7 @@ export class BlockchainService {
   }
 
   public async getETHTransactionHistory(userId: number): Promise<any> {
+    const NOWNodesApiKey = this.configService.get('nownode.apiKey');
     await this.getERC20Balance(userId);
     let totalHis: any = [];
     const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);
@@ -290,6 +299,7 @@ export class BlockchainService {
   }
 
   public async getBTCTransactionHistory(userId: number): Promise<any> {
+    const NOWNodesApiKey = this.configService.get('nownode.apiKey');
     await this.getBTCBalance(userId);
     const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);
 
@@ -364,6 +374,7 @@ export class BlockchainService {
   }
 
   public async getBCHTransactionHistory(userId: number): Promise<any> {
+    const NOWNodesApiKey = this.configService.get('nownode.apiKey');
     await this.getBCHBalance(userId);
     const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);
 
