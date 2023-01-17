@@ -566,6 +566,7 @@ export class BlockchainService {
       }
     } catch (error) {
       console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
     }
   }
 
@@ -677,6 +678,7 @@ export class BlockchainService {
       }
     } catch (error) {
       console.log(error);
+      return { status: false, message: 'Error. Try again later.' };
     }
     // try {
     //   const userWallet = await this.walletRepositoryService.getWalletsByUserId(data.userId);
@@ -888,7 +890,7 @@ export class BlockchainService {
           .catch(reject),
       );
     } catch (error) {
-      alert(error);
+      return { status: false, message: 'Error. Try again later.' };
     }
   }
 
