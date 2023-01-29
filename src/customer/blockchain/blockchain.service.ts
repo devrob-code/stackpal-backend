@@ -884,7 +884,6 @@ export class BlockchainService {
             });
           })
           .then(() => {
-            console.log('d');
             //rippleApi.disconnect();
           })
           .catch(reject),
