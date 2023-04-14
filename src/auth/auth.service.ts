@@ -143,7 +143,7 @@ export class AuthService {
   public async sendPhoneVerificationCode(body: PhoneVerificationDto): Promise<boolean> {
     const code = this.helperService.generateCode(6);
 
-    // Save Code to db
+    // Save Code to DB
     await this.verificationRepositoryService.createPhoneVerificationCode({
       phone: body.phone,
       code,

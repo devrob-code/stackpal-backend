@@ -61,20 +61,27 @@ export class BlockchainService {
     ];
     try {
       const baseURL = this.configService.get('coingecko.baseUrl');
-      const url = `${baseURL}/coins`;
+      const url = `${baseURL}/simple/price?ids=tether%2Cbitcoin%2Cusd-coin%2Cethereum%2Cripple%2Cbitcoin-cash&vs_currencies=usd`;
       const { data } = await firstValueFrom(
         this.httpService.get(url, { headers: { 'Accept-Encoding': 'gzip,deflate,compress' } }),
       );
 
       //return data;
-      data.map((eRes: any) => {
-        tokens.map((eToken) => {
-          if (eToken.token.toLowerCase() === eRes.symbol) {
-            tPrices[eToken.token] = eRes.market_data.current_price.usd;
-          }
-        });
-      });
-      return tPrices;
+      // data.map((eRes: any) => {
+      //   tokens.map((eToken) => {
+      //     if (eToken.token.toLowerCase() === eRes.symbol) {
+      //       tPrices[eToken.token] = eRes.market_data.current_price.usd;
+      //     }
+      //   });
+      // });
+      return {
+        BTC: data.bitcoin.usd,
+        ETH: data.ethereum.usd,
+        USDT: data.tether.usd,
+        USDC: data['usd-coin']['usd'],
+        XRP: data.ripple.usd,
+        BCH: data['bitcoin-cash']['usd'],
+      };
     } catch (e) {
       console.log(e.message);
     }
@@ -223,6 +230,7 @@ export class BlockchainService {
 
   public async getNGNBalance(userId: number): Promise<any> {
     const currency = await this.currencyRepositoryService.getByCurrencyAlias('NGN');
+    console.log({ currency });
     const wallet = await this.walletRepositoryService.getUserWalletByCurrencyId(userId, currency.id);
     return { balance: Number(wallet.balance) };
   }
@@ -906,24 +914,33 @@ export class BlockchainService {
     ];
     try {
       const baseURL = this.configService.get('coingecko.baseUrl');
-      const url = `${baseURL}/coins`;
+      const url = `${baseURL}/simple/price?ids=tether%2Cbitcoin%2Cusd-coin%2Cethereum%2Cripple%2Cbitcoin-cash&vs_currencies=usd%2Cngn`;
       const { data } = await firstValueFrom(
         this.httpService.get(url, { headers: { 'Accept-Encoding': 'gzip,deflate,compress' } }),
       );
 
       //return data;
-      data.map((eRes: any) => {
-        tokens.map((eToken) => {
-          if (eToken.token.toLowerCase() === eRes.symbol) {
-            tPrices[eToken.token] = eRes.market_data.current_price.usd;
-          }
+      // data.map((eRes: any) => {
+      //   tokens.map((eToken) => {
+      //     if (eToken.token.toLowerCase() === eRes.symbol) {
+      //       tPrices[eToken.token] = eRes.market_data.current_price.usd;
+      //     }
 
-          if (eRes.symbol === 'usdt') {
-            tPrices['rate'] = eRes.market_data.current_price.ngn + 284;
-          }
-        });
-      });
-      return tPrices;
+      //     if (eRes.symbol === 'usdt') {
+      //       tPrices['rate'] = eRes.market_data.current_price.ngn + 284;
+      //     }
+      //   });
+      // });
+
+      return {
+        BTC: data.bitcoin.usd,
+        ETH: data.ethereum.usd,
+        USDT: data.tether.usd,
+        USDC: data['usd-coin']['usd'],
+        XRP: data.ripple.usd,
+        BCH: data['bitcoin-cash']['usd'],
+        rate: data.tether.ngn + 284,
+      };
     } catch (e) {
       console.log(e.message);
     }
@@ -934,22 +951,22 @@ export class BlockchainService {
     const tokens = [{ token: 'USDT', network: 'ethereum' }];
     try {
       const baseURL = this.configService.get('coingecko.baseUrl');
-      const url = `${baseURL}/coins`;
+      const url = `${baseURL}/simple/price?ids=tether&vs_currencies=ngn`;
 
       const { data } = await firstValueFrom(
         this.httpService.get(url, { headers: { 'Accept-Encoding': 'gzip,deflate,compress' } }),
       );
 
-      //return data;
-      data.map((eRes: any) => {
-        tokens.map((eToken) => {
-          if (eToken.token.toLowerCase() === eRes.symbol) {
-            price = eRes.market_data.current_price.ngn + 284;
-          }
-        });
-      });
+      // //return data;
+      // data.map((eRes: any) => {
+      //   tokens.map((eToken) => {
+      //     if (eToken.token.toLowerCase() === eRes.symbol) {
+      //       price = eRes.market_data.current_price.ngn + 284;
+      //     }
+      //   });
+      // });
 
-      return price;
+      return data.tether.ngn + 284;
     } catch (e) {
       console.log(e.message);
     }

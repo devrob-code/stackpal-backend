@@ -20,11 +20,11 @@ export class SmsService {
         body: `Your Stackpal verification code is ${code}`,
       });
 
-      //TODO: Turn back this condition once twilio is active  if (response) return true;
-      return true;
+      if (response) return true;
     } catch (e) {
       Logger.error(e);
-      return false;
+      return true;
+      // TODO: Change to false as soon as Twilio is active
     }
 
     // .then((message) => {
