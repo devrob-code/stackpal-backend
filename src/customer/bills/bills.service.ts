@@ -55,6 +55,7 @@ export class BillsService {
       const url = `${this.baseURL}/pay`;
       const requestId = this.todayDate + this.generateRandomString();
 
+      console.log(requestId);
       const { data } = await firstValueFrom(
         this.httpService.post(
           url,
@@ -222,6 +223,8 @@ export class BillsService {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
       const requestId = this.todayDate + this.generateRandomString();
+
+      console.log(requestId);
 
       const { data } = await firstValueFrom(
         this.httpService.post(
