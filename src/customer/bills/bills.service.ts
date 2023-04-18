@@ -53,7 +53,7 @@ export class BillsService {
   public async purchaseAirtime(body: PurchaseAirtimeDto): Promise<any> {
     try {
       const url = `${this.baseURL}/pay`;
-      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
+      const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -94,7 +94,7 @@ export class BillsService {
   public async buyDataPlan(body: PurchaseDataDto): Promise<any> {
     try {
       const url = `${this.baseURL}/pay`;
-      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
+      const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
 
       let serviceId;
       if (body.network === DataNetworkTypes.smile) {
@@ -164,7 +164,7 @@ export class BillsService {
     try {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
-      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
+      const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -222,7 +222,7 @@ export class BillsService {
     try {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
-      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
+      const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
 
       console.log(requestId);
 
