@@ -53,9 +53,8 @@ export class BillsService {
   public async purchaseAirtime(body: PurchaseAirtimeDto): Promise<any> {
     try {
       const url = `${this.baseURL}/pay`;
-      const requestId = this.todayDate + this.generateRandomString();
+      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
 
-      console.log(requestId);
       const { data } = await firstValueFrom(
         this.httpService.post(
           url,
@@ -95,7 +94,8 @@ export class BillsService {
   public async buyDataPlan(body: PurchaseDataDto): Promise<any> {
     try {
       const url = `${this.baseURL}/pay`;
-      const requestId = this.todayDate + this.generateRandomString();
+      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
+
       let serviceId;
       if (body.network === DataNetworkTypes.smile) {
         serviceId = `${body.network}-direct`;
@@ -164,7 +164,7 @@ export class BillsService {
     try {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
-      const requestId = this.todayDate + this.generateRandomString();
+      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -222,7 +222,7 @@ export class BillsService {
     try {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
-      const requestId = this.todayDate + this.generateRandomString();
+      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
 
       console.log(requestId);
 
@@ -266,7 +266,7 @@ export class BillsService {
     try {
       const { network, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
-      const requestId = this.todayDate + this.generateRandomString();
+      const requestId = moment().format('YYYYMMDDHHmm') + this.generateRandomString();
 
       const { data } = await firstValueFrom(
         this.httpService.post(
