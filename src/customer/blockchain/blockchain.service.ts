@@ -140,6 +140,7 @@ export class BlockchainService {
 
           //return response.data.balance / 10 ** totalDecimal['BTC'];
           response.data.balance = response.data.balance / 10 ** totalDecimal['BTC'];
+          response.data.btcWallet = userWallet;
           return response.data;
         })
         .catch((err) => {
@@ -212,6 +213,7 @@ export class BlockchainService {
             ETH: ethCurrentBalance,
             USDT: usdtCurrentBalance,
             USDC: usdcCurrentBalance,
+            ethWallet: userWallet,
           };
         })
         .catch((err) => {
@@ -973,26 +975,29 @@ export class BlockchainService {
   }
 
   public async dashboardBalances(userId: number) {
-    const ngnBalance: any = await this.getNGNBalance(userId);
-    const btcBalance: any = await this.getBTCBalance(userId);
     //const bchBalance = await this.getBCHBalance(userId);
-    const erc20Balance: any = await this.getERC20Balance(userId);
-    const coinsDollarPrices: any = await this.getCoinPrices();
-    const usdRate = await this.getOnlyUsdRate();
 
-    const balances = Promise.all([ngnBalance, btcBalance, erc20Balance, usdRate, coinsDollarPrices]).then((values) => {
-      return {
-        ngnBalance: ngnBalance.balance.toString(),
-        btcBalance: btcBalance.balance.toString(),
-        ethBalance: erc20Balance.ETH.toString(),
-        usdtBalance: erc20Balance.USDT.toString(),
-        usdcBalance: erc20Balance.USDC.toString(),
-        usd: usdRate.toString(),
-        coinsDollarPrices,
-      };
-    });
-
-    return balances;
+    const [ngnBalance, btcBalance, erc20Balance, coinsDollarPrices, usdRate] = await Promise.all([
+      this.getNGNBalance(userId),
+      this.getBTCBalance(userId),
+      this.getERC20Balance(userId),
+      this.getCoinPrices(),
+      this.getOnlyUsdRate(),
+    ]);
+    console.log({ coinsDollarPrices });
+    return {
+      ngnBalance: ngnBalance.balance.toString(),
+      btcBalance: btcBalance.balance.toString(),
+      ethBalance: erc20Balance.ETH.toString(),
+      usdtBalance: erc20Balance.USDT.toString(),
+      usdcBalance: erc20Balance.USDC.toString(),
+      usd: usdRate.toString(),
+      coinsDollarPrices,
+      wallets: {
+        btcWalletAddress: btcBalance.btcWallet.address,
+        ethWalletAddress: erc20Balance.ethWallet.address,
+      },
+    };
   }
 
   public async adminSendBTC(receiverId: number, body: AdminBuyCoinDto) {
