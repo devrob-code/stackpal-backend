@@ -269,7 +269,10 @@ export class BlockchainService {
           )
             .then(async (response) => {
               if (!userWallet) return [];
+
               var data = {
+                from: response.data.vin[0].addresses[0],
+                transactionId: response.data.txid,
                 scanURL: `https://www.blockchain.com/eth/tx/${response.data.txid}`,
                 network: 'Ethereum',
                 symbol: response.data.tokenTransfers ? response.data.tokenTransfers[0].symbol : 'ETH',
@@ -298,7 +301,7 @@ export class BlockchainService {
             });
         }
 
-        return totalHis;
+        return { status: true, data: totalHis };
       } catch (error) {
         console.log(error);
         return [];
@@ -373,7 +376,7 @@ export class BlockchainService {
               });
           }),
         );
-        return totalHis.map((res) => res);
+        return { status: true, data: totalHis.map((res) => res) };
       } catch (error) {
         console.log(error);
         return [];
