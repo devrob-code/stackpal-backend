@@ -16,7 +16,7 @@ export default async function (configService: ConfigService): Promise<PostgresCo
     migrationsRun,
     // migrations: [migrations],
     entities: [entities],
-    logging: true,
+    logging: false,
     ssl,
   };
 }

@@ -329,6 +329,7 @@ export class BlockchainService {
 
       try {
         let totalHis: any = [];
+
         await Promise.all(
           bitcoinTxids.map(async (eTxids) => {
             await firstValueFrom(
@@ -336,7 +337,7 @@ export class BlockchainService {
                 `https://btcbook.nownodes.io/api/v2/tx/${eTxids}`,
                 {},
                 {
-                  headers: { 'api-key': NOWNodesApiKey },
+                  headers: { 'api-key': NOWNodesApiKey, 'Accept-Encoding': 'gzip,deflate,compress' },
                 },
               ),
             )
@@ -361,11 +362,15 @@ export class BlockchainService {
                 //   }
                 // });
                 var data = {
+                  from: response.data.vin[0].addresses[0],
+                  transactionId: response.data.txid,
                   scanURL: `https://www.blockchain.com/btc/tx/${response.data.txid}`,
                   network: 'Bitcoin',
                   symbol: 'BTC',
                   blocktime: response.data.blockTime,
-                  amount: value,
+                  amount: response.data.tokenTransfers
+                    ? response.data.tokenTransfers[0].value / 10 ** response.data.tokenTransfers[0].decimals
+                    : response.data.value / 10 ** totalDecimal['BTC'],
                   fee: response.data.fees / 10 ** totalDecimal['BTC'],
                   status: response.data.confirmations >= 3 ? state : 'Pending',
                 };
@@ -376,6 +381,7 @@ export class BlockchainService {
               });
           }),
         );
+
         return { status: true, data: totalHis.map((res) => res) };
       } catch (error) {
         console.log(error);
