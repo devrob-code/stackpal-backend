@@ -56,3 +56,7 @@ export enum EducationTypes {
   waec = 'waec',
   jamb = 'jamb',
 }
+
+export enum AirtimePaymentType {
+  prepaid = 'prepaid',
+}

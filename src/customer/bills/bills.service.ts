@@ -6,6 +6,7 @@ import { WalletRepositoryService } from 'src/repositories/wallets/wallet-reposit
 import { PurchaseAirtimeDto } from './dto/request/purchase-airtime.dto';
 import * as moment from 'moment';
 import {
+  AirtimePaymentType,
   DataNetworkTypes,
   EducationTypes,
   ElectricityList,
@@ -22,6 +23,7 @@ import { TransactionRepositoryService } from 'src/repositories/transactions/tran
 import { HelperService } from 'src/core/helpers/helper.service';
 import { MailService } from 'src/core/mail/mail.service';
 import { UserRepositoryService } from 'src/repositories/users/user-repository.service';
+import { AirtimeDataTypes } from '../transactions/transactions.constants';
 
 @Injectable()
 export class BillsService {
@@ -56,10 +58,11 @@ export class BillsService {
     }
   }
 
-  public async purchaseAirtime(body: PurchaseAirtimeDto): Promise<any> {
+  public async purchaseAirtime(body: PurchaseAirtimeDto, userId: number): Promise<any> {
     try {
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
+      const user = await this.userRepositoryService.getById(userId);
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -68,6 +71,32 @@ export class BillsService {
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
       );
+
+      // Log into transactions
+      this.transactionRepositoryService
+        .createAirtimeDataTransactionHistory({
+          txId: this.helperService.generateTransactionId('SPAL_', 8),
+          userId: userId,
+          amount: body.amount * 100, // Convert to KOBO
+          network: body.network,
+          plan: AirtimePaymentType.prepaid,
+          recipient: body.phone,
+          billerTxId: data.content.transactions.transactionId,
+          status: data.content.transactions.status,
+          type: AirtimeDataTypes.airtime,
+        })
+        .then((response) => {
+          // Send Email
+          this.mailService.billTransaction(
+            user.email,
+            AirtimePaymentType.prepaid,
+            body.phone,
+            body.amount,
+            user.username,
+            body.network,
+            response.txId,
+          );
+        });
 
       return data;
     } catch (e) {
@@ -97,10 +126,11 @@ export class BillsService {
     }
   }
 
-  public async buyDataPlan(body: PurchaseDataDto): Promise<any> {
+  public async buyDataPlan(body: PurchaseDataDto, userId: number): Promise<any> {
     try {
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
+      const user = await this.userRepositoryService.getById(userId);
 
       let serviceId;
       if (body.network === DataNetworkTypes.smile) {

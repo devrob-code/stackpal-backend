@@ -25,8 +25,8 @@ export class BillsController {
   }
 
   @Post('airtime')
-  public async purchaseAirtime(@Body() body: PurchaseAirtimeDto): Promise<any> {
-    return this.billsService.purchaseAirtime(body);
+  public async purchaseAirtime(@Body() body: PurchaseAirtimeDto, @Request() req): Promise<any> {
+    return this.billsService.purchaseAirtime(body, req.user.id);
   }
 
   @Get('data/:network')
@@ -35,8 +35,8 @@ export class BillsController {
   }
 
   @Post('data')
-  public async buyDataPlan(@Body() body: PurchaseDataDto): Promise<any> {
-    return this.billsService.buyDataPlan(body);
+  public async buyDataPlan(@Body() body: PurchaseDataDto, @Request() req): Promise<any> {
+    return this.billsService.buyDataPlan(body, req.user.id);
   }
 
   @Get('tv/:network')
