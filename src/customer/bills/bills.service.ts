@@ -155,6 +155,32 @@ export class BillsService {
         ),
       );
 
+      // Log into transactions
+      this.transactionRepositoryService
+        .createAirtimeDataTransactionHistory({
+          txId: this.helperService.generateTransactionId('SPAL_', 8),
+          userId: userId,
+          amount: Number(data.content.transactions.amount) * 100, // Convert to KOBO
+          network: body.network,
+          plan: body.variationCode,
+          recipient: body.phone,
+          billerTxId: data.content.transactions.transactionId,
+          status: data.content.transactions.status,
+          type: AirtimeDataTypes.data,
+        })
+        .then((response) => {
+          // Send Email
+          this.mailService.billTransaction(
+            user.email,
+            body.variationCode,
+            body.phone,
+            data.content.transactions.amount,
+            user.username,
+            body.network,
+            response.txId,
+          );
+        });
+
       return data;
     } catch (e) {
       throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
