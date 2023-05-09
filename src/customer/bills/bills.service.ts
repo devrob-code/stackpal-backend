@@ -18,6 +18,10 @@ import { PurchaseDataDto } from './dto/request/purchase-data.dto';
 import { PurchaseTVSubscriptionDto } from './dto/request/purchase-tv-subscription.dto';
 import { PurchaseElectricityDto } from './dto/request/purchase-electricity.dto';
 import { PurchaseEducationDto } from './dto/request/purchase-education.dto';
+import { TransactionRepositoryService } from 'src/repositories/transactions/transactions.repository.service';
+import { HelperService } from 'src/core/helpers/helper.service';
+import { MailService } from 'src/core/mail/mail.service';
+import { UserRepositoryService } from 'src/repositories/users/user-repository.service';
 
 @Injectable()
 export class BillsService {
@@ -25,12 +29,14 @@ export class BillsService {
   private apiKey = this.configService.get('vtu.apiKey');
   private publicKey = this.configService.get('vtu.publicKey');
   private privateKey = this.configService.get('vtu.privateKey');
-  private todayDate = moment().format('YYYYMMDDHHmm');
 
   constructor(
     private httpService: HttpService,
     private readonly configService: ConfigService,
-    private readonly walletRepositoryService: WalletRepositoryService,
+    private readonly helperService: HelperService,
+    private readonly mailService: MailService,
+    private readonly transactionRepositoryService: TransactionRepositoryService,
+    private readonly userRepositoryService: UserRepositoryService,
   ) {}
 
   private generateRandomString(): string {
@@ -160,11 +166,12 @@ export class BillsService {
     }
   }
 
-  public async payTVBills(body: PurchaseTVSubscriptionDto): Promise<any> {
+  public async payTVBills(body: PurchaseTVSubscriptionDto, userId: number): Promise<any> {
     try {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
+      const user = await this.userRepositoryService.getById(userId);
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -181,6 +188,31 @@ export class BillsService {
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
       );
+
+      // Log into transactions
+      this.transactionRepositoryService
+        .createTvTransactionHistory({
+          txId: this.helperService.generateTransactionId('SPAL_', 8),
+          userId: userId,
+          amount: body.amount * 100, // Convert to KOBO
+          network: body.network,
+          plan: body.variationCode,
+          recipient: body.billersCode,
+          billerTxId: requestId,
+          status: data.content.transactions.status,
+        })
+        .then((response) => {
+          // Send Email
+          this.mailService.billTransaction(
+            user.email,
+            body.variationCode,
+            body.billersCode,
+            body.amount,
+            user.username,
+            body.network,
+            response.txId,
+          );
+        });
 
       return data;
     } catch (e) {
@@ -223,8 +255,6 @@ export class BillsService {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
-
-      console.log(requestId);
 
       const { data } = await firstValueFrom(
         this.httpService.post(

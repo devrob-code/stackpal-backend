@@ -232,7 +232,6 @@ export class BlockchainService {
 
   public async getNGNBalance(userId: number): Promise<any> {
     const currency = await this.currencyRepositoryService.getByCurrencyAlias('NGN');
-    console.log({ currency });
     const wallet = await this.walletRepositoryService.getUserWalletByCurrencyId(userId, currency.id);
     return { balance: Number(wallet.balance) };
   }
@@ -993,7 +992,7 @@ export class BlockchainService {
       this.getCoinPrices(),
       this.getOnlyUsdRate(),
     ]);
-    console.log({ coinsDollarPrices });
+
     return {
       ngnBalance: ngnBalance.balance.toString(),
       btcBalance: btcBalance.balance.toString(),

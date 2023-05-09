@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
   DataNetworkTypes,
@@ -53,8 +53,8 @@ export class BillsController {
   }
 
   @Post('tv')
-  public async payTVBills(@Body() body: PurchaseTVSubscriptionDto): Promise<any> {
-    return this.billsService.payTVBills(body);
+  public async payTVBills(@Body() body: PurchaseTVSubscriptionDto, @Request() req): Promise<any> {
+    return this.billsService.payTVBills(body, req.user.id);
   }
 
   @Get('electricity/list')

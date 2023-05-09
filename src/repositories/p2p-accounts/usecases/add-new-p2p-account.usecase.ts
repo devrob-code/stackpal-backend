@@ -11,13 +11,8 @@ export class AddNewP2PAccountUseCase {
     private readonly p2pAccountRepo: Repository<P2PAccount>,
   ) {}
 
-  public async exec(
-    p2pAccount: Partial<P2PAccount>,
-  ): Promise<P2PAccountResponse> {
-    const newP2PAccount = this.p2pAccountRepo.merge(
-      new P2PAccount(),
-      p2pAccount,
-    );
+  public async exec(p2pAccount: Partial<P2PAccount>): Promise<P2PAccountResponse> {
+    const newP2PAccount = this.p2pAccountRepo.merge(new P2PAccount(), p2pAccount);
 
     return this.p2pAccountRepo.save(newP2PAccount);
   }

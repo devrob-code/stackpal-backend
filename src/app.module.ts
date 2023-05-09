@@ -14,6 +14,7 @@ import { P2PAccountModule } from './customer/p2p-accounts/p2p-account.module';
 //import { RateModule } from './customer/rates/rate.module';
 import { WalletModule } from './customer/wallet/wallet.module';
 import { UserModule } from './user/user.module';
+import { TransactionsModule } from './customer/transactions/transactions.module';
 
 @Module({
   controllers: [AppController],
@@ -31,6 +32,7 @@ import { UserModule } from './user/user.module';
     GiftCardModule,
     BlockchainModule,
     BillsModule,
+    TransactionsModule,
     //RateModule,
   ],
 })

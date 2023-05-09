@@ -132,4 +132,32 @@ export class MailService {
 
     return !!sendBuyCoinEmail;
   }
+
+  public async billTransaction(
+    email: string,
+    variationCode: string,
+    billersCode: string,
+    amount: number,
+    username: string,
+    network: string,
+    txId: string,
+  ): Promise<boolean> {
+    let sendTransactionEmail = this.mailerService.sendMail({
+      to: email.toLowerCase(),
+      from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
+      subject: `Stackpal - New ${network.charAt(0).toUpperCase() + network.slice(1).toLowerCase()} Bill Transaction`,
+      template: './bill-transaction',
+      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+      context: {
+        txId,
+        network,
+        plan: variationCode,
+        billersCode,
+        amount: amount.toLocaleString(),
+        username,
+      },
+    });
+
+    return !!sendTransactionEmail;
+  }
 }
