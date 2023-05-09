@@ -141,6 +141,7 @@ export class MailService {
     username: string,
     network: string,
     txId: string,
+    electricityCode: string = null,
   ): Promise<boolean> {
     let sendTransactionEmail = this.mailerService.sendMail({
       to: email.toLowerCase(),
@@ -155,6 +156,7 @@ export class MailService {
         billersCode,
         amount: amount.toLocaleString(),
         username,
+        electricityCode,
       },
     });
 

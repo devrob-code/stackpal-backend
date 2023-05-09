@@ -198,7 +198,7 @@ export class BillsService {
           network: body.network,
           plan: body.variationCode,
           recipient: body.billersCode,
-          billerTxId: requestId,
+          billerTxId: data.content.transactions.transactionId,
           status: data.content.transactions.status,
         })
         .then((response) => {
@@ -250,11 +250,12 @@ export class BillsService {
     }
   }
 
-  public async payElectricity(body: PurchaseElectricityDto): Promise<any> {
+  public async payElectricity(body: PurchaseElectricityDto, userId: number): Promise<any> {
     try {
       const { network, billersCode, amount, phone, variationCode } = body;
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
+      const user = await this.userRepositoryService.getById(userId);
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -271,6 +272,32 @@ export class BillsService {
           { headers: { 'api-key': this.apiKey, 'secret-key': this.privateKey } },
         ),
       );
+
+      // Log into transactions
+      this.transactionRepositoryService
+        .createElectricityTransactionHistory({
+          txId: this.helperService.generateTransactionId('SPAL_', 8),
+          userId: userId,
+          amount: body.amount * 100, // Convert to KOBO
+          network: body.network,
+          plan: body.variationCode.charAt(0).toUpperCase() + body.variationCode.slice(1).toLowerCase(),
+          recipient: body.billersCode,
+          billerTxId: data.content.transactions.transactionId,
+          status: data.content.transactions.status,
+        })
+        .then((response) => {
+          // Send Email
+          this.mailService.billTransaction(
+            user.email,
+            body.variationCode,
+            body.billersCode,
+            body.amount,
+            user.username,
+            body.network,
+            response.txId,
+            data.purchased_code,
+          );
+        });
 
       return data;
     } catch (e) {

@@ -72,8 +72,8 @@ export class BillsController {
   }
 
   @Post('electricity')
-  public async payElectricity(@Body() body: PurchaseElectricityDto): Promise<any> {
-    return this.billsService.payElectricity(body);
+  public async payElectricity(@Body() body: PurchaseElectricityDto, @Request() req): Promise<any> {
+    return this.billsService.payElectricity(body, req.user.id);
   }
 
   @Get('education/:network')
