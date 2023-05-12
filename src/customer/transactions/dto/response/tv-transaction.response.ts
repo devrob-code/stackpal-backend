@@ -13,6 +13,21 @@ export class TvTransactionResponse {
   txId: string;
 
   @Expose()
+  amount: number;
+
+  @Expose()
+  network: string;
+
+  @Expose()
+  plan: string;
+
+  @Expose()
+  recipient: string;
+
+  @Expose()
+  status: string;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()

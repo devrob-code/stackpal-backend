@@ -8,6 +8,9 @@ import { CreateElectricityTransactionsUseCase } from './usecases/create-electric
 import { CreateAirtimeDataTransactionDto } from 'src/customer/transactions/dto/request/create-airtime-data-transaction.dto';
 import { AirtimeDataTransactionResponse } from 'src/customer/transactions/dto/response/airtime-data-transaction.dto';
 import { CreateAirtimeDataTransactionsUseCase } from './usecases/create-airtime-data-transaction.usecase';
+import { GetTvTransactionsByUserIdUseCase } from './usecases/get-tv-transactions-by-user-id.usecase';
+import { GetElectricityTransactionsByUserIdUseCase } from './usecases/get-electricity-transactions-by-user-id.usecase';
+import { GetAirtimeDataTransactionsByUserIdUseCase } from './usecases/get-airtime-data-transactions-by-user-id.usecase';
 
 @Injectable()
 export class TransactionRepositoryService {
@@ -15,6 +18,9 @@ export class TransactionRepositoryService {
     private readonly createTvTransactionsUseCase: CreateTvTransactionsUseCase,
     private readonly createElectricityTransactionsUseCase: CreateElectricityTransactionsUseCase,
     private readonly createAirtimeDataTransactionsUseCase: CreateAirtimeDataTransactionsUseCase,
+    private readonly getTvTransactionsByUserIdUseCase: GetTvTransactionsByUserIdUseCase,
+    private readonly getElectricityTransactionsByUserIdUseCase: GetElectricityTransactionsByUserIdUseCase,
+    private readonly getAirtimeDataTransactionsByUserIdUseCase: GetAirtimeDataTransactionsByUserIdUseCase,
   ) {}
 
   public async createTvTransactionHistory(body: CreateTvTransactionDto): Promise<TvTransactionResponse> {
@@ -31,5 +37,17 @@ export class TransactionRepositoryService {
     body: CreateAirtimeDataTransactionDto,
   ): Promise<AirtimeDataTransactionResponse> {
     return this.createAirtimeDataTransactionsUseCase.exec(body);
+  }
+
+  public async getTvTransactionsByUserId(userId: number): Promise<TvTransactionResponse[]> {
+    return this.getTvTransactionsByUserIdUseCase.exec(userId);
+  }
+
+  public async getElectricityTransactionsByUserId(userId: number): Promise<ElectricityTransactionResponse[]> {
+    return this.getElectricityTransactionsByUserIdUseCase.exec(userId);
+  }
+
+  public async getAirtimeDataTransactionsByUserId(userId: number): Promise<AirtimeDataTransactionResponse[]> {
+    return this.getAirtimeDataTransactionsByUserIdUseCase.exec(userId);
   }
 }

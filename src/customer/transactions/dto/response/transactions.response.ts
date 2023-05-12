@@ -1,8 +1,8 @@
-import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { UserResponse } from 'src/user/dto/response/user.response';
 
 @Exclude()
-export class ElectricityTransactionResponse {
+export class TransactionsResponse {
   @Expose()
   id: number;
 
