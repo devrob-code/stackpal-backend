@@ -18,19 +18,34 @@ export class GiftCard {
   adminId: number;
 
   @Column('varchar')
-  cardType: string;
+  name: string;
 
   @Column('varchar')
   imageUrl: string;
 
-  @Column('bigint')
-  physicalRate: number;
+  @Column('varchar')
+  denominationRange: string;
 
-  @Column('bigint')
-  eCodeRate: number;
+  @Column('varchar')
+  country: string;
 
   @Column('int')
-  denomination: number;
+  physicalFastRate: number;
+
+  @Column('int')
+  physicalSlowRate: number;
+
+  @Column('int')
+  ecodeFastRate: number;
+
+  @Column('int')
+  ecodeSlowRate: number;
+
+  @Column('varchar')
+  receiptType: string;
+
+  @Column('varchar')
+  receiptImageUrl: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

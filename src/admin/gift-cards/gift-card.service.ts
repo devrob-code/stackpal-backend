@@ -17,37 +17,21 @@ export class AdminGiftCardService {
     return this.giftCardRepositoryService.newGiftCard(data);
   }
 
-  public async updateGiftCardById(
-    id: number,
-    body: UpdateGiftCardDto,
-  ): Promise<boolean> {
+  public async updateGiftCardById(id: number, body: UpdateGiftCardDto): Promise<boolean> {
     return this.giftCardRepositoryService.updateGiftCardById(id, body);
   }
 
-  public async changeGiftCardDepositApprovalStatus(
-    id: number,
-    status: boolean,
-    approvedBy: number,
-  ): Promise<boolean> {
-    return this.giftCardDepositRepositoryService.changeGiftCardDepositApprovalStatus(
-      id,
-      status,
-      approvedBy,
-    );
+  public async changeGiftCardDepositApprovalStatus(id: number, status: boolean, approvedBy: number): Promise<boolean> {
+    return this.giftCardDepositRepositoryService.changeGiftCardDepositApprovalStatus(id, status, approvedBy);
   }
 
   public async getAllGiftCardDeposits(): Promise<GiftCardDepositResponse[]> {
-    const giftCardDeposits =
-      await this.giftCardDepositRepositoryService.getAllGiftCardDeposits();
+    const giftCardDeposits = await this.giftCardDepositRepositoryService.getAllGiftCardDeposits();
     return plainToInstance(GiftCardDepositResponse, giftCardDeposits);
   }
 
-  public async getGiftCardDepositById(
-    id: number,
-  ): Promise<GiftCardDepositResponse> {
-    const giftCardDeposit = await this.giftCardDepositRepositoryService.getById(
-      id,
-    );
+  public async getGiftCardDepositById(id: number): Promise<GiftCardDepositResponse> {
+    const giftCardDeposit = await this.giftCardDepositRepositoryService.getById(id);
     return plainToInstance(GiftCardDepositResponse, giftCardDeposit);
   }
 }

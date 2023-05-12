@@ -2,26 +2,38 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class GiftCardDto {
   @IsString()
-  cardType: string;
+  name: string;
 
   @IsString()
+  imageUrl: string;
+
+  @IsString()
+  country: string;
+
+  @IsInt()
+  physicalFastRate: number;
+
+  @IsInt()
+  physicalSlowRate: number;
+
+  @IsInt()
+  ecodeFastRate: number;
+
+  @IsInt()
+  ecodeSlowRate: number;
+
+  @IsString()
+  denominationRange: string;
+
   @IsOptional()
-  imageUrl?: string;
-
-  @IsInt()
-  physicalRate: number;
-
-  @IsInt()
-  eCodeRate: number;
-
-  @IsInt()
-  denomination: number;
+  @IsString()
+  receiptType: string;
 }
 
 export class UpdateGiftCardDto {
   @IsString()
   @IsOptional()
-  cardType?: string;
+  name?: string;
 
   @IsString()
   @IsOptional()
@@ -29,13 +41,21 @@ export class UpdateGiftCardDto {
 
   @IsInt()
   @IsOptional()
-  physicalRate?: number;
+  physicalFastRate?: number;
 
   @IsInt()
   @IsOptional()
-  eCodeRate?: number;
+  physicalSlowRate?: number;
 
   @IsInt()
   @IsOptional()
-  denomination?: number;
+  ecodeFastRate?: number;
+
+  @IsInt()
+  @IsOptional()
+  ecodeSlowRate?: number;
+
+  @IsString()
+  @IsOptional()
+  denominationRange?: string;
 }

@@ -25,10 +25,7 @@ export class AdminGiftCardController {
   constructor(private readonly adminGiftCardService: AdminGiftCardService) {}
 
   @Post()
-  public async addNewGiftCard(
-    @Body() body: GiftCardDto,
-    @Request() req,
-  ): Promise<GiftCardResponse> {
+  public async addNewGiftCard(@Body() body: GiftCardDto, @Request() req): Promise<GiftCardResponse> {
     const data = {
       adminId: req.user.id,
       ...body,
@@ -53,11 +50,7 @@ export class AdminGiftCardController {
     @Param('id', new ParseIntPipe()) id: number,
     @Param('status', new ParseBoolPipe()) status: boolean,
   ): Promise<boolean> {
-    return await this.adminGiftCardService.changeGiftCardDepositApprovalStatus(
-      id,
-      status,
-      req.user.id,
-    );
+    return await this.adminGiftCardService.changeGiftCardDepositApprovalStatus(id, status, req.user.id);
   }
 
   @Get('all/deposits')
@@ -67,9 +60,7 @@ export class AdminGiftCardController {
 
   @UseGuards(CheckGiftCardDepositIdExists)
   @Get('deposit/:id')
-  public async getGiftCardDepositById(
-    @Param('id', new ParseIntPipe()) id: number,
-  ): Promise<GiftCardDepositResponse> {
+  public async getGiftCardDepositById(@Param('id', new ParseIntPipe()) id: number): Promise<GiftCardDepositResponse> {
     return await this.adminGiftCardService.getGiftCardDepositById(id);
   }
 }

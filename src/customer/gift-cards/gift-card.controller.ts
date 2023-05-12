@@ -1,15 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { GiftCardResponse } from 'src/admin/gift-cards/dto/response/gift-card.response';
+import { GiftCardResponse, GiftCardResponseDto } from 'src/admin/gift-cards/dto/response/gift-card.response';
 import { CheckGiftCardIdExists } from 'src/admin/gift-cards/guards/check-gift-card-id-exists.guard';
 import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
 import { GiftCardDepositResponse } from './dto/response/gift-card-deposit.response';
@@ -22,22 +13,17 @@ export class GiftCardController {
 
   @UseGuards(CheckGiftCardIdExists)
   @Get(':id')
-  public async getById(
-    @Param('id', new ParseIntPipe()) id: number,
-  ): Promise<GiftCardResponse> {
+  public async getById(@Param('id', new ParseIntPipe()) id: number): Promise<GiftCardResponse> {
     return await this.giftCardService.getById(id);
   }
 
   @Get()
-  public async getAll(): Promise<GiftCardResponse[]> {
+  public async getAll(): Promise<GiftCardResponseDto> {
     return await this.giftCardService.getAll();
   }
 
   @Post('deposit/new')
-  public async giftCardDeposit(
-    @Body() body: GiftCardDepositDto,
-    @Request() req,
-  ): Promise<GiftCardDepositResponse> {
+  public async giftCardDeposit(@Body() body: GiftCardDepositDto, @Request() req): Promise<GiftCardDepositResponse> {
     const data = {
       userId: req.user.id,
       ...body,
@@ -47,9 +33,7 @@ export class GiftCardController {
   }
 
   @Get('deposits/user/all')
-  public async getUserGiftCardDeposit(
-    @Request() req,
-  ): Promise<GiftCardDepositResponse[]> {
+  public async getUserGiftCardDeposit(@Request() req): Promise<GiftCardDepositResponse[]> {
     return await this.giftCardService.getByUserId(req.user.id);
   }
 }

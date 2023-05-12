@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { GiftCardResponse } from 'src/admin/gift-cards/dto/response/gift-card.response';
+import { GiftCardResponse, GiftCardResponseDto } from 'src/admin/gift-cards/dto/response/gift-card.response';
 import { GiftCardDepositRepositoryService } from 'src/repositories/gift-card-deposits/gift-card-deposit-repository.service';
 import { GiftCardRepositoryService } from 'src/repositories/gift-cards/gift-card-repository.service';
 import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
@@ -18,21 +18,22 @@ export class GiftCardService {
     return plainToInstance(GiftCardResponse, giftCard);
   }
 
-  public async getAll(): Promise<GiftCardResponse[]> {
+  public async getAll(): Promise<GiftCardResponseDto> {
+    let response: any = {};
     const giftCard = await this.giftCardRepositoryService.getAll();
-    return plainToInstance(GiftCardResponse, giftCard);
+
+    response.status = true;
+    response.data = giftCard;
+    return plainToInstance(GiftCardResponseDto, response);
   }
 
-  public async newGiftCardDeposit(
-    data: GiftCardDepositDto,
-  ): Promise<GiftCardDepositResponse> {
+  public async newGiftCardDeposit(data: GiftCardDepositDto): Promise<GiftCardDepositResponse> {
     data.isCredited = false;
     return this.giftCardDepositRepositoryService.newGiftCardDeposit(data);
   }
 
   public async getByUserId(userId: number): Promise<GiftCardDepositResponse[]> {
-    const giftCardDeposit =
-      await this.giftCardDepositRepositoryService.getByUserId(userId);
+    const giftCardDeposit = await this.giftCardDepositRepositoryService.getByUserId(userId);
     return plainToInstance(GiftCardDepositResponse, giftCardDeposit);
   }
 }

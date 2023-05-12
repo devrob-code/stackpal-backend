@@ -10,19 +10,31 @@ export class GiftCardResponse {
   adminId: number;
 
   @Expose()
-  cardType: string;
+  name: string;
 
   @Expose()
   imageUrl: string;
 
   @Expose()
-  physicalRate: number;
+  country: string;
 
   @Expose()
-  eCodeRate: number;
+  physicalFastRate: number;
 
   @Expose()
-  denomination: number;
+  physicalSlowRate: number;
+
+  @Expose()
+  ecodeFastRate: number;
+
+  @Expose()
+  ecodeSlowRate: number;
+
+  @Expose()
+  receiptType: string;
+
+  @Expose()
+  receiptImageUrl: string;
 
   @Expose()
   createdAt: Date;
@@ -33,4 +45,12 @@ export class GiftCardResponse {
   @Expose()
   @Type(() => UserResponse)
   user: UserResponse[];
+}
+
+export class GiftCardResponseDto {
+  @Expose()
+  status: boolean;
+
+  @Expose()
+  data: GiftCardResponse[];
 }

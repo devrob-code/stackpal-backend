@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import {
-  GiftCardDto,
-  UpdateGiftCardDto,
-} from 'src/admin/gift-cards/dto/request/gift-card.dto';
+import { GiftCardDto, UpdateGiftCardDto } from 'src/admin/gift-cards/dto/request/gift-card.dto';
 import { GiftCardResponse } from 'src/admin/gift-cards/dto/response/gift-card.response';
 import { GetAllGiftCardsUseCase } from './usecases/get-all.usecase';
 import { GetByIdUseCase } from './usecases/get-by-id.usecase';
 import { NewGiftCardUseCase } from './usecases/new-gift-card.usecase';
 import { UpdateGiftCardByIdUseCase } from './usecases/update-gift-card-by-id.usecase';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class GiftCardRepositoryService {
@@ -22,10 +20,7 @@ export class GiftCardRepositoryService {
     return this.newGiftCardUseCase.exec(data);
   }
 
-  public async updateGiftCardById(
-    id: number,
-    body: UpdateGiftCardDto,
-  ): Promise<boolean> {
+  public async updateGiftCardById(id: number, body: UpdateGiftCardDto): Promise<boolean> {
     return this.updateGiftCardByIdUseCase.exec(id, body);
   }
 
@@ -34,6 +29,8 @@ export class GiftCardRepositoryService {
   }
 
   public async getAll(): Promise<GiftCardResponse[]> {
-    return this.getAllGiftCardsUseCase.exec();
+    const response = await this.getAllGiftCardsUseCase.exec();
+
+    return plainToInstance(GiftCardResponse, response);
   }
 }
