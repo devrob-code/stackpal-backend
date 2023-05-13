@@ -17,9 +17,7 @@ export class GiftCardDepositRepositoryService {
     private readonly getByUserIdUseCase: GetByUserIdUseCase,
   ) {}
 
-  public async newGiftCardDeposit(
-    data: GiftCardDepositDto,
-  ): Promise<GiftCardDepositResponse> {
+  public async newGiftCardDeposit(data: GiftCardDepositDto): Promise<GiftCardDepositResponse> {
     return this.newGiftCardDepositUseCase.exec(data);
   }
 
@@ -27,11 +25,7 @@ export class GiftCardDepositRepositoryService {
     return this.getByIdUseCase.exec(id);
   }
 
-  public async changeGiftCardDepositApprovalStatus(
-    id: number,
-    status: boolean,
-    approvedBy: number,
-  ): Promise<boolean> {
+  public async changeGiftCardDepositApprovalStatus(id: number, status: boolean, approvedBy: number): Promise<boolean> {
     return this.changeApprovalStatusUseCase.exec(id, status, approvedBy);
   }
 

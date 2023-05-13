@@ -47,6 +47,12 @@ export class GiftCard {
   @Column('varchar')
   receiptImageUrl: string;
 
+  @Column('boolean')
+  isActive: boolean;
+
+  @Column('varchar')
+  countryFlag: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

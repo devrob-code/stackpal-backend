@@ -5,6 +5,7 @@ import { CheckGiftCardIdExists } from 'src/admin/gift-cards/guards/check-gift-ca
 import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
 import { GiftCardDepositResponse } from './dto/response/gift-card-deposit.response';
 import { GiftCardService } from './gift-card.service';
+import { ActiveGiftCardResponse } from './dto/response/active-gift-card.response';
 
 @Controller('gift-card')
 @UseGuards(AuthGuard('jwt'))
@@ -35,5 +36,15 @@ export class GiftCardController {
   @Get('deposits/user/all')
   public async getUserGiftCardDeposit(@Request() req): Promise<GiftCardDepositResponse[]> {
     return await this.giftCardService.getByUserId(req.user.id);
+  }
+
+  @Get('/all/active')
+  public async getActiveGiftCards(): Promise<ActiveGiftCardResponse> {
+    return await this.giftCardService.getActiveGiftCards();
+  }
+
+  @Get('/denominations/:name')
+  public async getGiftCardDenominationByName(@Param('name') name: string): Promise<any> {
+    return await this.giftCardService.getGiftCardDenominationByName(name);
   }
 }
