@@ -21,8 +21,8 @@ export class GiftCardDeposit {
   @Column({ type: 'enum', enum: GiftCardDepositType })
   type: GiftCardDepositType;
 
-  @Column('bigint')
-  denomination: number;
+  @Column('varchar')
+  denomination: string;
 
   @Column('boolean')
   isApproved: boolean;
@@ -47,6 +47,21 @@ export class GiftCardDeposit {
 
   @Column('varchar')
   code: string;
+
+  @Column('varchar')
+  cardName: string;
+
+  @Column('int')
+  cardWorth: number;
+
+  @Column('int')
+  giftCardId: number;
+
+  @Column('varchar')
+  speed: string;
+
+  @Column('int')
+  rate: number;
 
   @ManyToOne(() => User, (user) => user.giftCard)
   @JoinColumn({ name: 'approvedBy', referencedColumnName: 'id' })

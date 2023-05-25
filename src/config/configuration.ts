@@ -13,6 +13,7 @@ export default () => ({
   password: process.env.DB_PASSWORD,
   environment: process.env.NODE_ENV,
   nownode: getNowNodeProps(),
+  aws: getAWSProps(),
 });
 
 const getDatabaseProps = () => {
@@ -71,4 +72,12 @@ const getVTUProps = () => ({
 
 const getNowNodeProps = () => ({
   apiKey: process.env.NOWNODE_API_KEY,
+});
+
+const getAWSProps = () => ({
+  awsRegion: process.env.AWS_REGION,
+  awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  awsBucketName: process.env.AWS_BUCKET_NAME,
+  cloudfrontUrl: process.env.CLOUDFRONT_URL,
 });

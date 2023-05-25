@@ -14,7 +14,7 @@ export class GiftCardDepositResponse {
   type: GiftCardDepositType;
 
   @Expose()
-  denomination: number;
+  denomination: string;
 
   @Expose()
   isApproved: boolean;

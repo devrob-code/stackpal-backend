@@ -3,9 +3,10 @@ import { GiftCardDepositRepositoryModule } from 'src/repositories/gift-card-depo
 import { GiftCardRepositoryModule } from 'src/repositories/gift-cards/gift-card-repository.module';
 import { GiftCardController } from './gift-card.controller';
 import { GiftCardService } from './gift-card.service';
+import { HelperModule } from 'src/core/helpers/helper.module';
 
 @Module({
-  imports: [GiftCardRepositoryModule, GiftCardDepositRepositoryModule],
+  imports: [GiftCardRepositoryModule, GiftCardDepositRepositoryModule, HelperModule],
   controllers: [GiftCardController],
   providers: [GiftCardService],
 })

@@ -6,12 +6,14 @@ import { GiftCardRepositoryService } from 'src/repositories/gift-cards/gift-card
 import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
 import { GiftCardDepositResponse } from './dto/response/gift-card-deposit.response';
 import { ActiveGiftCardResponse } from './dto/response/active-gift-card.response';
+import { HelperService } from 'src/core/helpers/helper.service';
 
 @Injectable()
 export class GiftCardService {
   constructor(
     private readonly giftCardRepositoryService: GiftCardRepositoryService,
     private readonly giftCardDepositRepositoryService: GiftCardDepositRepositoryService,
+    private readonly helperService: HelperService,
   ) {}
 
   public async getById(id: number): Promise<GiftCardResponse> {
@@ -28,9 +30,15 @@ export class GiftCardService {
     return plainToInstance(GiftCardResponseDto, response);
   }
 
-  public async newGiftCardDeposit(data: GiftCardDepositDto): Promise<GiftCardDepositResponse> {
+  public async newGiftCardDeposit(data: GiftCardDepositDto): Promise<any> {
     data.isCredited = false;
-    return this.giftCardDepositRepositoryService.newGiftCardDeposit(data);
+    const giftCardDeposit = await this.giftCardDepositRepositoryService.newGiftCardDeposit(data);
+
+    if (giftCardDeposit) {
+      return { status: true };
+    }
+
+    return { status: false };
   }
 
   public async getByUserId(userId: number): Promise<GiftCardDepositResponse[]> {
@@ -53,5 +61,14 @@ export class GiftCardService {
     const response = { status: true, data: giftCards };
 
     return plainToInstance(GiftCardResponseDto, response);
+  }
+
+  public async uploadGiftCard(file: Express.Multer.File): Promise<{ status: boolean; url: string }> {
+    const url = await this.helperService.uploadFile(file.buffer, file.originalname);
+
+    return {
+      status: true,
+      url,
+    };
   }
 }

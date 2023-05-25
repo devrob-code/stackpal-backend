@@ -1,5 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { S3 } from 'aws-sdk';
+import { v4 as uuid } from 'uuid';
 
 let ncrypt = require('ncrypt-js');
 @Injectable()
@@ -43,5 +45,18 @@ export class HelperService {
       code += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return prefix + code;
+  }
+
+  public async uploadFile(dataBuffer: Buffer, fileName: string): Promise<string> {
+    const s3 = new S3();
+    const cloudfrontUrl = this.configService.get('aws.cloudfrontUrl');
+    const uploadResult = await s3
+      .upload({
+        Bucket: this.configService.get('aws.awsBucketName'),
+        Body: dataBuffer,
+        Key: `gift-card/user-uploads/${uuid()}-${fileName}`,
+      })
+      .promise();
+    return cloudfrontUrl + uploadResult.Key;
   }
 }

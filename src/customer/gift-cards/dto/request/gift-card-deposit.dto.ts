@@ -1,18 +1,12 @@
-import {
-  IsBoolean,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { GiftCardDepositType } from '../../gift-card.constants';
 
 export class GiftCardDepositDto {
   @IsEnum(GiftCardDepositType)
   type: GiftCardDepositType;
 
-  @IsInt()
-  denomination: number;
+  @IsString()
+  denomination: string;
 
   @IsBoolean()
   @IsOptional()
@@ -37,4 +31,24 @@ export class GiftCardDepositDto {
   @IsString()
   @IsOptional()
   code?: string;
+
+  @IsString()
+  @IsOptional()
+  cardName?: string;
+
+  @IsInt()
+  @IsOptional()
+  cardWorth?: number;
+
+  @IsInt()
+  @IsOptional()
+  giftCardId?: number;
+
+  @IsString()
+  @IsOptional()
+  speed?: string;
+
+  @IsInt()
+  @IsOptional()
+  rate: number;
 }
