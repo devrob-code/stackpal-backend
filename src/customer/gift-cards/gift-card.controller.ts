@@ -66,4 +66,9 @@ export class GiftCardController {
   public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<{ status: boolean; url: string }> {
     return await this.giftCardService.uploadGiftCard(file);
   }
+
+  @Get('/receipts/all/:giftCardName')
+  public async getGiftCardReceiptsByName(@Param('giftCardName') name: string): Promise<any> {
+    return await this.giftCardService.getGiftCardReceiptsByGiftCardName(name);
+  }
 }

@@ -5,12 +5,16 @@ import { GiftCardDepositRepositoryService } from 'src/repositories/gift-card-dep
 import { GiftCardRepositoryService } from 'src/repositories/gift-cards/gift-card-repository.service';
 import { GiftCardDto, UpdateGiftCardDto } from './dto/request/gift-card.dto';
 import { GiftCardResponse } from './dto/response/gift-card.response';
+import { GiftCardReceiptDto } from './dto/request/gift-card-receipt.dto';
+import { GiftCardReceiptResponse } from './dto/response/gift-card-receipt.response';
+import { GiftCardReceiptsRepositoryService } from 'src/repositories/gift-card-receipts/gift-card-receipts.repository.service';
 
 @Injectable()
 export class AdminGiftCardService {
   constructor(
     private readonly giftCardRepositoryService: GiftCardRepositoryService,
     private readonly giftCardDepositRepositoryService: GiftCardDepositRepositoryService,
+    private readonly giftCardReceiptsRepositoryService: GiftCardReceiptsRepositoryService,
   ) {}
 
   public async addNewGiftCard(data: GiftCardDto): Promise<GiftCardResponse> {
@@ -33,5 +37,9 @@ export class AdminGiftCardService {
   public async getGiftCardDepositById(id: number): Promise<GiftCardDepositResponse> {
     const giftCardDeposit = await this.giftCardDepositRepositoryService.getById(id);
     return plainToInstance(GiftCardDepositResponse, giftCardDeposit);
+  }
+
+  public async addNewGiftCardReceipt(data: GiftCardReceiptDto): Promise<GiftCardReceiptResponse> {
+    return this.giftCardReceiptsRepositoryService.addNewGiftCardReceipt(data);
   }
 }

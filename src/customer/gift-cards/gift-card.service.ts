@@ -7,12 +7,14 @@ import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
 import { GiftCardDepositResponse } from './dto/response/gift-card-deposit.response';
 import { ActiveGiftCardResponse } from './dto/response/active-gift-card.response';
 import { HelperService } from 'src/core/helpers/helper.service';
+import { GiftCardReceiptsRepositoryService } from 'src/repositories/gift-card-receipts/gift-card-receipts.repository.service';
 
 @Injectable()
 export class GiftCardService {
   constructor(
     private readonly giftCardRepositoryService: GiftCardRepositoryService,
     private readonly giftCardDepositRepositoryService: GiftCardDepositRepositoryService,
+    private readonly giftCardReceiptsRepositoryService: GiftCardReceiptsRepositoryService,
     private readonly helperService: HelperService,
   ) {}
 
@@ -70,5 +72,12 @@ export class GiftCardService {
       status: true,
       url,
     };
+  }
+
+  public async getGiftCardReceiptsByGiftCardName(name: string): Promise<any> {
+    const giftCardReceipts = await this.giftCardReceiptsRepositoryService.getGiftCardReceiptsByGiftCardName(name);
+    const response = { status: true, data: giftCardReceipts };
+
+    return response;
   }
 }

@@ -10,18 +10,23 @@ export class GiftCardDto {
   @IsString()
   country: string;
 
+  @IsOptional()
   @IsInt()
   physicalFastRate: number;
 
+  @IsOptional()
   @IsInt()
   physicalSlowRate: number;
 
+  @IsOptional()
   @IsInt()
   ecodeFastRate: number;
 
+  @IsOptional()
   @IsInt()
   ecodeSlowRate: number;
 
+  @IsOptional()
   @IsString()
   denominationRange: string;
 

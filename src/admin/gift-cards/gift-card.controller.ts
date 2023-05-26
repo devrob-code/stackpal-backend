@@ -18,6 +18,8 @@ import { GiftCardResponse } from './dto/response/gift-card.response';
 import { AdminGiftCardService } from './gift-card.service';
 import { CheckGiftCardDepositIdExists } from './guards/check-gift-card-deposit-id-exists.guard';
 import { CheckGiftCardIdExists } from './guards/check-gift-card-id-exists.guard';
+import { GiftCardReceiptDto } from './dto/request/gift-card-receipt.dto';
+import { GiftCardReceiptResponse } from './dto/response/gift-card-receipt.response';
 
 @Controller('gift-card')
 @UseGuards(AuthGuard('jwt'), AdminGuard)
@@ -62,5 +64,18 @@ export class AdminGiftCardController {
   @Get('deposit/:id')
   public async getGiftCardDepositById(@Param('id', new ParseIntPipe()) id: number): Promise<GiftCardDepositResponse> {
     return await this.adminGiftCardService.getGiftCardDepositById(id);
+  }
+
+  @Post('receipts')
+  public async addNewGiftCardReceipt(
+    @Body() body: GiftCardReceiptDto,
+    @Request() req,
+  ): Promise<GiftCardReceiptResponse> {
+    const data = {
+      adminId: req.user.id,
+      ...body,
+    };
+
+    return await this.adminGiftCardService.addNewGiftCardReceipt(data);
   }
 }

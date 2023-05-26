@@ -1,3 +1,4 @@
+import { GiftCardReceipts } from 'src/repositories/gift-card-receipts/entities/gift-card-receipts.entity';
 import { User } from 'src/repositories/users/entities/user.entity';
 import {
   Column,
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -62,4 +64,7 @@ export class GiftCard {
   @ManyToOne(() => User, (user) => user.giftCard)
   @JoinColumn({ name: 'adminId', referencedColumnName: 'id' })
   user: User[];
+
+  @OneToMany(() => GiftCardReceipts, (giftCardReceipts) => giftCardReceipts.giftCard)
+  giftCardReceipts: GiftCardReceipts[];
 }
