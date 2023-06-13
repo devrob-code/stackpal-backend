@@ -8,4 +8,8 @@ export class UpdateUserDataDto {
   @IsBoolean()
   @IsOptional()
   phoneVerified: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  bvnVerified: boolean;
 }

@@ -12,6 +12,7 @@ import { UpdateUserByEmailUseCase } from './usecases/update-user-by-email.usecas
 import { UserRepositoryService } from './user-repository.service';
 import { GetIdByUserDataUsecase } from './usecases/get-user-id-by-user-data.usecase';
 import { GetUserByIdUseCase } from './usecases/get-user-by-id.usecase';
+import { UpdateUserByIdUseCase } from './usecases/update-user-by-id.usecase';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), TypeOrmModule.forFeature([Wallet])],
@@ -26,6 +27,7 @@ import { GetUserByIdUseCase } from './usecases/get-user-by-id.usecase';
     GetUserByPhoneUseCase,
     GetIdByUserDataUsecase,
     GetUserByIdUseCase,
+    UpdateUserByIdUseCase,
   ],
   exports: [UserRepositoryService],
 })

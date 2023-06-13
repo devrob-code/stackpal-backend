@@ -81,7 +81,7 @@ export class AuthService {
       role: user.role,
     });
 
-    // Assign all fiat currency to user if user does not have fiat currency
+    // Assign all fiat currencies to user if user does not have fiat currency
     await this.assignFiatCurrenciesToUser(user.id);
 
     const response = { ...user, ...token };
@@ -150,7 +150,7 @@ export class AuthService {
     });
 
     // Send the code
-    return await this.smsService.sendUserPhoneVerificationToken(body.phone, code);
+    return await this.smsService.termiiSendUserVerificationCode(body.phone, code);
   }
 
   public async verifyPhone(body: VerifyPhoneDto): Promise<boolean | string> {
@@ -262,5 +262,24 @@ export class AuthService {
     });
 
     return !!createPassword;
+  }
+
+  public async changePassword(body: { currentPassword: string; newPassword: string }, userId: number): Promise<any> {
+    const user = await this.userRepositoryService.getById(userId);
+    const comparePassword = await bcrypt.compare(body.currentPassword, user.password);
+
+    if (comparePassword) {
+      const changedPassword = await bcrypt.hash(body.newPassword, 10);
+      await this.userRepositoryService.updateUserByEmail(user.email, {
+        password: changedPassword,
+      });
+      return { status: true, message: 'Password Changed Successfully' };
+    } else {
+      return { status: false, message: 'Current Password does not match' };
+    }
+  }
+
+  public async testSms() {
+    return await this.smsService.termiiSendUserVerificationCode('', '');
   }
 }

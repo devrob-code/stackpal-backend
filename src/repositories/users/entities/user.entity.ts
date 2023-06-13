@@ -64,6 +64,12 @@ export class User {
   @Column({ type: 'varchar' })
   avatar: string;
 
+  @Column({ type: 'varchar' })
+  dob: string;
+
+  @Column('boolean')
+  bvnVerified: boolean;
+
   @OneToMany(() => Wallet, (wallet) => wallet.user)
   wallet: Wallet[];
 

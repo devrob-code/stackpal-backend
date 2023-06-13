@@ -38,4 +38,10 @@ export class LoginResponse {
 
   @Expose()
   avatar?: string;
+
+  @Expose()
+  dob?: string;
+
+  @Expose()
+  bvnVerified?: boolean;
 }

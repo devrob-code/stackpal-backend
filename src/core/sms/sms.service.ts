@@ -1,10 +1,15 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { firstValueFrom } from 'rxjs';
 import { Twilio } from 'twilio';
 
 @Injectable()
 export class SmsService {
-  constructor(public readonly configService: ConfigService) {}
+  constructor(public readonly configService: ConfigService, private httpService: HttpService) {}
+
+  private baseURL = this.configService.get('termii.termiiBaseUrl');
+  private secretKey = this.configService.get('termii.termiiApiKey');
 
   public async sendUserPhoneVerificationToken(phone: string, code: string): Promise<boolean> {
     try {
@@ -35,5 +40,35 @@ export class SmsService {
     //   Logger.error(e);
     //   response = false;
     // });
+  }
+
+  public async termiiSendUserVerificationCode(phone: string, code: string): Promise<boolean> {
+    try {
+      const url = `${this.baseURL}api/sms/send`;
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          url,
+          {
+            to: phone.toString(),
+            from: 'Stackpal',
+            sms: `Your Stackpal verification code is ${code}`,
+            type: 'plain',
+            api_key: this.secretKey,
+            channel: 'generic',
+          },
+          {
+            headers: {
+              'Content-Type': ['application/json', 'application/json'],
+            },
+          },
+        ),
+      );
+
+      return data;
+    } catch (e) {
+      e.response.data.data = null;
+      return e.response.data;
+      //throw new HttpException(e.response.data, HttpStatus.BAD_REQUEST);
+    }
   }
 }

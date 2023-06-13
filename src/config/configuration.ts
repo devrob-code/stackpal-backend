@@ -14,6 +14,8 @@ export default () => ({
   environment: process.env.NODE_ENV,
   nownode: getNowNodeProps(),
   aws: getAWSProps(),
+  okra: getOkraProps(),
+  termii: getTermiiProps(),
 });
 
 const getDatabaseProps = () => {
@@ -80,4 +82,14 @@ const getAWSProps = () => ({
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   awsBucketName: process.env.AWS_BUCKET_NAME,
   cloudfrontUrl: process.env.CLOUDFRONT_URL,
+});
+
+const getOkraProps = () => ({
+  okraBaseUrl: process.env.OKRA_BASE_URL,
+  okraSecretKey: process.env.OKRA_SECRET_KEY,
+});
+
+const getTermiiProps = () => ({
+  termiiBaseUrl: process.env.TERMII_BASE_URL,
+  termiiApiKey: process.env.TERMII_API_KEY,
 });

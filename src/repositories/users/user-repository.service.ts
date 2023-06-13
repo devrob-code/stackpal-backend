@@ -11,6 +11,7 @@ import { UpdateUserByEmailUseCase } from './usecases/update-user-by-email.usecas
 import { GetIdByUserDataUsecase } from './usecases/get-user-id-by-user-data.usecase';
 import { Keypair } from '@solana/web3.js';
 import { GetUserByIdUseCase } from './usecases/get-user-by-id.usecase';
+import { UpdateUserByIdUseCase } from './usecases/update-user-by-id.usecase';
 @Injectable()
 export class UserRepositoryService {
   constructor(
@@ -23,6 +24,7 @@ export class UserRepositoryService {
     private readonly getUserByPhoneUseCase: GetUserByPhoneUseCase,
     private readonly getIdByUserDataUsecase: GetIdByUserDataUsecase,
     private readonly getUserByIdlUseCase: GetUserByIdUseCase,
+    private readonly updateUserByIdUseCase: UpdateUserByIdUseCase,
   ) {}
 
   public async getByEmail(email: string): Promise<User> {
@@ -182,5 +184,9 @@ export class UserRepositoryService {
 
   public async getById(id: number): Promise<User> {
     return this.getUserByIdlUseCase.exec(id);
+  }
+
+  public async updateUserById(id: number, data: Partial<User>): Promise<boolean> {
+    return this.updateUserByIdUseCase.exec(id, data);
   }
 }
