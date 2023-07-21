@@ -11,6 +11,13 @@ import { CreateAirtimeDataTransactionsUseCase } from './usecases/create-airtime-
 import { GetTvTransactionsByUserIdUseCase } from './usecases/get-tv-transactions-by-user-id.usecase';
 import { GetElectricityTransactionsByUserIdUseCase } from './usecases/get-electricity-transactions-by-user-id.usecase';
 import { GetAirtimeDataTransactionsByUserIdUseCase } from './usecases/get-airtime-data-transactions-by-user-id.usecase';
+import { CreateFiatTransactionDto } from 'src/customer/transactions/dto/request/create-fiat-transaction-dto';
+import { FiatTransactionResponse } from 'src/customer/transactions/dto/response/fiat-transaction-response';
+import { CreateFiatTransactionHistoryUseCase } from './usecases/create-fiat-transaction-history.usecase';
+import { CreateCryptoTransactionDto } from 'src/customer/transactions/dto/request/create-crypto-transaction.dto';
+import { CryptoTransactionResponse } from 'src/customer/transactions/dto/response/crypto-transaction.response';
+import { CreateCryptoTransactionHistoryUseCase } from './usecases/create-crypto-transaction-history.usecase';
+import { GeUserCryptoHistoryBySendTypeUseCase } from './usecases/get-user-crypto-history-by-send-type.usecase';
 
 @Injectable()
 export class TransactionRepositoryService {
@@ -21,6 +28,9 @@ export class TransactionRepositoryService {
     private readonly getTvTransactionsByUserIdUseCase: GetTvTransactionsByUserIdUseCase,
     private readonly getElectricityTransactionsByUserIdUseCase: GetElectricityTransactionsByUserIdUseCase,
     private readonly getAirtimeDataTransactionsByUserIdUseCase: GetAirtimeDataTransactionsByUserIdUseCase,
+    private readonly createFiatTransactionHistoryUseCase: CreateFiatTransactionHistoryUseCase,
+    private readonly createCryptoTransactionHistoryUseCase: CreateCryptoTransactionHistoryUseCase,
+    private readonly geUserCryptoHistoryBySendTypeUseCase: GeUserCryptoHistoryBySendTypeUseCase,
   ) {}
 
   public async createTvTransactionHistory(body: CreateTvTransactionDto): Promise<TvTransactionResponse> {
@@ -49,5 +59,16 @@ export class TransactionRepositoryService {
 
   public async getAirtimeDataTransactionsByUserId(userId: number): Promise<AirtimeDataTransactionResponse[]> {
     return this.getAirtimeDataTransactionsByUserIdUseCase.exec(userId);
+  }
+
+  public async createFiatTransactionHistory(body: CreateFiatTransactionDto): Promise<FiatTransactionResponse> {
+    return this.createFiatTransactionHistoryUseCase.exec(body);
+  }
+
+  public async createCryptoTransactionHistory(body: CreateCryptoTransactionDto): Promise<CryptoTransactionResponse> {
+    return this.createCryptoTransactionHistoryUseCase.exec(body);
+  }
+  public async geUserCryptoHistoryBySendType(userId: number): Promise<CryptoTransactionResponse[]> {
+    return this.geUserCryptoHistoryBySendTypeUseCase.exec(userId);
   }
 }

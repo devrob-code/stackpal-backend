@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_SOURCE, MailRequestSource, WEB_SOURCE } from 'src/auth/auth.constants';
 import { HelperService } from '../helpers/helper.service';
+import { FiatTransactionsType } from 'src/customer/transactions/transactions.constants';
 
 @Injectable()
 export class MailService {
@@ -157,6 +158,30 @@ export class MailService {
         amount: amount.toLocaleString(),
         username,
         electricityCode,
+      },
+    });
+
+    return !!sendTransactionEmail;
+  }
+
+  public async fiatTransaction(
+    email: string,
+    amount: number,
+    username: string,
+    type: FiatTransactionsType,
+    txId: string,
+  ): Promise<boolean> {
+    let sendTransactionEmail = this.mailerService.sendMail({
+      to: email.toLowerCase(),
+      from: `Stackpal <${this.configService.get('mail.accountEmail')}>`,
+      subject: `Stackpal - New Fiat ${type} Transaction`,
+      template: './fiat-transaction',
+      replyTo: `Stackpal No-Reply <${this.configService.get('mail.defaultReplyTo')}>`,
+      context: {
+        txId,
+        amount: (amount / 100).toLocaleString(),
+        type,
+        username,
       },
     });
 

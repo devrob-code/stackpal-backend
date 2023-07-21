@@ -9,9 +9,14 @@ import { WalletRepositoryService } from 'src/repositories/wallets/wallet-reposit
 import { WalletAction } from '../wallet/wallet.constants';
 import { AdminBuyCoinDto, AdminSellCoinDto } from './dto/request/admin-buy-coin.dto';
 import { SendCoinDto } from './dto/request/send-coin.dto';
+import { ADMIN_ID } from './blockchain.constants';
+import { TransactionRepositoryService } from 'src/repositories/transactions/transactions.repository.service';
+import { HelperService } from 'src/core/helpers/helper.service';
+import { CryptoTransactionSendType, CryptoTransactionsType } from '../transactions/transactions.constants';
 const RippleAPI = require('ripple-lib').RippleAPI;
 const CryptoAccount = require('send-crypto');
 const BchWallet = require('minimal-bch-wallet/index');
+import * as moment from 'moment';
 
 const totalDecimal: { [key: string]: number } = {
   BTC: 8,
@@ -45,6 +50,8 @@ export class BlockchainService {
     private readonly currencyRepositoryService: CurrencyRepositoryService,
     private readonly mailService: MailService,
     private readonly userRepositoryService: UserRepositoryService,
+    private readonly transactionRepositoryService: TransactionRepositoryService,
+    private readonly helperService: HelperService,
   ) {}
 
   public async getCoinPrices(): Promise<any> {
@@ -1021,7 +1028,7 @@ export class BlockchainService {
       tGasPrice['medium'] = Math.floor(btcFee.medium_fee_per_kb / 1000) + 1;
       tGasPrice['high'] = Math.floor(btcFee.high_fee_per_kb / 1000) + 1;
 
-      const userWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
       const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(receiverId);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
@@ -1096,7 +1103,7 @@ export class BlockchainService {
       tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
 
       const user = await this.userRepositoryService.getById(receiverId);
-      const userWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
       const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(receiverId);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
@@ -1159,7 +1166,7 @@ export class BlockchainService {
       tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
 
       const user = await this.userRepositoryService.getById(receiverId);
-      const userWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
       const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(receiverId);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
@@ -1231,7 +1238,7 @@ export class BlockchainService {
       tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
 
       const user = await this.userRepositoryService.getById(receiverId);
-      const userWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const userWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
       const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(receiverId);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
@@ -1293,7 +1300,15 @@ export class BlockchainService {
   public async adminSellBTC(senderId: number, body: AdminSellCoinDto) {
     try {
       let tGasPrice = {};
+      let receiverWallet;
       const sender = await this.userRepositoryService.getById(senderId);
+
+      if (body.username) {
+        const receiver = await this.userRepositoryService.getByUsername(body.username);
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(receiver.id);
+      } else {
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
+      }
 
       const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
         (res) => res.data,
@@ -1304,7 +1319,7 @@ export class BlockchainService {
       tGasPrice['high'] = Math.floor(btcFee.high_fee_per_kb / 1000) + 1;
 
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
-      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {
@@ -1346,19 +1361,30 @@ export class BlockchainService {
       if (result) {
         // Send Email Notification
         this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
-        const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
-        await this.walletRepositoryService.changeWalletBalance(
-          senderWallet.id,
-          parseFloat(body.ngnValue) * 100,
-          WalletAction.increase,
-        );
+        // const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
+        // await this.walletRepositoryService.changeWalletBalance(
+        //   senderWallet.id,
+        //   parseFloat(body.ngnValue) * 100,
+        //   WalletAction.increase,
+        // );
+        this.transactionRepositoryService.createCryptoTransactionHistory({
+          txId: this.helperService.generateTransactionId('SPAL_', 8),
+          userId: senderId,
+          amount: Number(body.amount),
+          network: 'BTC',
+          type: CryptoTransactionsType.sent,
+          sendType: body.username ? CryptoTransactionSendType.userToUser : CryptoTransactionSendType.walletAddress,
+          senderWalletAddress: wallets['bitcoin'].address,
+          receiverWalletAddress: receiverWallets['bitcoin'].address,
+          transactionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+        });
 
         return { status: true };
       } else {
         return { status: false };
       }
     } catch (error) {
-      console.log(error);
+      console.log({ error });
       return { status: false };
     }
   }
@@ -1376,7 +1402,7 @@ export class BlockchainService {
       const sender = await this.userRepositoryService.getById(senderId);
 
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
-      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {
@@ -1434,7 +1460,7 @@ export class BlockchainService {
 
       const sender = await this.userRepositoryService.getById(senderId);
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
-      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {
@@ -1500,7 +1526,7 @@ export class BlockchainService {
 
       const sender = await this.userRepositoryService.getById(senderId);
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
-      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(16);
+      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {

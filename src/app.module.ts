@@ -16,6 +16,7 @@ import { WalletModule } from './customer/wallet/wallet.module';
 import { UserModule } from './user/user.module';
 import { TransactionsModule } from './customer/transactions/transactions.module';
 import { BankModule } from './customer/banks/banks.module';
+import { UserToUserModule } from './customer/user-to-user/usert-to-user.module';
 
 @Module({
   controllers: [AppController],
@@ -35,6 +36,7 @@ import { BankModule } from './customer/banks/banks.module';
     BillsModule,
     TransactionsModule,
     BankModule,
+    UserToUserModule,
     //RateModule,
   ],
 })

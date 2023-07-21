@@ -20,5 +20,10 @@ export class AdminSellCoinDto {
   amount: string;
 
   @IsString()
-  ngnValue: string;
+  @IsOptional()
+  ngnValue?: string;
+
+  @IsString()
+  @IsOptional()
+  username?: string;
 }

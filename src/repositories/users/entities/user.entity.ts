@@ -16,6 +16,7 @@ import { GiftCard } from 'src/repositories/gift-cards/entities/gift-card.entity'
 import { TvTransactions } from 'src/repositories/transactions/entities/tv-transactions.entity';
 import { ElectricityTransactions } from 'src/repositories/transactions/entities/electricity-transactions.entity';
 import { AirtimeDataTransactions } from 'src/repositories/transactions/entities/airtime-data-transactions.entity';
+import { CryptoTransactions } from 'src/repositories/transactions/entities/crypto-transactions.entity';
 
 @Entity('users')
 export class User {
@@ -90,4 +91,7 @@ export class User {
 
   @OneToMany(() => AirtimeDataTransactions, (airtimeDataTransactions) => airtimeDataTransactions.user)
   airtimeDataTransactions: AirtimeDataTransactions[];
+
+  @OneToMany(() => CryptoTransactions, (cryptoTransactions) => cryptoTransactions.user)
+  cryptoTransactions: CryptoTransactions[];
 }

@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { AirtimeDataTypes } from '../../transactions.constants';
 
 export class CreateAirtimeDataTransactionDto {

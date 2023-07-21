@@ -1,11 +1,5 @@
 import { IsEmail, IsString, IsArray, IsOptional } from 'class-validator';
 
-interface Wallet {
-  network: string;
-  address: string;
-  privateKey: string;
-}
-
 export class CreateUserDto {
   @IsString()
   username: string;
@@ -27,4 +21,7 @@ export class CreateUserDto {
 
   @IsOptional()
   phone?: string;
+
+  @IsOptional()
+  dob?: string;
 }

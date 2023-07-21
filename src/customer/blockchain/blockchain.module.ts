@@ -6,9 +6,20 @@ import { UserRepositoryModule } from 'src/repositories/users/user-repository.mod
 import { WalletRepositoryModule } from 'src/repositories/wallets/wallet-repository.module';
 import { BlockchainController } from './blockchain.controller';
 import { BlockchainService } from './blockchain.service';
+import { TransactionsRepositoryModule } from 'src/repositories/transactions/transactions.repository.module';
+import { HelperModule } from 'src/core/helpers/helper.module';
 
 @Module({
-  imports: [HttpModule, WalletRepositoryModule, CurrencyRepositoryModule, UserRepositoryModule, MailModule],
+  imports: [
+    HttpModule,
+    WalletRepositoryModule,
+    CurrencyRepositoryModule,
+    UserRepositoryModule,
+    MailModule,
+    TransactionsRepositoryModule,
+
+    HelperModule,
+  ],
   controllers: [BlockchainController],
   providers: [BlockchainService],
 })

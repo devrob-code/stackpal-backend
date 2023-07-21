@@ -10,6 +10,7 @@ import { GetUserWalletByCurrencyIdUseCase } from './usecases/get-user-wallet-by-
 import { GetUserWalletUseCase } from './usecases/get-user-wallet.usecase';
 import { GetWalletByUserIdAndNetworkUsecase } from './usecases/get-wallet-by-user-id-and-network.usecase';
 import { GetWalletByUserIdUsecase } from './usecases/get-wallet-by-user-id.usecase';
+import { GetByCurrencyIdAndUserIdUseCase } from './usecases/get-by-currency-id-and-user-id.usecase';
 
 @Injectable()
 export class WalletRepositoryService {
@@ -22,26 +23,18 @@ export class WalletRepositoryService {
     private readonly changeWalletBalanceUseCase: ChangeWalletBalanceUseCase,
     private readonly getWalletByUserIdUsecase: GetWalletByUserIdUsecase,
     private readonly getWalletByUserIdAndNetworkUsecase: GetWalletByUserIdAndNetworkUsecase,
+    private readonly getByCurrencyIdAndUserIdUseCase: GetByCurrencyIdAndUserIdUseCase,
   ) {}
 
-  public async getUserWallet(
-    userId: number,
-    type: CurrencyTypes,
-  ): Promise<Wallet[]> {
+  public async getUserWallet(userId: number, type: CurrencyTypes): Promise<Wallet[]> {
     return this.getUserWalletUseCase.exec(userId, type);
   }
 
-  public async createWallet(
-    userId: number,
-    currencyId: number,
-  ): Promise<Wallet> {
+  public async createWallet(userId: number, currencyId: number): Promise<Wallet> {
     return this.createUserWalletUseCase.exec({ userId, currencyId });
   }
 
-  public async getUserWalletByCurrencyId(
-    userId: number,
-    currencyId: number,
-  ): Promise<Wallet> {
+  public async getUserWalletByCurrencyId(userId: number, currencyId: number): Promise<Wallet> {
     return this.getUserWalletByCurrencyIdUseCase.exec(userId, currencyId);
   }
 
@@ -53,25 +46,28 @@ export class WalletRepositoryService {
     return this.getByIdAndUserIdUseCase.exec(id, userId);
   }
 
-  public async getWalletsByUserId(
-    userId: number,
-    network?: string,
-  ): Promise<Wallet[]> {
+  public async getWalletsByUserId(userId: number, network?: string): Promise<Wallet[]> {
     return this.getWalletByUserIdUsecase.exec(userId, network);
   }
 
-  public async changeWalletBalance(
-    id: number,
-    amount: number,
-    action: WalletAction,
-  ) {
+  public async changeWalletBalance(id: number, amount: number, action: WalletAction) {
     return this.changeWalletBalanceUseCase.exec(id, amount, action);
   }
 
-  public async getWalletByUserIdAndNetwork(
-    userId: number,
-    network: string,
-  ): Promise<Wallet> {
+  public async getWalletByUserIdAndNetwork(userId: number, network: string): Promise<Wallet> {
     return this.getWalletByUserIdAndNetworkUsecase.exec(userId, network);
+  }
+
+  public async changeWalletBalanceByCurrencyIdAndUserId(
+    userId: number,
+    amount: number,
+    action: WalletAction,
+    currencyId: number,
+  ) {
+    return this.changeWalletBalanceUseCase.execByCurrencyIdAndUserId(currencyId, amount, action, userId);
+  }
+
+  public async getByCurrencyIdAndUserId(currencyId: number, userId: number): Promise<Wallet> {
+    return this.getByCurrencyIdAndUserIdUseCase.exec(currencyId, userId);
   }
 }
