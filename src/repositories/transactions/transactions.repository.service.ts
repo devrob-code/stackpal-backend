@@ -18,6 +18,7 @@ import { CreateCryptoTransactionDto } from 'src/customer/transactions/dto/reques
 import { CryptoTransactionResponse } from 'src/customer/transactions/dto/response/crypto-transaction.response';
 import { CreateCryptoTransactionHistoryUseCase } from './usecases/create-crypto-transaction-history.usecase';
 import { GeUserCryptoHistoryBySendTypeUseCase } from './usecases/get-user-crypto-history-by-send-type.usecase';
+import { GetCryptoUserToUserByCoinUseCase } from './usecases/get-crypto-user-to-user-by-coin.usecase';
 
 @Injectable()
 export class TransactionRepositoryService {
@@ -31,6 +32,7 @@ export class TransactionRepositoryService {
     private readonly createFiatTransactionHistoryUseCase: CreateFiatTransactionHistoryUseCase,
     private readonly createCryptoTransactionHistoryUseCase: CreateCryptoTransactionHistoryUseCase,
     private readonly geUserCryptoHistoryBySendTypeUseCase: GeUserCryptoHistoryBySendTypeUseCase,
+    private readonly getCryptoUserToUserByCoinUseCase: GetCryptoUserToUserByCoinUseCase,
   ) {}
 
   public async createTvTransactionHistory(body: CreateTvTransactionDto): Promise<TvTransactionResponse> {
@@ -49,16 +51,22 @@ export class TransactionRepositoryService {
     return this.createAirtimeDataTransactionsUseCase.exec(body);
   }
 
-  public async getTvTransactionsByUserId(userId: number): Promise<TvTransactionResponse[]> {
-    return this.getTvTransactionsByUserIdUseCase.exec(userId);
+  public async getTvTransactionsByUserId(userId: number, limit: number = null): Promise<TvTransactionResponse[]> {
+    return this.getTvTransactionsByUserIdUseCase.exec(userId, limit);
   }
 
-  public async getElectricityTransactionsByUserId(userId: number): Promise<ElectricityTransactionResponse[]> {
-    return this.getElectricityTransactionsByUserIdUseCase.exec(userId);
+  public async getElectricityTransactionsByUserId(
+    userId: number,
+    limit: number = null,
+  ): Promise<ElectricityTransactionResponse[]> {
+    return this.getElectricityTransactionsByUserIdUseCase.exec(userId, limit);
   }
 
-  public async getAirtimeDataTransactionsByUserId(userId: number): Promise<AirtimeDataTransactionResponse[]> {
-    return this.getAirtimeDataTransactionsByUserIdUseCase.exec(userId);
+  public async getAirtimeDataTransactionsByUserId(
+    userId: number,
+    limit: number = null,
+  ): Promise<AirtimeDataTransactionResponse[]> {
+    return this.getAirtimeDataTransactionsByUserIdUseCase.exec(userId, limit);
   }
 
   public async createFiatTransactionHistory(body: CreateFiatTransactionDto): Promise<FiatTransactionResponse> {
@@ -70,5 +78,9 @@ export class TransactionRepositoryService {
   }
   public async geUserCryptoHistoryBySendType(userId: number): Promise<CryptoTransactionResponse[]> {
     return this.geUserCryptoHistoryBySendTypeUseCase.exec(userId);
+  }
+
+  public async getCryptoUserToUserByCoin(userId: number, coin: string): Promise<CryptoTransactionResponse[]> {
+    return this.getCryptoUserToUserByCoinUseCase.exec(userId, coin);
   }
 }

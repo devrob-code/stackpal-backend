@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Body, Post, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Body, Post, Param, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BlockchainService } from './blockchain.service';
 import { AdminBuyCoinDto, AdminSellCoinDto } from './dto/request/admin-buy-coin.dto';
@@ -45,9 +45,9 @@ export class BlockchainController {
   }
 
   @Get('transaction-history/eth')
-  public async getETHTransactionHistory(@Request() req): Promise<any> {
+  public async getETHTransactionHistory(@Request() req, @Query('currency') currency: string | null): Promise<any> {
     const userId = req.user.id;
-    return this.blockchainService.getETHTransactionHistory(userId);
+    return this.blockchainService.getETHTransactionHistory(userId, currency);
   }
 
   @Get('transaction-history/btc')

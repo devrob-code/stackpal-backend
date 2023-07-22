@@ -11,12 +11,13 @@ export class GetTvTransactionsByUserIdUseCase {
     private readonly tvTransactionRepo: Repository<TvTransactions>,
   ) {}
 
-  public async exec(userId: number): Promise<TvTransactionResponse[]> {
+  public async exec(userId: number, limit?: number): Promise<TvTransactionResponse[]> {
     return this.tvTransactionRepo.find({
       where: {
         userId,
       },
       order: { createdAt: 'DESC' },
+      take: limit,
     });
   }
 }

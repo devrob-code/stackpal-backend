@@ -20,3 +20,6 @@ export enum CryptoTransactionSendType {
   userToUser = 'User to User',
   walletAddress = 'Wallet Address',
 }
+
+export const LIMIT_TWO = 2;
+export const LIMIT_FOUR = 4;

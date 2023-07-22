@@ -13,12 +13,13 @@ export class GetAirtimeDataTransactionsByUserIdUseCase {
     private readonly airtimeDataTransactionsRepo: Repository<AirtimeDataTransactions>,
   ) {}
 
-  public async exec(userId: number): Promise<AirtimeDataTransactionResponse[]> {
+  public async exec(userId: number, limit?: number): Promise<AirtimeDataTransactionResponse[]> {
     return this.airtimeDataTransactionsRepo.find({
       where: {
         userId,
       },
       order: { createdAt: 'DESC' },
+      take: limit,
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TransactionsService } from './transactions.service';
 import { TransactionsResponse } from './dto/response/transactions.response';
@@ -22,5 +22,18 @@ export class TransactionsController {
   @Get('/crypto/user-to-user')
   public async getCryptoHistoryBySendType(@Request() req): Promise<CryptoTransactionResponse[]> {
     return await this.transactionsService.getCryptoHistoryBySendType(req.user.id);
+  }
+
+  @Get('/crypto/user-to-user/:coin')
+  public async getCryptoUserToUserByCoin(
+    @Request() req,
+    @Param('coin') coin: string,
+  ): Promise<CryptoTransactionResponse[]> {
+    return await this.transactionsService.getCryptoUserToUserByCoin(req.user.id, coin);
+  }
+
+  @Get('/fiat/recent')
+  public async getRecentFiatTransactions(@Request() req): Promise<any> {
+    return await this.transactionsService.getRecentFiatTransactions(req.user.id);
   }
 }

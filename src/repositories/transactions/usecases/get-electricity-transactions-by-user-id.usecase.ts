@@ -11,12 +11,13 @@ export class GetElectricityTransactionsByUserIdUseCase {
     private readonly electricityTransactionRepo: Repository<ElectricityTransactions>,
   ) {}
 
-  public async exec(userId: number): Promise<ElectricityTransactionResponse[]> {
+  public async exec(userId: number, limit?: number): Promise<ElectricityTransactionResponse[]> {
     return this.electricityTransactionRepo.find({
       where: {
         userId,
       },
       order: { createdAt: 'DESC' },
+      take: limit,
     });
   }
 }

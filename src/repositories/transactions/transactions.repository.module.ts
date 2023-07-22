@@ -15,6 +15,7 @@ import { CreateFiatTransactionHistoryUseCase } from './usecases/create-fiat-tran
 import { CreateCryptoTransactionHistoryUseCase } from './usecases/create-crypto-transaction-history.usecase';
 import { CryptoTransactions } from './entities/crypto-transactions.entity';
 import { GeUserCryptoHistoryBySendTypeUseCase } from './usecases/get-user-crypto-history-by-send-type.usecase';
+import { GetCryptoUserToUserByCoinUseCase } from './usecases/get-crypto-user-to-user-by-coin.usecase';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { GeUserCryptoHistoryBySendTypeUseCase } from './usecases/get-user-crypto
     CreateFiatTransactionHistoryUseCase,
     CreateCryptoTransactionHistoryUseCase,
     GeUserCryptoHistoryBySendTypeUseCase,
+    GetCryptoUserToUserByCoinUseCase,
   ],
   exports: [TransactionRepositoryService],
 })

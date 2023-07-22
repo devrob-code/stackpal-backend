@@ -243,7 +243,7 @@ export class BlockchainService {
     return { balance: Number(wallet.balance) };
   }
 
-  public async getETHTransactionHistory(userId: number): Promise<any> {
+  public async getETHTransactionHistory(userId: number, currency?: string): Promise<any> {
     const NOWNodesApiKey = this.configService.get('nownode.apiKey');
     await this.getERC20Balance(userId);
     let totalHis: any = [];
@@ -305,6 +305,16 @@ export class BlockchainService {
               console.log(err);
               return [];
             });
+        }
+        let response = [];
+
+        if (currency) {
+          for (const history of totalHis) {
+            if (history.symbol.toLowerCase() == currency) {
+              response.push(history);
+            }
+          }
+          totalHis = response;
         }
 
         return { status: true, data: totalHis };
