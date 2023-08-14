@@ -20,7 +20,10 @@ export class FiatDepositController {
     CheckIfWalletIsFiatGuard,
     CheckIfWalletIsUserWalletGuard,
   )
-  public async depositFiat(@Body() body: FiatDepositDto, @Request() req): Promise<FiatDepositResponse> {
+  public async depositFiat(
+    @Body() body: FiatDepositDto,
+    @Request() req,
+  ): Promise<{ status: boolean; response: FiatDepositResponse }> {
     const data = {
       userId: req.user.id,
       ...body,
@@ -32,4 +35,4 @@ export class FiatDepositController {
   public async getUserFiatDeposit(@Request() req) {
     return await this.fiatDepositService.getFiatDepositsByUserId(req.user.id);
   }
-}
+} //

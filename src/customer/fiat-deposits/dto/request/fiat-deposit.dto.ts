@@ -11,6 +11,7 @@ export class FiatDepositDto {
   @IsInt()
   amount: number;
 
+  @IsOptional()
   @IsInt()
   walletId: number;
 }

@@ -167,9 +167,13 @@ export class BlockchainService {
 
     try {
       const res = await firstValueFrom(
-        this.httpService.post(`https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
-          headers: { 'api-key': NOWNodesApiKey },
-        }),
+        this.httpService.post(
+          `https://bchbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          {},
+          {
+            headers: { 'Accept-Encoding': 'gzip,deflate,compress', 'api-key': NOWNodesApiKey },
+          },
+        ),
       )
         .then(async (response) => {
           if (response.data.txids) {
@@ -193,9 +197,13 @@ export class BlockchainService {
 
     try {
       const res = await firstValueFrom(
-        this.httpService.post(`https://eth-blockbook.nownodes.io/api/v2/address/${userWallet.address}`, '', {
-          headers: { 'api-key': NOWNodesApiKey },
-        }),
+        this.httpService.post(
+          `https://eth-blockbook.nownodes.io/api/v2/address/${userWallet.address}`,
+          {},
+          {
+            headers: { 'Accept-Encoding': 'gzip,deflate,compress', 'api-key': NOWNodesApiKey },
+          },
+        ),
       )
         .then(async (response) => {
           var ethCurrentBalance = response.data.balance / 10 ** totalDecimal['ETH'];
@@ -208,7 +216,7 @@ export class BlockchainService {
 
           if (response.data.tokens) {
             response.data.tokens.map((eData: any) => {
-              if (eData.symbol === 'USDT') {
+              if (eData.symbol === 'USDT' && eData.decimals === 6) {
                 usdtCurrentBalance = eData.balance / 10 ** 6;
               } else if (eData.symbol === 'USDC') {
                 usdcCurrentBalance = eData.balance / 10 ** 6;
@@ -269,14 +277,14 @@ export class BlockchainService {
               `https://eth-blockbook.nownodes.io/api/v2/tx/${eTxids}`,
               {},
               {
-                headers: { 'api-key': NOWNodesApiKey },
+                headers: { 'Accept-Encoding': 'gzip,deflate,compress', 'api-key': NOWNodesApiKey },
               },
             ),
           )
             .then(async (response) => {
               if (!userWallet) return [];
 
-              var data = {
+              var data: any = {
                 from: response.data.vin[0].addresses[0],
                 transactionId: response.data.txid,
                 scanURL: `https://www.blockchain.com/eth/tx/${response.data.txid}`,
@@ -298,7 +306,7 @@ export class BlockchainService {
                       : 'Received'
                     : 'Pending',
               };
-
+              data.amount = parseFloat(data.amount.toFixed(2)).toFixed(2);
               totalHis.push(data);
             })
             .catch((err) => {
@@ -1213,14 +1221,14 @@ export class BlockchainService {
           },
           {
             gas: gasLimit['USDT'],
-            gasPrice: tGasPrice['low'],
+            gasPrice: tGasPrice['medium'],
           },
         )
         .on('transactionHash', console.log)
         .on('confirmation', console.log);
 
       if (result) {
-        // Send Email Notifications
+        // Send Email Notifications//
         this.mailService.buyCoin(user.email, body.coin, body.naira, body.amount, user.username);
 
         const receiverWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(receiverId, 3);
@@ -1401,6 +1409,7 @@ export class BlockchainService {
 
   public async adminSellETH(senderId: number, body: AdminSellCoinDto): Promise<any> {
     try {
+      let receiverWallet;
       let tGasPrice = {};
       const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
         (res) => res.data,
@@ -1412,7 +1421,14 @@ export class BlockchainService {
       const sender = await this.userRepositoryService.getById(senderId);
 
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
-      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
+
+      if (body.username) {
+        const recipient = await this.userRepositoryService.getByUsername(body.username);
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(recipient.id);
+      } else {
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
+      }
+
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {
@@ -1460,6 +1476,7 @@ export class BlockchainService {
 
   public async adminSellUSDT(senderId: number, body: AdminSellCoinDto): Promise<any> {
     try {
+      let receiverWallet;
       let tGasPrice = {};
       const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
         (res) => res.data,
@@ -1470,7 +1487,14 @@ export class BlockchainService {
 
       const sender = await this.userRepositoryService.getById(senderId);
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
-      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
+
+      if (body.username) {
+        const recipient = await this.userRepositoryService.getByUsername(body.username);
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(recipient.id);
+      } else {
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
+      }
+
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {
@@ -1501,7 +1525,7 @@ export class BlockchainService {
           },
           {
             gas: gasLimit['USDT'],
-            gasPrice: tGasPrice['low'],
+            gasPrice: tGasPrice['medium'],
           },
         )
         .on('transactionHash', console.log)
@@ -1510,12 +1534,12 @@ export class BlockchainService {
       if (result) {
         // Send Email Notifications
         this.mailService.sellCoin(sender.email, body.coin.toUpperCase(), body.amount, sender.username);
-        const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
-        await this.walletRepositoryService.changeWalletBalance(
-          senderWallet.id,
-          parseFloat(body.ngnValue) * 100,
-          WalletAction.increase,
-        );
+        // const senderWallet = await this.walletRepositoryService.getUserWalletByCurrencyId(senderId, 3);
+        // await this.walletRepositoryService.changeWalletBalance(
+        //   senderWallet.id,
+        //   parseFloat(body.ngnValue) * 100,
+        //   WalletAction.increase,
+        // );
         return { status: true };
       }
     } catch (error) {
@@ -1526,6 +1550,7 @@ export class BlockchainService {
 
   public async adminSellUSDC(senderId: number, body: AdminSellCoinDto): Promise<any> {
     try {
+      let receiverWallet;
       let tGasPrice = {};
       const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
         (res) => res.data,
@@ -1536,7 +1561,13 @@ export class BlockchainService {
 
       const sender = await this.userRepositoryService.getById(senderId);
       const userWallet = await this.walletRepositoryService.getWalletsByUserId(senderId);
-      const receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
+
+      if (body.username) {
+        const recipient = await this.userRepositoryService.getByUsername(body.username);
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(recipient.id);
+      } else {
+        receiverWallet = await this.walletRepositoryService.getWalletsByUserId(ADMIN_ID);
+      }
       let wallets: { [key: string]: { address: string; privateKey: string } } = {};
       let receiverWallets: { [key: string]: { address: string; privateKey: string } } = {};
       userWallet.map((eData: any) => {
@@ -1595,33 +1626,41 @@ export class BlockchainService {
       let price;
       let tGasPrice = { ...gasPrice };
       if (sendTokenType === 'ETH' || sendTokenType === 'USDT' || sendTokenType === 'USDC') {
-        const ethFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`)).then(
-          (res) => res.data,
-        );
+        const ethFee = await firstValueFrom(
+          this.httpService.get(`https://app.bitgo.com/api/v2/eth/tx/fee`, {
+            headers: { 'Accept-Encoding': 'gzip,deflate,compress' },
+          }),
+        ).then((res) => res.data);
         tGasPrice['low'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.safeLowMinerTip);
         tGasPrice['medium'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.normalMinerTip);
         tGasPrice['high'] = parseFloat(ethFee.eip1559.baseFee) + parseFloat(ethFee.eip1559.fastestMinerTip);
         gasPrice = tGasPrice;
       } else if (sendTokenType === 'BTC') {
-        const btcFee = await firstValueFrom(this.httpService.get(`https://api.blockcypher.com/v1/btc/main`)).then(
-          (res) => res.data,
-        );
+        const btcFee = await firstValueFrom(
+          this.httpService.get(`https://api.blockcypher.com/v1/btc/main`, {
+            headers: { 'Accept-Encoding': 'gzip,deflate,compress' },
+          }),
+        ).then((res) => res.data);
         tGasPrice['low'] = Math.floor(btcFee.low_fee_per_kb / 1000) + 1;
         tGasPrice['medium'] = Math.floor(btcFee.medium_fee_per_kb / 1000) + 1;
         tGasPrice['high'] = Math.floor(btcFee.high_fee_per_kb / 1000) + 1;
         gasPrice = tGasPrice;
       } else if (sendTokenType === 'BCH') {
-        const bchFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/bch/tx/fee`)).then(
-          (res) => res.data,
-        );
+        const bchFee = await firstValueFrom(
+          this.httpService.get(`https://app.bitgo.com/api/v2/bch/tx/fee`, {
+            headers: { 'Accept-Encoding': 'gzip,deflate,compress' },
+          }),
+        ).then((res) => res.data);
         tGasPrice['low'] = bchFee.feePerKb;
         tGasPrice['medium'] = bchFee.feePerKb;
         tGasPrice['high'] = bchFee.feePerKb;
         gasPrice = tGasPrice;
       } else if (sendTokenType === 'XRP') {
-        const xrpFee = await firstValueFrom(this.httpService.get(`https://app.bitgo.com/api/v2/xrp/tx/fee`)).then(
-          (res) => res.data,
-        );
+        const xrpFee = await firstValueFrom(
+          this.httpService.get(`https://app.bitgo.com/api/v2/xrp/tx/fee`, {
+            headers: { 'Accept-Encoding': 'gzip,deflate,compress' },
+          }),
+        ).then((res) => res.data);
         tGasPrice['low'] = xrpFee.feeEstimate;
         tGasPrice['medium'] = xrpFee.feeEstimate;
         tGasPrice['high'] = xrpFee.feeEstimate;

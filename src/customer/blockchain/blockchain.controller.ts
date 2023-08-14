@@ -170,14 +170,14 @@ export class BlockchainController {
 
   @Post('/sell/now/usdt')
   public async adminSellUSDT(@Request() req, @Body() body: AdminSellCoinDto): Promise<any> {
-    return this.blockchainService.adminSellETH(req.user.id, body);
+    return this.blockchainService.adminSellUSDT(req.user.id, body);
   }
 
   @Post('/sell/now/usdc')
   public async adminSellUSDC(@Request() req, @Body() body: AdminSellCoinDto): Promise<any> {
     return this.blockchainService.adminSellUSDC(req.user.id, body);
   }
-
+  //
   @Get('/calculate-send-fee/:token/:speed')
   public async calculateSendFee(@Param('token') token: string, @Param('speed') speed: string): Promise<any> {
     token = token.toUpperCase();

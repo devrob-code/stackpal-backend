@@ -8,9 +8,10 @@ import { FiatDepositResponse } from './dto/response/fiat-deposit.response';
 export class FiatDepositService {
   constructor(private readonly fiatDepositRepositoryService: FiatDepositRepositoryService) {}
 
-  public async depositFiat(body: FiatDepositDto): Promise<FiatDepositResponse> {
+  public async depositFiat(body: FiatDepositDto): Promise<{ status: boolean; response: FiatDepositResponse }> {
     const newFiatDeposit = await this.fiatDepositRepositoryService.newFiatDeposit(body);
-    return plainToInstance(FiatDepositResponse, newFiatDeposit);
+    const response = plainToInstance(FiatDepositResponse, newFiatDeposit);
+    return { status: true, response };
   }
 
   public async getFiatDepositsByUserId(userId: number): Promise<FiatDepositResponse[]> {
