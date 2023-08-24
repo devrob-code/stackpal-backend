@@ -1,4 +1,5 @@
 import { GiftCardDepositType } from 'src/customer/gift-cards/gift-card.constants';
+import { GiftCard } from 'src/repositories/gift-cards/entities/gift-card.entity';
 import { User } from 'src/repositories/users/entities/user.entity';
 import {
   Column,
@@ -66,4 +67,7 @@ export class GiftCardDeposit {
   @ManyToOne(() => User, (user) => user.giftCard)
   @JoinColumn({ name: 'approvedBy', referencedColumnName: 'id' })
   user: User[];
+
+  @ManyToOne(() => GiftCard, (giftCard) => giftCard.giftCardDeposits)
+  giftCard: GiftCard[];
 }

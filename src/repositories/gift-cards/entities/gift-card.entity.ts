@@ -1,3 +1,4 @@
+import { GiftCardDeposit } from 'src/repositories/gift-card-deposits/entities/gift-card-deposit.entity';
 import { GiftCardReceipts } from 'src/repositories/gift-card-receipts/entities/gift-card-receipts.entity';
 import { User } from 'src/repositories/users/entities/user.entity';
 import {
@@ -67,4 +68,7 @@ export class GiftCard {
 
   @OneToMany(() => GiftCardReceipts, (giftCardReceipts) => giftCardReceipts.giftCard)
   giftCardReceipts: GiftCardReceipts[];
+
+  @OneToMany(() => GiftCardDeposit, (giftCardDeposit) => giftCardDeposit.giftCard)
+  giftCardDeposits: GiftCard[];
 }

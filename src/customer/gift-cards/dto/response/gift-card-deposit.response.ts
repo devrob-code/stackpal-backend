@@ -3,7 +3,7 @@ import { UserResponse } from 'src/user/dto/response/user.response';
 import { GiftCardDepositType } from '../../gift-card.constants';
 
 @Exclude()
-export class GiftCardDepositResponse {
+export class GiftCardDepositResponseData {
   @Expose()
   id: number;
 
@@ -15,6 +15,18 @@ export class GiftCardDepositResponse {
 
   @Expose()
   denomination: string;
+
+  @Expose()
+  cardName: string;
+
+  @Expose()
+  cardWorth: number;
+
+  @Expose()
+  speed: string;
+
+  @Expose()
+  rate: number;
 
   @Expose()
   isApproved: boolean;
@@ -43,4 +55,13 @@ export class GiftCardDepositResponse {
   @Expose()
   @Type(() => UserResponse)
   user: UserResponse[];
+}
+
+@Exclude()
+export class GiftCardDepositResponse {
+  @Expose()
+  status: boolean;
+
+  @Expose()
+  data: GiftCardDepositResponseData[];
 }

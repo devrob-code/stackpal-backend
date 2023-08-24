@@ -335,7 +335,7 @@ export class BlockchainService {
     }
   }
 
-  public async getBTCTransactionHistory(userId: number): Promise<any> {
+  public async getBTCTransactionHistory(userId: number, currency?: string): Promise<any> {
     const NOWNodesApiKey = this.configService.get('nownode.apiKey');
     await this.getBTCBalance(userId);
     const userWallet = await this.walletRepositoryService.getWalletsByUserId(userId);

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GiftCardDepositResponse } from 'src/customer/gift-cards/dto/response/gift-card-deposit.response';
+import {
+  GiftCardDepositResponse,
+  GiftCardDepositResponseData,
+} from 'src/customer/gift-cards/dto/response/gift-card-deposit.response';
 import { Repository } from 'typeorm';
 import { GiftCardDeposit } from '../entities/gift-card-deposit.entity';
 
@@ -11,8 +14,8 @@ export class GetByUserIdUseCase {
     private readonly giftCardDepositRepo: Repository<GiftCardDeposit>,
   ) {}
 
-  public async exec(userId: number): Promise<GiftCardDepositResponse[]> {
-    return this.giftCardDepositRepo.find({
+  public async exec(userId: number): Promise<GiftCardDepositResponseData[]> {
+    return await this.giftCardDepositRepo.find({
       where: { userId },
       relations: ['user'],
     });

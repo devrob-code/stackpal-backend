@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { GiftCardDepositDto } from 'src/customer/gift-cards/dto/request/gift-card-deposit.dto';
-import { GiftCardDepositResponse } from 'src/customer/gift-cards/dto/response/gift-card-deposit.response';
+import {
+  GiftCardDepositResponse,
+  GiftCardDepositResponseData,
+} from 'src/customer/gift-cards/dto/response/gift-card-deposit.response';
 import { ChangeApprovalStatusUseCase } from './usecases/change-approval-status.usecase';
 import { GetAllGiftCardDepositsUseCase } from './usecases/get-all-gift-card-deposits.usecase';
 import { GetByIdUseCase } from './usecases/get-by-id.usecase';
@@ -17,11 +20,11 @@ export class GiftCardDepositRepositoryService {
     private readonly getByUserIdUseCase: GetByUserIdUseCase,
   ) {}
 
-  public async newGiftCardDeposit(data: GiftCardDepositDto): Promise<GiftCardDepositResponse> {
+  public async newGiftCardDeposit(data: GiftCardDepositDto): Promise<GiftCardDepositResponseData> {
     return this.newGiftCardDepositUseCase.exec(data);
   }
 
-  public async getById(id: number): Promise<GiftCardDepositResponse> {
+  public async getById(id: number): Promise<GiftCardDepositResponseData> {
     return this.getByIdUseCase.exec(id);
   }
 
@@ -29,11 +32,11 @@ export class GiftCardDepositRepositoryService {
     return this.changeApprovalStatusUseCase.exec(id, status, approvedBy);
   }
 
-  public async getAllGiftCardDeposits(): Promise<GiftCardDepositResponse[]> {
+  public async getAllGiftCardDeposits(): Promise<GiftCardDepositResponseData[]> {
     return this.getAllGiftCardDepositsUseCase.exec();
   }
 
-  public async getByUserId(userId: number): Promise<GiftCardDepositResponse[]> {
+  public async getByUserId(userId: number): Promise<GiftCardDepositResponseData[]> {
     return this.getByUserIdUseCase.exec(userId);
   }
 }

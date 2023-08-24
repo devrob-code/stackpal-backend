@@ -4,7 +4,7 @@ import { GiftCardResponse, GiftCardResponseDto } from 'src/admin/gift-cards/dto/
 import { GiftCardDepositRepositoryService } from 'src/repositories/gift-card-deposits/gift-card-deposit-repository.service';
 import { GiftCardRepositoryService } from 'src/repositories/gift-cards/gift-card-repository.service';
 import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
-import { GiftCardDepositResponse } from './dto/response/gift-card-deposit.response';
+import { GiftCardDepositResponse, GiftCardDepositResponseData } from './dto/response/gift-card-deposit.response';
 import { ActiveGiftCardResponse } from './dto/response/active-gift-card.response';
 import { HelperService } from 'src/core/helpers/helper.service';
 import { GiftCardReceiptsRepositoryService } from 'src/repositories/gift-card-receipts/gift-card-receipts.repository.service';
@@ -43,9 +43,14 @@ export class GiftCardService {
     return { status: false };
   }
 
-  public async getByUserId(userId: number): Promise<GiftCardDepositResponse[]> {
+  public async getByUserId(userId: number): Promise<GiftCardDepositResponse> {
+    let response: any = {};
     const giftCardDeposit = await this.giftCardDepositRepositoryService.getByUserId(userId);
-    return plainToInstance(GiftCardDepositResponse, giftCardDeposit);
+
+    response.status = true;
+    response.data = giftCardDeposit;
+
+    return plainToInstance(GiftCardDepositResponse, response);
   }
 
   public async getActiveGiftCards(): Promise<ActiveGiftCardResponse> {

@@ -14,7 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GiftCardResponse, GiftCardResponseDto } from 'src/admin/gift-cards/dto/response/gift-card.response';
 import { CheckGiftCardIdExists } from 'src/admin/gift-cards/guards/check-gift-card-id-exists.guard';
 import { GiftCardDepositDto } from './dto/request/gift-card-deposit.dto';
-import { GiftCardDepositResponse } from './dto/response/gift-card-deposit.response';
+import { GiftCardDepositResponse, GiftCardDepositResponseData } from './dto/response/gift-card-deposit.response';
 import { GiftCardService } from './gift-card.service';
 import { ActiveGiftCardResponse } from './dto/response/active-gift-card.response';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -47,7 +47,7 @@ export class GiftCardController {
   }
 
   @Get('deposits/user/all')
-  public async getUserGiftCardDeposit(@Request() req): Promise<GiftCardDepositResponse[]> {
+  public async getUserGiftCardDeposit(@Request() req): Promise<GiftCardDepositResponse> {
     return await this.giftCardService.getByUserId(req.user.id);
   }
 
