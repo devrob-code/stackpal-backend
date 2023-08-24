@@ -90,6 +90,15 @@ export class AuthController {
     return await this.authService.createPin(body);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Post('validate-pin')
+  public async validatePin(
+    @Body() body: { pin: string },
+    @Request() req,
+  ): Promise<{ status: boolean; message: string }> {
+    return await this.authService.validatePin(req.user.id, body);
+  }
+
   @Post('reset-password')
   public async resetPassword(@Body() body: { password: string; email: string }): Promise<boolean> {
     return await this.authService.resetPassword(body);

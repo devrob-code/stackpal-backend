@@ -255,6 +255,17 @@ export class AuthService {
     return !!createPin;
   }
 
+  public async validatePin(userId: number, body: { pin: string }): Promise<{ status: boolean; message: string }> {
+    const user = await this.userRepositoryService.getById(userId);
+    const comparePin = await bcrypt.compare(body.pin, user.transactionPin);
+
+    if (comparePin) {
+      return { status: true, message: 'Correct Pin' };
+    } else {
+      return { status: false, message: 'Invalid Pin' };
+    }
+  }
+
   public async resetPassword(body: { password: string; email: string }): Promise<boolean> {
     const password = await bcrypt.hash(body.password, 10);
     const createPassword = await this.userRepositoryService.updateUserByEmail(body.email, {
