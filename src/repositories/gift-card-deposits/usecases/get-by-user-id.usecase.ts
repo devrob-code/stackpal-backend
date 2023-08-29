@@ -18,6 +18,9 @@ export class GetByUserIdUseCase {
     return await this.giftCardDepositRepo.find({
       where: { userId },
       relations: ['user'],
+      order: {
+        createdAt: 'DESC',
+      },
     });
   }
 }
