@@ -65,7 +65,7 @@ export class GiftCardService {
         return 1;
       } else {
         return 0;
-      }
+      } //
     });
 
     return plainToInstance(GiftCardDepositResponse, response);
