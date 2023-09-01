@@ -17,6 +17,7 @@ import { UserModule } from './user/user.module';
 import { TransactionsModule } from './customer/transactions/transactions.module';
 import { BankModule } from './customer/banks/banks.module';
 import { UserToUserModule } from './customer/user-to-user/usert-to-user.module';
+import { WithdrawalRequestModule } from './customer/withdrawal-request/withdrawal-request.module';
 
 @Module({
   controllers: [AppController],
@@ -37,6 +38,7 @@ import { UserToUserModule } from './customer/user-to-user/usert-to-user.module';
     TransactionsModule,
     BankModule,
     UserToUserModule,
+    WithdrawalRequestModule,
     //RateModule,
   ],
 })

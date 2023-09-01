@@ -8,6 +8,7 @@ import { GiftCardDepositResponse, GiftCardDepositResponseData } from './dto/resp
 import { ActiveGiftCardResponse } from './dto/response/active-gift-card.response';
 import { HelperService } from 'src/core/helpers/helper.service';
 import { GiftCardReceiptsRepositoryService } from 'src/repositories/gift-card-receipts/gift-card-receipts.repository.service';
+import { WithdrawalRequestRepositoryService } from 'src/repositories/withdrawal-requests/withdrawal-request.repository.service';
 
 @Injectable()
 export class GiftCardService {
@@ -15,6 +16,7 @@ export class GiftCardService {
     private readonly giftCardRepositoryService: GiftCardRepositoryService,
     private readonly giftCardDepositRepositoryService: GiftCardDepositRepositoryService,
     private readonly giftCardReceiptsRepositoryService: GiftCardReceiptsRepositoryService,
+    private readonly withdrawalRequestRepositoryService: WithdrawalRequestRepositoryService,
     private readonly helperService: HelperService,
   ) {}
 
@@ -46,9 +48,25 @@ export class GiftCardService {
   public async getByUserId(userId: number): Promise<GiftCardDepositResponse> {
     let response: any = {};
     const giftCardDeposit = await this.giftCardDepositRepositoryService.getByUserId(userId);
+    const withdrawalRequestRepositoryService =
+      await this.withdrawalRequestRepositoryService.getAllWithdrawalRequestByUserId(userId);
 
     response.status = true;
-    response.data = giftCardDeposit;
+    response.data = giftCardDeposit.concat(withdrawalRequestRepositoryService);
+
+    response.data.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+
+      // Compare the dates in descending order
+      if (dateA > dateB) {
+        return -1;
+      } else if (dateA < dateB) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
     return plainToInstance(GiftCardDepositResponse, response);
   }

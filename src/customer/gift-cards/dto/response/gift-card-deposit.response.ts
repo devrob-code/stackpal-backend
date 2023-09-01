@@ -55,6 +55,12 @@ export class GiftCardDepositResponseData {
   @Expose()
   @Type(() => UserResponse)
   user: UserResponse[];
+
+  @Expose()
+  transactionId?: string;
+
+  @Expose()
+  amount?: number;
 }
 
 @Exclude()
