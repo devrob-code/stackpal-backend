@@ -6,7 +6,7 @@ export default () => ({
   twilio: getTwilioProps(),
   coingecko: getCoinGeckoProps(),
   vtu: getVTUProps(),
-  port: process.env.PORT,
+  port: process.env.PORT || 5000,
   type: process.env.DB_TYPE,
   host: process.env.DB_HOST,
   username: process.env.DB_USERNAME,

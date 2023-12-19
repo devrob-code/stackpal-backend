@@ -70,7 +70,7 @@ export class AuthService {
 
     // compare passwords
     if (!(await this.checkPassword(password, user.password))) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Incorrect Login Credentials', HttpStatus.UNAUTHORIZED); //
     }
 
     // generate and sign token

@@ -24,6 +24,7 @@ import { HelperService } from 'src/core/helpers/helper.service';
 import { MailService } from 'src/core/mail/mail.service';
 import { UserRepositoryService } from 'src/repositories/users/user-repository.service';
 import { AirtimeDataTypes } from '../transactions/transactions.constants';
+import { NAIRA_CURRENCY_ID, WalletAction } from '../wallet/wallet.constants';
 
 @Injectable()
 export class BillsService {
@@ -39,6 +40,7 @@ export class BillsService {
     private readonly mailService: MailService,
     private readonly transactionRepositoryService: TransactionRepositoryService,
     private readonly userRepositoryService: UserRepositoryService,
+    private readonly walletRepsitoryService: WalletRepositoryService,
   ) {}
 
   private generateRandomString(): string {
@@ -96,6 +98,10 @@ export class BillsService {
             body.network,
             response.txId,
           );
+        })
+        .then(async () => {
+          const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+          this.walletRepsitoryService.changeWalletBalance(userWallet.id, body.amount * 100, WalletAction.deduct);
         });
 
       return data;
@@ -178,6 +184,14 @@ export class BillsService {
             user.username,
             body.network,
             response.txId,
+          );
+        })
+        .then(async () => {
+          const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+          this.walletRepsitoryService.changeWalletBalance(
+            userWallet.id,
+            Number(data.content.transactions.amount) * 100,
+            WalletAction.deduct,
           );
         });
 
@@ -268,6 +282,14 @@ export class BillsService {
             body.network,
             response.txId,
           );
+        })
+        .then(async () => {
+          const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+          this.walletRepsitoryService.changeWalletBalance(
+            userWallet.id,
+            Number(body.amount) * 100,
+            WalletAction.deduct,
+          );
         });
 
       return data;
@@ -352,6 +374,14 @@ export class BillsService {
             body.network,
             response.txId,
             data.purchased_code,
+          );
+        })
+        .then(async () => {
+          const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+          this.walletRepsitoryService.changeWalletBalance(
+            userWallet.id,
+            Number(body.amount) * 100,
+            WalletAction.deduct,
           );
         });
 

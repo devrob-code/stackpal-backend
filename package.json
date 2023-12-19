@@ -59,7 +59,7 @@
     "ripple-bip32": "^0.0.3",
     "ripple-keypairs": "^1.1.4",
     "ripple-lib": "^1.10.1",
-    "rxjs": "^7.2.0",
+    "rxjs": "^7.5.2",
     "send-crypto": "^0.2.37",
     "simple-bitcoin-wallet": "^0.0.9",
     "twilio": "^3.76.1",
