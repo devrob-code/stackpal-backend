@@ -65,6 +65,14 @@ export class BillsService {
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
       const user = await this.userRepositoryService.getById(userId);
+      const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+
+      if (userWallet.balance < body.amount * 100) {
+        return new HttpException(
+          'You have Insufficient balance to make continue with this transaction',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
       const { data } = await firstValueFrom(
         this.httpService.post(
@@ -100,12 +108,12 @@ export class BillsService {
           );
         })
         .then(async () => {
-          const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
           this.walletRepsitoryService.changeWalletBalance(userWallet.id, body.amount * 100, WalletAction.deduct);
         });
 
       return data;
     } catch (e) {
+      console.log(e);
       throw new HttpException(e.response.data, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -137,6 +145,15 @@ export class BillsService {
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
       const user = await this.userRepositoryService.getById(userId);
+
+      const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+
+      if (userWallet.balance < body.amount * 100) {
+        return new HttpException(
+          'You have Insufficient balance to make continue with this transaction',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
       let serviceId;
       if (body.network === DataNetworkTypes.smile) {

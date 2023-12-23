@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { DataNetworkTypes } from '../../bills.constants';
 
 export class PurchaseDataDto {
@@ -15,4 +15,7 @@ export class PurchaseDataDto {
 
   @IsEnum(DataNetworkTypes)
   network: DataNetworkTypes;
+
+  @IsInt()
+  amount: number;
 }
