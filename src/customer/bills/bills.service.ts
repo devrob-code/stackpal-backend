@@ -260,6 +260,15 @@ export class BillsService {
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
       const user = await this.userRepositoryService.getById(userId);
 
+      const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+
+      if (userWallet.balance < amount * 100) {
+        return new HttpException(
+          'You have Insufficient balance to make continue with this transaction',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       const { data } = await firstValueFrom(
         this.httpService.post(
           url,
@@ -351,6 +360,15 @@ export class BillsService {
       const url = `${this.baseURL}/pay`;
       const requestId = moment().utcOffset('+0100').format('YYYYMMDDHHmm') + this.generateRandomString();
       const user = await this.userRepositoryService.getById(userId);
+
+      const userWallet = await this.walletRepsitoryService.getUserWalletByCurrencyId(userId, NAIRA_CURRENCY_ID);
+
+      if (userWallet.balance < amount * 100) {
+        return new HttpException(
+          'You have Insufficient balance to make continue with this transaction',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
       const { data } = await firstValueFrom(
         this.httpService.post(
